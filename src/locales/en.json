@@ -1,0 +1,217 @@
+{
+  "nav": {
+    "home": "Home",
+    "services": "Services",
+    "gallery": "Gallery",
+    "blog": "Blog",
+    "aboutUs": "About Us",
+    "ourWork": "Our Work",
+    "contactUs": "Contact Us",
+    "switchLanguage": "Switch Language"
+  },
+  "footer": {
+    "address": {
+      "title": "Address",
+      "text": "7711 Lorem ipsum dolor sit amet, Riyadh, Saudi Arabia."
+    },
+    "links": {
+      "services": "Services",
+      "gallery": "Gallery",
+      "blog": "Blog",
+      "contactUs": "Contact Us"
+    },
+    "contacts": {
+      "title": "Contacts",
+      "phone1": "009 222 222 333 22",
+      "phone2": "009 222 222 333 22",
+      "email": "Info\\@ProStdios.com"
+    },
+    "copyright": "Copyright © {year} By",
+    "company": "ProStdios",
+    "privacyPolicy": "Privacy Policy"
+  },
+  "hero": {
+    "text1": "Creative Agency for Brands That Dare to Stand Out",
+    "text2": "Capturing Moments. Creating Stories.",
+    "book": "Book a Shoot",
+    "watch": "Watch Our Production Reel",
+    "descriptions": "Bold visuals that move, inspire, and make your brand memorable. Photos/videos/content speak louder. We don't just capture—we create lasting experiences.",
+    "videoUnsupported": "Your browser does not support the video tag."
+  },
+  "visualArchive": {
+    "title": "Visual Archive", 
+    "subtitle": "From concept to capture — explore the creative behind every frame",
+    "imageAlt": "Visual archive image",
+    "viewCaseStudy": "View Case Study",
+    "prevImage": "Previous image",
+    "nextImage": "Next image",
+    "contents": [
+      {
+        "country": "Riyadh, Saudi Arabia",
+        "topic": "Safety", 
+        "titleWork": "Campaign, editorial, brand film",
+        "descriptionWork": "Lifestyle photoshoot for an eco-friendly brand. Shot on location using natural lighting and simple setup. Designed to reflect freedom, texture, and authenticity."
+      },
+      {
+        "country": "Dammam, Saudi Arabia",
+        "topic": "Escape",
+        "titleWork": "Product launch, commercial", 
+        "descriptionWork": "Lifestyle photoshoot for an eco-friendly brand. Shot on location using natural lighting and simple setup. Designed to reflect freedom, texture, and authenticity."
+      },
+      {
+        "country": "Jeddah, Saudi Arabia",
+        "topic": "Creativity",
+        "titleWork": "Advertising campaign, artistic photos",
+        "descriptionWork": "Creative photography expressing the spirit of creativity and innovation in the world of design and visual arts."
+      }
+    ]
+  },
+  "form": {
+    "name": "Name",
+    "namePlaceholder": "Enter your name",
+    "email": "Email",
+    "emailPlaceholder": "Enter your email",
+    "message": "Message",
+    "messagePlaceholder": "Enter your message",
+    "submit": "Submit",
+    "submitting": "Submitting...",
+    "successMessage": "Your message has been sent successfully! 👌",
+    "validation": {
+      "name": "Name is required",
+      "email": "Valid email is required",
+      "message": "Message is required",
+      "general": "Something went wrong. Please try again.",
+      "network": "Network error. Please check your connection."
+    }
+  },
+  "contact": {
+    "small":"Creative Agency for Brands That Dare to Stand Out",
+    "big":"We can't wait to hear from you!",
+    "address": "7711 Lorem ipsum dolor sit amet, Riyadh, Saudi Arabia.",
+    "email": "Info\\@ProStdios.com",
+    "phone1": "009 222 222 333 22",
+    "phone2": "009 222 222 333 22",
+    "emailIcon": "Email Icon",
+    "phoneIcon": "Phone Icon",
+    "social": {
+      "facebook": "Facebook Icon",
+      "whatsapp": "WhatsApp Icon",
+      "google": "Google Icon",
+      "youtube": "YouTube Icon"
+    }
+  },
+  "logoAlt": "Company Logo",
+  "videoUnsupported": "Your browser does not support the video tag."
+  ,
+  
+  "services": {
+    "title": {
+      "main": "Built to Shoot. Made to Shine.",
+      "subtitle": "Lights. Camera. Vision."
+    },
+    "items": [
+      {
+        "name": "Branding",
+        "projects": "25 Projects"
+      },
+      {
+        "name": "Photography",
+        "projects": "64 Projects"
+      },
+      {
+        "name": "Video",
+        "projects": "88 Projects"
+      },
+      {
+        "name": "Content",
+        "projects": "12 Projects"
+      },
+      {
+        "name": "Marketing",
+        "projects": "32 Projects"
+      },
+      {
+        "name": "AI Solutions",
+        "projects": "40 Projects"
+      },
+      {
+        "name": "ProStdios",
+        "projects": "200 Projects"
+      }
+    ],
+    "description": "Refined visuals. Precise execution. From concept to final cut, we offer end-to-end creative services designed to elevate your brand through photography and film.",
+    "button": "See Our Work"
+  }
+  ,
+  
+  "contacts": {
+    "title": "Let’s Create Something Beautiful",
+    "subtitle": "We’d love to hear from you. Let’s bring your vision to life — one frame at a time.",
+    "button": "Start the Conversation"
+  },
+   "testimonials": {
+    "title": "Testimonials",
+    "prev": "Previous testimonial",
+    "next": "Next testimonial"
+  },
+ 
+  "OurServices": {
+    "title": "Our Services",
+    "span_title": "got you Covered", 
+    "service": [
+      {
+        "id": "1",
+        "title": "AI-Driven ",
+        "span": "Marketing Solutions"
+      },
+      {
+        "id": "2",
+        "title": "Product ",
+        "span": "& Market Strategy"
+      },
+      {
+        "id": "3", 
+        "title": "Brand ",
+        "span": "Creation"
+      },
+      {
+        "id": "4",
+        "title": "App & Website ",
+        "span": "Development"
+      },
+      {
+        "id": "5",
+        "title": "Advanced ",
+        "span": "Data Analytics"
+      },
+      {
+        "id": "6",
+        "title": "Technical ",
+        "span": "Consulting"
+      },
+      {
+        "id": "7",
+        "title": "User Experience ",
+        "span": "Design"
+      },
+      {
+        "id": "8",
+        "title": "Search Engine ",
+        "span": "Optimization"
+      },
+      {
+        "id": "9",
+        "title": "Social Media ",
+        "span": "Management"
+      },
+      {
+        "id": "10",
+        "title": "Team Training ",
+        "span": "& Development"
+      }
+    ]
+  }
+  ,
+  "btn-watch":"Watch Full Session"
+
+}
