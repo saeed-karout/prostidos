@@ -537,7 +537,7 @@ onUnmounted(() => {
 
 /* دعم للغة العربية */
 :root[dir="rtl"] .right,
-[dir="rtl"] .right {
+[dir="rtl"] .right, .left {
     direction: rtl;
 }
 

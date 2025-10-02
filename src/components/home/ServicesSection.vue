@@ -332,7 +332,7 @@ const activeLine = [1, 8, 8, 8, 8, 8, 8];
 }
 
 .frame1 .brand {
-  width: 120px;
+  width: 156px;
   height: 24px;
   display: flex;
   gap: 8px;
