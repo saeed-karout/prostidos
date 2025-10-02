@@ -32,7 +32,7 @@
 </template>
 
 <script setup>
-import video from '@/assets/new-video/Beachy.mp4'
+import video from '@/assets/new-video/beachy.mp4'
 import { useI18n } from 'vue-i18n';
 
 const {  t } = useI18n();
