@@ -15,7 +15,7 @@
         <div class="top">
           <div class="brand">
             <img :src="icons[0]" class="w-[24px] h-[24px]" :alt="$t('services.items[0].name')">
-            <div class="text-white">{{ $t('services.items[0].name') }}</div>
+            <div class="text-white name" >{{ $t('services.items[0].name') }}</div>
           </div>
           <div class="data">
             {{ $t('services.items[0].projects') }}
@@ -34,7 +34,7 @@
         <div class="bottoms">
           <div class="brand">
             <img :src="icons[1]" class="w-[24px] h-[24px]" :alt="$t('services.items[1].name')">
-            <div class="text-white">{{ $t('services.items[1].name') }}</div>
+            <div class="text-white name">{{ $t('services.items[1].name') }}</div>
           </div>
           <div class="data">
             {{ $t('services.items[1].projects') }}
@@ -46,7 +46,7 @@
         <div class="top">
           <div class="brand">
             <img :src="icons[2]" class="w-[24px] h-[24px]" :alt="$t('services.items[2].name')">
-            <div class="text-white">{{ $t('services.items[2].name') }}</div>
+            <div class="text-white name">{{ $t('services.items[2].name') }}</div>
           </div>
           <div class="data">
             {{ $t('services.items[2].projects') }}
@@ -66,7 +66,7 @@
         <div class="bottoms">
           <div class="brand">
             <img :src="icons[3]" class="w-[24px] h-[24px]" :alt="$t('services.items[3].name')">
-            <div class="text-white">{{ $t('services.items[3].name') }}</div>
+            <div class="text-white name">{{ $t('services.items[3].name') }}</div>
           </div>
           <div class="data">
             {{ $t('services.items[3].projects') }}
@@ -78,7 +78,7 @@
         <div class="top">
           <div class="brand">
             <img :src="icons[4]" class="w-[24px] h-[24px]" :alt="$t('services.items[4].name')">
-            <div class="text-white">{{ $t('services.items[4].name') }}</div>
+            <div class="text-white name">{{ $t('services.items[4].name') }}</div>
           </div>
           <div class="data">
             {{ $t('services.items[4].projects') }}
@@ -97,7 +97,7 @@
         <div class="bottoms">
           <div class="brand">
             <img :src="icons[5]" class="w-[24px] h-[24px]" :alt="$t('services.items[5].name')">
-            <div class="text-white">{{ $t('services.items[5].name') }}</div>
+            <div class="text-white name">{{ $t('services.items[5].name') }}</div>
           </div>
           <div class="data">
             {{ $t('services.items[5].projects') }}
@@ -109,7 +109,7 @@
         <div class="top">
           <div class="brand">
             <img :src="icons[6]" class="w-[24px] h-[24px]" :alt="$t('services.items[6].name')">
-            <div class="text-white">{{ $t('services.items[6].name') }}</div>
+            <div class="text-white name">{{ $t('services.items[6].name') }}</div>
           </div>
           <div class="data">
             {{ $t('services.items[6].projects') }}
@@ -384,14 +384,15 @@ const activeLine = [1, 8, 8, 8, 8, 8, 8];
 }
 
 .data {
-  font-family: Georgia;
-  font-weight: 400;
-  font-style: normal;
-  font-size: 16px;
-  line-height: 125%;
-  letter-spacing: 0%;
-  text-align: center;
-  color: white;
+  color: #FFF;
+
+/* 16/Reg Georgia */
+font-family: Georgia;
+font-size: 16px;
+font-style: normal;
+font-weight: 400;
+/* line-height: 125%; */
+text-align: center;
 }
 
 .ruler {
@@ -548,11 +549,14 @@ const activeLine = [1, 8, 8, 8, 8, 8, 8];
 
 .top .topic {
   color: #FFF;
-  font-family: Rockwell;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 125%;
+
+/* 16/Bold Rockwell */
+font-family: Rockwell;
+font-size: 16px;
+font-style: normal;
+font-weight: 700;
+
+  /* line-height: 125%; */
 }
 
 .content-mobile .frame .right .bottom-mob,
@@ -667,5 +671,16 @@ const activeLine = [1, 8, 8, 8, 8, 8, 8];
 
 [dir="rtl"] .ruler.justify-end {
   justify-content: flex-start;
+}
+
+.name{
+  color: #FFF;
+
+/* 16/Bold Rockwell */
+font-family: Rockwell;
+font-size: 16px;
+font-style: normal;
+font-weight: 700;
+/* line-height: 125%; 20px */
 }
 </style>
