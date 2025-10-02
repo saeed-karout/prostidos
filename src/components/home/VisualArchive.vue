@@ -106,7 +106,7 @@
   </div>
 
   <!-- Mobile Section -->
-  <div class="main-mobile flex md:hidden">
+  <div :class="mobileMainClasses">
     <div class="top-mobile">
       <div class="title">
         {{ t('visualArchive.title') }}
@@ -117,10 +117,24 @@
     </div>
 
     <div class="content-mobile">
-      <transition name="fade" mode="out-in">
+      <!-- مؤشرات السحب -->
+      <!-- <div class="swipe-indicators">
+        <div class="swipe-hint">
+          <span>{{ swipeHint }}</span>
+          <div class="swipe-arrows">
+            <img src="/icons/arrow-right.svg" alt="swipe left" />
+            <img src="/icons/arrow-right.svg" alt="swipe right" />
+          </div>
+        </div>
+      </div> -->
+
+      <transition :name="transitionDirection" mode="out-in">
         <div class="contents-mobile" :key="`${currentIndex}-${locale}`">
           <!-- في الجوال السكرول يعمل على الصورة فقط -->
-          <div class="frame-img" @touchstart="handleTouchStart" @touchmove="handleTouchMove" @touchend="handleTouchEnd">
+          <div class="frame-img swipe-area" 
+               @touchstart="handleTouchStart" 
+               @touchmove="handleTouchMove" 
+               @touchend="handleTouchEnd">
             <img :src="currentContent.image" class="h-[232px] w-full object-cover rounded-[12px]"
               :alt="t('visualArchive.imageAlt')" />
             <div class="description-image w-full h-[20px] flex items-center justify-start gap-4">
@@ -159,8 +173,8 @@
 
       <div class="buttons-mobile flex flex-row gap-2 justify-center">
         <div v-for="(item, index) in contents" :key="index" :class="[
-          'w-[67px] h-[3px] cursor-pointer',
-          index === currentIndex ? 'bg-[#E9480E]' : 'bg-white/40'
+          'w-[67px] h-[3px] cursor-pointer transition-all duration-300',
+          index === currentIndex ? 'bg-[#E9480E] scale-110' : 'bg-white/40'
         ]" @click="changeContent(index)"></div>
       </div>
     </div>
@@ -168,7 +182,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onBeforeUnmount,  } from 'vue';
+import { ref, computed, onBeforeUnmount } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const { locale, t } = useI18n();
@@ -177,9 +191,15 @@ const currentIndex = ref(0);
 const isCaseStudyModalOpen = ref(false);
 const currentImageIndex = ref(0);
 
-// بيانات اللمس للجوال
-const touchStartY = ref(0);
-const touchEndY = ref(0);
+// بيانات اللمس للجوال - المحور X
+const touchStartX = ref(0);
+const touchEndX = ref(0);
+
+// اتجاه الانتقال للرسوم المتحركة
+const transitionDirection = ref('slide-left');
+
+// تتبع إذا كان المستخدم قد استخدم السحب
+const hasSwiped = ref(false);
 
 // البيانات الديناميكية التي تتغير مع اللغة
 const contents = computed(() => {
@@ -203,7 +223,6 @@ const contents = computed(() => {
         descriptionWork: t('visualArchive.contents[1].descriptionWork'),
         images: ["/images/Gallery/project2/1.jpg", "/images/Gallery/project2/2.jpg", "/images/Gallery/project2/3.jpg", "/images/Gallery/project2/4.jpg"],
       },
-     
     ];
   } else {
     return [
@@ -232,7 +251,25 @@ const contents = computed(() => {
 const currentContent = computed(() => contents.value[currentIndex.value]);
 const currentCaseStudyImage = computed(() => currentContent.value.images[currentImageIndex.value]);
 
+// // مؤشر السحب
+// const swipeHint = computed(() => {
+//   return locale.value === 'ar' ? 'اسحب لليسار أو اليمين للتنقل' : 'Swipe left or right to navigate';
+// });
+
+// classes للجوال
+const mobileMainClasses = computed(() => {
+  return {
+    'main-mobile': true,
+    'flex': true,
+    'md:hidden': true,
+    'swipe-used': hasSwiped.value
+  };
+});
+
 function changeContent(index) {
+  // تحديد اتجاه الانتقال
+  transitionDirection.value = index > currentIndex.value ? 'slide-left' : 'slide-right';
+  
   currentIndex.value = index;
   currentImageIndex.value = 0;
 }
@@ -290,33 +327,33 @@ function handleTextWheel(event) {
   }
 }
 
-// معالجة اللمس للجوال (على الصورة فقط)
+// معالجة اللمس للجوال (على الصورة فقط) - المحور X
 function handleTouchStart(event) {
-  touchStartY.value = event.touches[0].clientY;
+  touchStartX.value = event.touches[0].clientX;
+  touchEndX.value = event.touches[0].clientX;
 }
 
 function handleTouchMove(event) {
-  touchEndY.value = event.touches[0].clientY;
+  touchEndX.value = event.touches[0].clientX;
 }
 
 function handleTouchEnd() {
-  const touchDiff = touchStartY.value - touchEndY.value;
+  const touchDiff = touchStartX.value - touchEndX.value;
   const minSwipeDistance = 50;
   
   if (Math.abs(touchDiff) > minSwipeDistance) {
-    if (touchDiff > 0 && currentIndex.value < contents.value.length - 1) {
+    // swipe left (انتقال إلى العنصر التالي)
+    if (touchDiff > minSwipeDistance && currentIndex.value < contents.value.length - 1) {
       changeContent(currentIndex.value + 1);
-    } else if (touchDiff < 0 && currentIndex.value > 0) {
+      hasSwiped.value = true;
+    } 
+    // swipe right (انتقال إلى العنصر السابق)
+    else if (touchDiff < -minSwipeDistance && currentIndex.value > 0) {
       changeContent(currentIndex.value - 1);
+      hasSwiped.value = true;
     }
   }
 }
-
-// إعادة تعيين الفهرس الحالي عند تغيير اللغة (اختياري)
-// watch(locale, () => {
-//   currentIndex.value = 0;
-//   currentImageIndex.value = 0;
-// });
 
 onBeforeUnmount(() => {
   document.body.style.overflow = '';
@@ -393,6 +430,104 @@ onBeforeUnmount(() => {
 [dir="rtl"] .topic.scrollable-element::after {
   right: auto;
   left: -60px;
+}
+
+/* رسوم متحركة للسحب الأفقي */
+.slide-left-enter-active,
+.slide-left-leave-active,
+.slide-right-enter-active,
+.slide-right-leave-active {
+  transition: all 0.4s ease;
+}
+
+.slide-left-enter-from {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.slide-left-leave-to {
+  opacity: 0;
+  transform: translateX(-100%);
+}
+
+.slide-right-enter-from {
+  opacity: 0;
+  transform: translateX(-100%);
+}
+
+.slide-right-leave-to {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+/* منطقة السحب */
+.swipe-area {
+  position: relative;
+  cursor: grab;
+  user-select: none;
+  touch-action: pan-x;
+}
+
+.swipe-area:active {
+  cursor: grabbing;
+}
+
+/* مؤشرات السحب */
+.swipe-indicators {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+  transition: opacity 0.5s ease;
+}
+
+.swipe-hint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: Georgia;
+  font-size: 14px;
+  animation: pulse 2s infinite;
+}
+
+.swipe-arrows {
+  display: flex;
+  gap: 20px;
+}
+
+.swipe-arrows img {
+  width: 20px;
+  height: 20px;
+  opacity: 0.7;
+}
+
+[dir="rtl"] .swipe-arrows img:first-child {
+  transform: rotate(180deg);
+}
+
+[dir="rtl"] .swipe-arrows img:last-child {
+  transform: rotate(180deg);
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+/* إخفاء مؤشرات السحب بعد الاستخدام */
+.main-mobile.swipe-used .swipe-indicators {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* تحسينات للأزرار */
+.buttons-mobile div {
+  transition: all 0.3s ease;
+}
+
+.buttons-mobile div.bg-\[\#E9480E\] {
+  transform: scale(1.1);
 }
 
 /* إخفاء المؤشر في الجوال */
@@ -663,132 +798,7 @@ onBeforeUnmount(() => {
   }
 }
 
-/* Mobile Section styles تبقى كما هي */
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .main {
-    padding: 64px 16px;
-    gap: 40px;
-  }
-
-  .top {
-    width: 100%;
-    gap: 16px;
-  }
-
-  .top .title {
-    font-size: 32px;
-  }
-
-  .top .subtitle {
-    font-size: 16px;
-    text-align: center;
-  }
-
-  .contents {
-    height: auto;
-    flex-direction: column;
-    gap: 40px;
-  }
-
-  .content {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 24px;
-    height: auto;
-  }
-
-  .section-img {
-    gap: 24px;
-  }
-
-  .section-img img {
-    height: 232px;
-    min-width: 100%;
-  }
-
-  .description-image {
-    gap: 16px;
-  }
-
-  .description-image>div {
-    font-size: 16px;
-  }
-
-  .right {
-    height: auto;
-  }
-
-  .topic {
-    font-size: 64px;
-    left: 0 !important;
-    right: 0 !important;
-    text-align: center;
-    top: -20px;
-  }
-
-  .works {
-    width: 100%;
-    position: relative;
-    top: auto;
-    right: auto !important;
-    left: auto !important;
-    align-items: flex-start;
-  }
-
-  .title-work {
-    font-size: 16px;
-  }
-
-  .description-work {
-    font-size: 16px;
-  }
-
-  .btns {
-    width: 100%;
-    max-width: 226px;
-    padding: 14px 40px;
-  }
-
-  .buttons {
-    right: 0 !important;
-    left: 0 !important;
-    flex-direction: row;
-    justify-content: center;
-    gap: 8px;
-    height: auto;
-    top: 250px;
-  }
-
-  .buttons>div {
-    width: 67px;
-    height: 3px;
-  }
-
-  .case-study-modal-content {
-    width: 95vw;
-    padding: 0 16px;
-  }
-
-  .case-study-image {
-    width: 90vw;
-    height: 50vh;
-  }
-
-  .navigation-buttons {
-    padding: 20px;
-    gap: 8px;
-  }
-
-  .nav-button {
-    width: 40px;
-    height: 40px;
-    font-size: 20px;
-  }
-}
-
-/* Mobile Section */
+/* Mobile Section styles */
 .main-mobile {
   display: flex;
   padding: 64px 16px;
@@ -982,10 +992,6 @@ onBeforeUnmount(() => {
   height: 3px;
   cursor: pointer;
   transition: background 0.3s ease;
-}
-
-.buttons-mobile div {
-  background: #E9480E;
 }
 
 .buttons-mobile div.bg-white\/40 {

@@ -124,9 +124,9 @@ letter-spacing: 0%;
   font-family: Georgia;
 font-weight: 400;
 font-style: Regular;
-font-size: 24px;
+font-size: 22px;
 line-height: 125%;
-letter-spacing: 5px;
+letter-spacing: 3px;
 color: white;
 }
 }

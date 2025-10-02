@@ -77,7 +77,10 @@
     >
       <div class="main-mobile">
         <div class="frame-top">
-          <img src="/logo.svg" width="124px" alt="logo">
+          <router-link to="/" >
+
+            <img src="/logo.svg" width="124px" alt="logo">
+          </router-link>
           <img src="/icons/close.svg" class="close-icon cursor-pointer" alt="close" @click="closeMobileMenu">
         </div>
 
