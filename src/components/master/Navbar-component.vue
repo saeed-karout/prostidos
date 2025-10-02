@@ -130,7 +130,6 @@ onMounted(() => {
     locale.value = savedLanguage;
     document.documentElement.lang = savedLanguage;
   } else {
-    // Default to 'en' if no valid language is found
     locale.value = 'en';
     document.documentElement.lang = 'en';
     localStorage.setItem('language', 'en');
@@ -148,26 +147,6 @@ function toggleLanguage() {
 // Animation variables
 const isAnimating = ref(false);
 
-// Animation support
-function startMenuAnimation() {
-  isAnimating.value = true;
-  document.body.classList.add('no-scroll');
-}
-
-function endMenuAnimation() {
-  isAnimating.value = false;
-  if (!isMobileMenuOpen.value) {
-    document.body.classList.remove('no-scroll');
-  }
-}
-
-// Modified close function for animation compatibility
-function closeMobileMenu() {
-  if (isMobileMenuOpen.value && !isAnimating.value) {
-    isMobileMenuOpen.value = false;
-  }
-}
-
 // DOM references
 const isMobileMenuOpen = ref(false);
 const hasScrolled = ref(false);
@@ -176,13 +155,54 @@ const mobileMenu = ref(null);
 const menuButton = ref(null);
 const lastScrollY = ref(0);
 
-// Toggle mobile menu
+// تحسين دالة فتح وإغلاق القائمة
 function toggleMobileMenu() {
+  if (isAnimating.value) return;
+  
   isMobileMenuOpen.value = !isMobileMenuOpen.value;
-  document.body.classList.toggle('overflow-hidden', isMobileMenuOpen.value);
+  
+  if (isMobileMenuOpen.value) {
+    // عند فتح القائمة
+    document.body.style.overflow = 'hidden';
+    document.body.style.height = '100vh';
+  } else {
+    // عند إغلاق القائمة - ننتظر نهاية animation
+    setTimeout(() => {
+      document.body.style.overflow = '';
+      document.body.style.height = '';
+    }, 400); // نفس مدة animation
+  }
 }
 
-// Handle click inside/outside mobile menu to prevent closing on content click
+// تحسين دالة إغلاق القائمة
+function closeMobileMenu() {
+  if (isMobileMenuOpen.value && !isAnimating.value) {
+    isMobileMenuOpen.value = false;
+    
+    // إعادة التمرير بعد animation
+    setTimeout(() => {
+      document.body.style.overflow = '';
+      document.body.style.height = '';
+    }, 400);
+  }
+}
+
+// تحسين animation handlers
+function startMenuAnimation() {
+  isAnimating.value = true;
+}
+
+function endMenuAnimation() {
+  isAnimating.value = false;
+  
+  // إذا كانت القائمة مغلقة، نعيد التمرير
+  if (!isMobileMenuOpen.value) {
+    document.body.style.overflow = '';
+    document.body.style.height = '';
+  }
+}
+
+// Handle click inside/outside mobile menu
 function handleMobileMenuClick(event) {
   if (event.target === mobileMenu.value) {
     closeMobileMenu();
@@ -204,10 +224,8 @@ function handleScroll() {
   if (!isMobileMenuOpen.value) {
     const currentScrollY = window.scrollY;
     if (currentScrollY > lastScrollY.value && currentScrollY > 100) {
-      // Scrolling down
       isNavbarVisible.value = false;
     } else if (currentScrollY < lastScrollY.value || currentScrollY <= 100) {
-      // Scrolling up or near the top
       isNavbarVisible.value = true;
     }
     lastScrollY.value = currentScrollY;
@@ -239,6 +257,10 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('scroll', handleScroll);
   document.removeEventListener('click', handleClickOutside);
+  
+  // تنظيف أي styles متبقية
+  document.body.style.overflow = '';
+  document.body.style.height = '';
 });
 
 // Computed classes for nav
