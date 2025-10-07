@@ -15,12 +15,12 @@ import TestimonialsComponent from '@/components/home/TestimonialsComponent.vue';
 <template>
   <HeroComponent />
   <Services id="services" />
-  <OurServices />
   <Gallery id="gallery" />
   <GalleryTwo /> 
   <VisualArchive />
   <GalleryThree />
   <GalleryFour />
+  <OurServices /> 
   <TestimonialsComponent />
   <LatestSection />
 </template>
