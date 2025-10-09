@@ -2,7 +2,7 @@
   "nav": {
     "home": "Home",
     "services": "Services",
-    "gallery": "Gallery",
+    "gallery": "Portfolio",
     "blog": "Blog",
     "aboutUs": "About Us",
     "ourWork": "Our Work",
@@ -12,30 +12,30 @@
   "footer": {
     "address": {
       "title": "Address",
-      "text": "7711 Lorem ipsum dolor sit amet, Riyadh, Saudi Arabia."
+      "text": "Emaar square, King Abdullah Rd, Al Fayha'a, Jeddah 22241, Saudi Arabia"
     },
     "links": {
       "services": "Services",
-      "gallery": "Gallery",
+      "gallery": "Portfolio",
       "blog": "Blog",
       "contactUs": "Contact Us"
     },
     "contacts": {
-      "title": "Contacts",
-      "phone1": "009 222 222 333 22",
-      "phone2": "009 222 222 333 22",
+      "title": "Contact Us",
+      "phone1": "+966 58 167 0316",
+      "phone2": "+966 53 942 1031",
       "email": "Info\\@ProStdios.com"
     },
     "copyright": "Copyright © {year} By",
     "company": "ProStdios",
-    "privacyPolicy": "Privacy Policy"
+    "privacyPolicy": "Terms and Conditions"
   },
   "hero": {
-    "text1": "Creative Agency for Brands That Dare to Stand Out",
-    "text2": "Capturing Moments. Creating Stories.",
-    "book": "Book a Shoot",
-    "watch": "Watch Our Production Reel",
-    "descriptions": "Bold visuals that move, inspire, and make your brand memorable. Photos/videos/content speak louder. We don't just capture—we create lasting experiences.",
+    "text1": "Cinematic Production for Brands That Stand Out.",
+    "text2": "From Storyboard to Screen.",
+    "book": "Create Your Brand Film",
+    "watch": "Experience Our Reel",
+    "descriptions": "Promotional, commercial, and event filming—captured through our cameras and drones. Every project shaped by storytelling, editing, and creative direction that inspires.",
     "videoUnsupported": "Your browser does not support the video tag."
   },
   "visualArchive": {
@@ -46,25 +46,43 @@
     "prevImage": "Previous image",
     "nextImage": "Next image",
     "contents": [
-      {
-        "country": "Riyadh, Saudi Arabia",
-        "topic": "Safety", 
-        "titleWork": "Campaign, editorial, brand film",
-        "descriptionWork": "Lifestyle photoshoot for an eco-friendly brand. Shot on location using natural lighting and simple setup. Designed to reflect freedom, texture, and authenticity."
-      },
-      {
-        "country": "Dammam, Saudi Arabia",
-        "topic": "Escape",
-        "titleWork": "Product launch, commercial", 
-        "descriptionWork": "Lifestyle photoshoot for an eco-friendly brand. Shot on location using natural lighting and simple setup. Designed to reflect freedom, texture, and authenticity."
-      },
-      {
-        "country": "Jeddah, Saudi Arabia",
-        "topic": "Creativity",
-        "titleWork": "Advertising campaign, artistic photos",
-        "descriptionWork": "Creative photography expressing the spirit of creativity and innovation in the world of design and visual arts."
-      }
-    ]
+    {
+      "country": "Dammam, Saudi Arabia",
+      "topic": "Safety",
+      "titleWork": "Storytelling Film, Drone, Production",
+      "descriptionWork": "Cinematic storytelling for Environmental Safety Technologies for Specialized Services (ESTSS), showcasing their location, team, processes, and products. Aerial drone shots and full production highlight their commitment to innovation and alignment with Saudi Arabia’s Vision 2030."
+    },
+    {
+      "country": "Jeddah, Saudi Arabia",
+      "topic": "Luxury",
+      "titleWork": "Product Launch, Commercial Film",
+      "descriptionWork": "Immersive filming of 14 luxury beach villas for Beachy App. Using drone cinematography and full production, we captured elegance, lifestyle, and exclusivity, creating a visual experience that elevates the brand and engages high-end audiences."
+    },
+    {
+      "country": "Germany / Saudi Arabia",
+      "topic": "Creativity",
+      "titleWork": "Event Filming, Podcast, Social Media",
+      "descriptionWork": "Dynamic media production for Florian Homm, including event filming, weekly podcasts, drone footage, and content for social media and Google Ads. A cross-border collaboration delivering high-impact visuals, engaging storytelling, and consistent brand presence."
+    },
+    {
+      "country": "Jeddah, Saudi Arabia",
+      "topic": "Design",
+      "titleWork": "Storytelling, Commercial Filming",
+      "descriptionWork": "Creative production for Zarabi Furniture, capturing showroom storytelling, model interactions, and curated shots of premium living room sets. Cinematic filming, professional sound design, and voiceover bring the brand’s craftsmanship and elegance to life."
+    },
+    {
+      "country": "Jeddah, Saudi Arabia",
+      "topic": "Automotive",
+      "titleWork": "Showroom Filming, Luxury Cars",
+      "descriptionWork": "Filming and production for Final Edition luxury car showroom, featuring Bentley, Rolls-Royce, Brabus, Ferrari, and more. Cinematic shots highlight each vehicle’s elegance, with dynamic camera work and professional production creating a wow-factor visual experience."
+    },
+    {
+      "country": "Sonneberg, Germany",
+      "topic": "Sports",
+      "titleWork": "Event Filming, Drone, Production",
+      "descriptionWork": "Full production coverage of a high-energy carting event, including drone cinematography and immersive filming. Captured the speed, excitement, and competitive spirit of the event, delivering dynamic visuals for promotional and social media use."
+    }
+  ]
   },
   "form": {
     "name": "Name",
@@ -213,5 +231,6 @@
   }
   ,
   "btn-watch":"Watch Full Session"
+
 
 }
