@@ -297,7 +297,7 @@ onUnmounted(() => {
     <TimeLineComponent />
 
 
-    <div id="contact" class="p-[50px] ">
+    <div id="contact" class="p-[20px] md:p-[50px] ">
 
       <!-- <LatestSection /> -->
   
