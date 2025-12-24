@@ -3,7 +3,7 @@
     <transition name="fade" mode="out-in">
       <div v-if="showLogo" key="logo" class="flex flex-col items-center">
         <!-- Replace 'loading-icon.png' with your logo path -->
-        <img src="/logo.svg" alt="Logo" class="w-32 h-32 mb-4 animate-spin-slow">
+        <img src="/logos/logo.svg" alt="Logo" class="w-32 h-32 mb-4 animate-spin-slow">
       </div>
       <div v-else-if="showText" key="text" class="text-center">
         <p class="text-2xl font-semibold text-white">

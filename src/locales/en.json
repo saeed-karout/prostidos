@@ -7,13 +7,17 @@
     "aboutUs": "About Us",
     "ourWork": "Our Work",
     "contactUs": "Contact Us",
-    "switchLanguage": "Switch Language"
+    "language": "Switch Language",
+    "portfolio":"portfolio",
+    "followUs":"follow Us"
   },
   "footer": {
     "address": {
       "title": "Address",
-      "text": "7711 Lorem ipsum dolor sit amet, Riyadh, Saudi Arabia."
+      "text": "Jeddah: Emaar square, King Abdullah Rd, Al Fayha'a, Jeddah 22241, Saudi Arabia."
     },
+    "get":"get in touch",
+    "part":"Part of",
     "links": {
       "services": "Services",
       "gallery": "Gallery",
@@ -24,22 +28,30 @@
       "title": "Contacts",
       "phone1": "009 222 222 333 22",
       "phone2": "009 222 222 333 22",
-      "email": "Info\\@ProStdios.com"
+      "email": "Info[at]ProStdios.com"
     },
-    "copyright": "Copyright © {year} By",
+    "copyright": " By",
     "company": "ProStdios",
-    "privacyPolicy": "Privacy Policy"
+    "privacyPolicy": "Privacy",
+    "terms":"terms",
+    "cookies":"Cookies",
+    "backToTop":"back To Top",
+    "countries":"Emaar square, Jeddah 22241, KSA"
   },
   "hero": {
     "text1": "Creative Agency for Brands That Dare to Stand Out",
-    "text2": "Capturing Moments. Creating Stories.",
+    "text2": "Content people watch. Impact you can measure.",
     "book": "Book a Shoot",
-    "watch": "Watch Our Production Reel",
-    "descriptions": "Bold visuals that move, inspire, and make your brand memorable. Photos/videos/content speak louder. We don't just capture—we create lasting experiences.",
-    "videoUnsupported": "Your browser does not support the video tag."
+    "watch": "Watch the reel",
+    "descriptions": "PROSTDIOS  - Cinematic creativity for ambitious brands.",
+    "sub-description": "German craft. Saudi soul.",
+    "videoUnsupported": "Your browser does not support the video tag.",
+    "contact":"Contact Us",
+     "modalTitle": "Our Production Reel",
+    "modalDescription": "Watch our complete production reel showcasing our work and capabilities."
   },
   "visualArchive": {
-    "title": "Visual Archive", 
+    "title": "Visual Archive",
     "subtitle": "From concept to capture — explore the creative behind every frame",
     "imageAlt": "Visual archive image",
     "viewCaseStudy": "View Case Study",
@@ -48,14 +60,14 @@
     "contents": [
       {
         "country": "Riyadh, Saudi Arabia",
-        "topic": "Safety", 
+        "topic": "Safety",
         "titleWork": "Campaign, editorial, brand film",
         "descriptionWork": "Lifestyle photoshoot for an eco-friendly brand. Shot on location using natural lighting and simple setup. Designed to reflect freedom, texture, and authenticity."
       },
       {
         "country": "Dammam, Saudi Arabia",
         "topic": "Escape",
-        "titleWork": "Product launch, commercial", 
+        "titleWork": "Product launch, commercial",
         "descriptionWork": "Lifestyle photoshoot for an eco-friendly brand. Shot on location using natural lighting and simple setup. Designed to reflect freedom, texture, and authenticity."
       },
       {
@@ -66,44 +78,54 @@
       }
     ]
   },
-  "form": {
-    "name": "Name",
-    "namePlaceholder": "Enter your name",
-    "email": "Email",
-    "emailPlaceholder": "Enter your email",
-    "message": "Message",
-    "messagePlaceholder": "Enter your message",
-    "submit": "Submit",
-    "submitting": "Submitting...",
-    "successMessage": "Your message has been sent successfully! 👌",
-    "validation": {
-      "name": "Name is required",
-      "email": "Valid email is required",
-      "message": "Message is required",
-      "general": "Something went wrong. Please try again.",
-      "network": "Network error. Please check your connection."
-    }
-  },
-  "contact": {
-    "small":"Creative Agency for Brands That Dare to Stand Out",
-    "big":"We can't wait to hear from you!",
-    "address": "7711 Lorem ipsum dolor sit amet, Riyadh, Saudi Arabia.",
-    "email": "Info\\@ProStdios.com",
-    "phone1": "009 222 222 333 22",
-    "phone2": "009 222 222 333 22",
-    "emailIcon": "Email Icon",
-    "phoneIcon": "Phone Icon",
-    "social": {
-      "facebook": "Facebook Icon",
-      "whatsapp": "WhatsApp Icon",
-      "google": "Google Icon",
-      "youtube": "YouTube Icon"
-    }
-  },
-  "logoAlt": "Company Logo",
-  "videoUnsupported": "Your browser does not support the video tag."
-  ,
   
+    "form": {
+      "name": "Name",
+      "namePlaceholder": "Enter your name",
+      "email": "Email",
+      "emailPlaceholder": "Enter your email",
+      "message": "Message",
+      "messagePlaceholder": "Enter your message",
+      "submit": "Submit",
+      "submitting": "Submitting...",
+      "successMessage": "Your message has been sent successfully! 👌",
+      "validation": {
+        "name": "Name is required",
+        "email": "Valid email is required",
+        "message": "Message is required",
+        "general": "Something went wrong. Please try again.",
+        "network": "Network error. Please check your connection.",
+        "emailInvalid": "Please enter a valid email address",
+        "messageShort": "Message should be at least 10 characters"
+      }
+    },
+    "contact": {
+      "small": "Creative Agency for Brands That Dare to Stand Out",
+      "big": "We can't wait to hear from you!",
+      "address": "Jeddah: Emaar square, King Abdullah Rd, Al Fayha'a, Jeddah 22241, Saudi Arabia.",
+      "email": "Info@ProStdios.com",
+      "phone1": "009 222 222 333 22",
+      "phone2": "009 222 222 333 22",
+      "emailIcon": "Email Icon",
+      "phoneIcon": "Phone Icon",
+      "social": {
+        "facebook": "Facebook Icon",
+        "whatsapp": "WhatsApp Icon",
+        "google": "Google Icon",
+        "youtube": "YouTube Icon"
+      }
+    },
+    "homeContact": {
+      "title": "Start Your Project Now",
+      "subtitle": "Ready to start your next project? Leave your details and we'll be happy to help.",
+      "title2": "Get in Touch",
+      "subtitle2": "Have a project in mind? Let's make it a reality. Tell us your idea and we'll get back to you within 24 hours.",
+      "title3": "Contact Us",
+      "subtitle3": "We'd love to hear from you. Send us a message and we'll respond as soon as possible."
+    }
+  ,
+  "logoAlt": "Company Logo",
+  "videoUnsupported": "Your browser does not support the video tag.",
   "services": {
     "title": {
       "main": "Built to Shoot. Made to Shine.",
@@ -141,23 +163,20 @@
     ],
     "description": "Refined visuals. Precise execution. From concept to final cut, we offer end-to-end creative services designed to elevate your brand through photography and film.",
     "button": "See Our Work"
-  }
-  ,
-  
-  "contacts": {
-    "title": "Let’s Create Something Beautiful",
-    "subtitle": "We’d love to hear from you. Let’s bring your vision to life — one frame at a time.",
-    "button": "Start the Conversation"
   },
-   "testimonials": {
+  "contacts": {
+    "title": "Let’s turn your idea into a visual experience.",
+    "subtitle": "We listen, understand your goals, and turn them into content that serves your brand and delivers results — frame by frame.",
+    "button": "Start your project"
+  },
+  "testimonials": {
     "title": "Testimonials",
     "prev": "Previous testimonial",
     "next": "Next testimonial"
   },
- 
   "OurServices": {
     "title": "Our Services",
-    "span_title": "got you Covered", 
+    "span_title": "A refined cinematic process — from first idea to final frame.",
     "service": [
       {
         "id": "1",
@@ -170,7 +189,7 @@
         "span": "& Market Strategy"
       },
       {
-        "id": "3", 
+        "id": "3",
         "title": "Brand ",
         "span": "Creation"
       },
@@ -209,9 +228,125 @@
         "title": "Team Training ",
         "span": "& Development"
       }
+    ],
+    "new-services": [
+      {
+        "title": "Video Production",
+        "description": "We produce cinematic visuals that communicate brand stories with clarity and impact."
+      },
+      {
+        "title": "Company Films",
+        "description": "Professional corporate films that highlight your organization’s values, culture, and achievements."
+      },
+      {
+        "title": "Promotional & Commercial Films",
+        "description": "Strategic productions designed to enhance brand visibility and drive audience engagement."
+      },
+      {
+        "title": "Podcast Filming & Production",
+        "description": "Comprehensive production for professional podcasts, including setup, recording, and post-production."
+      },
+      {
+        "title": "Branding & Content CreationBranding & Content Creation",
+        "description": "Developing cohesive visual identities and content strategies that strengthen brand presence."
+      },
+      {
+        "title": "Events Filming & Production",
+        "description": "High-quality event coverage capturing key moments with precision and storytelling focus."
+      },
+      {
+        "title": "Ads Management",
+        "description": "Managing performance-driven campaigns across Google, Meta, Snapchat, and TikTok platforms."
+      }
     ]
+  },
+  "btn-watch": "Watch Full Session",
+  "featuredWorksTitle": "FEATURED WORKS",
+  "gallery": {
+    "clickToWatch": "Click to watch"
+  },
+  "featuredWorks": {
+    "ESTSS": {
+      "title": "ESTSS",
+      "subtitle": "Company Films",
+      "description": "We create cinematic company films that highlight your story, values, and achievements. Using high-end cameras, lenses, and precise lighting, we capture the true identity of your organization with clarity and impact."
+    },
+    "Zarabi": {
+      "title": "Zarabi",
+      "subtitle": "Commercial Films",
+      "description": "Strategic commercial films built to boost visibility and drive engagement. Perfect for brands aiming to convert views into customers through cinematic storytelling and clean visuals."
+    },
+    "FinalEdition": {
+      "title": "Final Edition",
+      "subtitle": "Cars Films",
+      "description": "Premium car and showroom films showcasing vehicles with cinematic movement, drone shots, and detail-focused visuals. Ideal for dealerships, luxury brands, and new model launches."
+    },
+    "BeachyRentals": {
+      "title": "Beachy Rentals",
+      "subtitle": "Real Estate Films",
+      "description": "We produce high-quality real estate films that bring spaces to life. Perfect for agents, developers, and luxury property owners looking for cinematic walkthroughs and stunning detail shots."
+    },
+    "PodcastProduction": {
+      "title": "Florian Homm",
+      "subtitle": "Podcast Films",
+      "description": "Professional podcast filming—especially weekly solo podcast episodes. We come to your location with full gear and handle filming, audio recording, lighting, and editing."
+    },
+    "EventCoverage": {
+      "title": "Art Gallery",
+      "subtitle": "Event Films",
+      "description": "High-quality event film production capturing the moments, energy, and atmosphere of your event. Perfect for conferences, launches, activations, exhibitions, and corporate gatherings."
+    }
+  },
+ "timeLine": {
+  "title": "Prostdios Project Timeline",
+  "subtitle": "A refined cinematic process — from first idea to final frame.",
+  
+  "section1": {
+    "title1": "Discovery & Strategy",
+    "desc1": "We start by understanding your brand story and communication goals. Our team aligns on the creative direction, audience, tone, and key message — ensuring every frame has purpose.",
+    "deliverables1": "Deliverables | Creative brief, concept outline, and moodboard.",
+    
+    "title2": "Concept Development",
+    "desc2": "Storytelling begins here. We craft a visual narrative that connects emotionally with your audience. This includes scriptwriting, storyboarding, and visual style planning.",
+    "deliverables2": "Deliverables | Final concept deck, script, and storyboard."
+  },
+  
+  "section2": {
+    "title": "Pre-Production",
+    "desc": "Precision before production. We handle location scouting, permits, talent casting, equipment setup, and scheduling. Everything is prepared down to the smallest cinematic detail.",
+    "deliverables": "Deliverables | Shooting schedule, cast list, call sheets, and production plan."
+  },
+  
+  "section3": {
+    "title1": "Production",
+    "desc1": "Lights. Camera. Storytelling. Our directors, DOPs, and crew bring the concept to life using industry-leading cameras, lenses, lighting, and drone cinematography.",
+    "deliverables1": "Deliverables | Raw footage and behind-the-scenes material.",
+    
+    "title2": "Post-Production",
+    "desc2": "Where the story takes shape. Our editors, sound designers, and colorists refine every frame — adding music, voice-overs, animations, and VFX when needed.",
+    "deliverables2": "Deliverables | First cut, revised edit, and final master."
+  },
+  
+  "section4": {
+    "title": "Review & Feedback",
+    "desc": "We collaborate with you for review and fine-tuning. Our process includes multiple feedback rounds to ensure your vision is fully realized.",
+    "deliverables": "Deliverables | Approved final edit."
+  },
+  
+  "section5": {
+    "title1": "Final Delivery",
+    "desc1": "Your film is delivered in full resolution, optimized for all platforms — broadcast, cinema, or social media. We also provide optional subtitled and teaser versions.",
+    "deliverables1": "Deliverables | 4K final film, social cuts, and delivery package.",
+    
+    "title2": "Launch Support",
+    "desc2": "We help you plan the launch — from social rollout strategy to cinematic teaser edits that boost engagement.",
+    "deliverables2": "Deliverables | Launch plan, teaser reels, and performance insights."
+  },
+  
+  "footer": {
+    "title": "OUR STANDARD",
+    "description": "Every project follows a clear path. Cinematic creativity, strategic storytelling, and precise execution — because quality is never optional.",
+    "button": "See our work"
   }
-  ,
-  "btn-watch":"Watch Full Session"
-
+}
 }

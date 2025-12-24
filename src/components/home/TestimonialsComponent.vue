@@ -170,14 +170,14 @@ onUnmounted(() => {
 }
 
 .title {
-    align-self: stretch;
-    color: #FFF;
-    text-align: center;
-    font-family: Rockwell;
-    font-size: 2rem;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 1.25;
+    color: var(--Black-black-1, #FFF);
+text-align: center;
+font-family: "Bebas Neue";
+font-size: 80px;
+font-style: normal;
+font-weight: 400;
+line-height: 125%; /* 100px */
+text-transform: uppercase;
 }
 
 .frame {
@@ -201,13 +201,13 @@ onUnmounted(() => {
 }
 
 .content .description {
-    color: #DBDBDB;
-    text-align: center;
-    font-family: Georgia;
-    font-size: 1rem;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 1.6;
+    color: var(--Black-black-5, #DBDBDB);
+text-align: center;
+font-family: Inter;
+font-size: 20px;
+font-style: normal;
+font-weight: 400;
+line-height: 125%; /* 25px */
     width: 100%;
 }
 
@@ -238,23 +238,24 @@ aspect-ratio: 1/1;
 }
 
 .profiles .name {
-    color: #FFF;
-    text-align: center;
-    font-family: Rockwell;
-    font-size: 1.5rem;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 1.25;
+    color: var(--Black-black-1, #FFF);
+text-align: center;
+font-family: "Bebas Neue";
+font-size: 40px;
+font-style: normal;
+font-weight: 400;
+line-height: 125%; /* 50px */
+text-transform: uppercase;
 }
 
 .profiles .job {
-    color: #E9480E;
-    text-align: center;
-    font-family: Rockwell;
-    font-size: 1.125rem;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 1.25;
+   color: var(--Orange-orange-500, #E9480E);
+text-align: center;
+font-family: "Bebas Neue";
+font-size: 28px;
+font-style: normal;
+font-weight: 400;
+line-height: 125%; /* 35px */
 }
 
 .frame .points {
@@ -331,9 +332,7 @@ align-items: center;
         gap: 48px;
     }
 
-    .title {
-        font-size: 2.5rem;
-    }
+   
 
     .content .description {
         font-size: 1.25rem;

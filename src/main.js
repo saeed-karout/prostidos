@@ -1,7 +1,7 @@
 import './index.css'
 
 import { createApp } from 'vue'
-import { createPinia } from 'pinia'
+// import { createPinia } from 'pinia'
 
 import App from './App.vue'
 import router from './router'
@@ -28,13 +28,21 @@ const i18n = createI18n({
   legacy: false,
   locale: savedLanguage, // تحميل اللغة المحفوظة
   fallbackLocale: 'en',
-  messages: { en, ar }
+  messages: { en, ar },
+
+  missingWarn: false,          // جديد
+  fallbackWarn: false,         // جديد
+  warnHtmlMessage: false,
+  // هذا مهم جدًا:
+  globalInjection: true,
+  // وهذا يجبره يرجع القيمة من fallback لو مفقودة
+  fallbackOnMissing: true
 });
 
 const app = createApp(App)
 
 app.use(i18n);
-app.use(createPinia())
+// app.use(createPinia())
 app.use(router)
 app.component('font-awesome-icon', FontAwesomeIcon)
 app.mount('#app')

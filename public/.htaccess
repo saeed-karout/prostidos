@@ -1,0 +1,67 @@
+Options -MultiViews
+
+RewriteEngine On
+RewriteBase /
+
+# تجاهل الملفات والمجلدات الحقيقية
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# إعادة توجيه جميع الطلبات الأخرى إلى index.html
+RewriteRule ^ index.html [L]
+
+# تفعيل Headers الأمان
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+
+    # HSTS (ابدأ بـ 300 للتجربة، ثم زد إلى 31536000)
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+
+    # Permissions-Policy
+    Header set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=()"
+
+    # Content-Security-Policy (مصححة بدون مسافات بعد \)
+    Header set Content-Security-Policy "default-src 'self' https:; \
+script-src 'self' 'unsafe-inline' 'unsafe-eval' \
+    https://www.youtube.com https://www.youtube-nocookie.com \
+    https://www.googletagmanager.com https://www.google-analytics.com \
+    https://www.google.com https://www.gstatic.com \
+    https://googleads.g.doubleclick.net https://stats.g.doubleclick.net \
+    https://widget.clutch.co; \
+style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://widget.clutch.co; \
+img-src 'self' blob: data: https:; \
+font-src 'self' data: https://fonts.gstatic.com; \
+frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com \
+    https://www.googletagmanager.com https://widget.clutch.co \
+    https://wa.me https://www.google.com; \
+connect-src 'self' https://www.google-analytics.com \
+    https://www.googletagmanager.com https://www.google.com \
+    https://googleads.g.doubleclick.net https://stats.g.doubleclick.net \
+    https://wa.me; \
+form-action 'self' https://wa.me; \
+media-src 'self' https:; \
+object-src 'none'; \
+base-uri 'self'; \
+upgrade-insecure-requests;"
+
+    # === إعدادات CORS (اختر واحدًا فقط) ===
+
+    # خيار 1: مفتوح للجميع (للتجربة فقط - غير آمن)
+    # Header set Access-Control-Allow-Origin "*"
+
+    # خيار 2: ديناميكي وآمن (يعكس Origin إذا كان من دوميناتك)
+    SetEnvIf Origin "^https?://(www\.)?prostdios\.com(:[0-9]+)?$" AllowedOrigin=$0
+    SetEnvIf Origin "^https?://localhost(:[0-9]+)?$" AllowedOrigin=$0
+    Header always set Access-Control-Allow-Origin "%{AllowedOrigin}e" env=AllowedOrigin
+    Header always set Access-Control-Allow-Methods "GET, POST, OPTIONS, HEAD"
+    Header always set Access-Control-Allow-Headers "Origin, Content-Type, Accept, Authorization"
+    Header always set Access-Control-Allow-Credentials "true"
+
+    # دعم preflight requests
+    RewriteCond %{REQUEST_METHOD} OPTIONS
+    RewriteRule ^(.*)$ $1 [R=200,L]
+</IfModule>

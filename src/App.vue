@@ -1,31 +1,91 @@
 <template class="font-league">
-  <div>
+  <div :data-lang="$i18n.locale">
     <SplashScreen v-if="showSplash" @finished="handleSplashFinished" />
-    <div v-else class="min-h-screen bg-[#100E0E]">
+    <div v-else class="min-h-screen bg-[#100E0E] relative">
       <Navbar />
       <RouterView />
       <FooterComp />
+      <!-- إضافة مكون WhatsApp Float هنا -->
+      <WhatsAppFloat
+        :phone-number="whatsappConfig.phoneNumber"
+        :settings="whatsappConfig.settings"
+        :messages="whatsappConfig.messages"
+        :tooltips="whatsappConfig.tooltips"
+        position="bottom-right"
+        @click="handleWhatsAppClick"
+      />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { RouterView } from 'vue-router';
 import Navbar from './components/master/Navbar-component.vue';
-import FooterComp from './components/master/FooterComponent.vue';
+import FooterComp from './components/master/LatestFooter.vue';
 import SplashScreen from './components/StartedCom.vue';
+import WhatsAppFloat from './components/WhatsAppFloat.vue'; // المسار الصحيح
+import { manageVideoPlayback, optimizeMemoryUsage } from '@/utils/performance-optimizations';
+
+// استيراد بيانات واتساب
+import whatsappData from '@/assets/data/whatsapp.json'; // تأكد من المسار الصحيح
 
 // Import CSS
 import 'tailwindcss/tailwind.css';
-import 'quill/dist/quill.snow.css';
-import 'toastr/build/toastr.min.css';
 
+const { locale } = useI18n();
 const showSplash = ref(true);
+const whatsappConfig = ref(whatsappData.whatsapp);
 
 const handleSplashFinished = () => {
   showSplash.value = false;
 };
+
+const handleWhatsAppClick = () => {
+  // يمكنك إضافة أي منطق إضافي هنا عند النقر على واتساب
+  console.log('WhatsApp clicked');
+  // يمكنك إضافة تحليلات مثلاً
+  // trackEvent('whatsapp_click', { phone: whatsappConfig.value.phoneNumber });
+};
+
+// تحديث document dir عند تغيير اللغة
+watch(locale, (newLocale) => {
+  // تحديث سمة dir في document
+  document.documentElement.setAttribute('dir', newLocale === 'ar' ? 'rtl' : 'ltr');
+  document.documentElement.setAttribute('lang', newLocale);
+  
+  // إضافة data-lang attribute للـ body
+  document.body.setAttribute('data-lang', newLocale);
+  
+  // حفظ اللغة في localStorage
+  localStorage.setItem('language', newLocale);
+});
+
+onMounted(() => {
+  // تعيين الـ dir الأولي عند تحميل التطبيق
+  const savedLanguage = localStorage.getItem('language') || 'en';
+  document.documentElement.setAttribute('dir', savedLanguage === 'ar' ? 'rtl' : 'ltr');
+  document.documentElement.setAttribute('lang', savedLanguage);
+  document.body.setAttribute('data-lang', savedLanguage);
+  
+  manageVideoPlayback();
+  optimizeMemoryUsage();
+  
+  // تحميل بيانات واتساب بشكل ديناميكي إذا لزم الأمر
+  // fetchWhatsAppConfig();
+});
+
+// دالة لجلب الإعدادات ديناميكياً (اختياري)
+// async function fetchWhatsAppConfig() {
+//   try {
+//     const response = await fetch('/api/whatsapp-config');
+//     const data = await response.json();
+//     whatsappConfig.value = data.whatsapp;
+//   } catch (error) {
+//     console.error('Error fetching WhatsApp config:', error);
+//   }
+// }
 </script>
 
 <style scoped>
@@ -44,7 +104,7 @@ const handleSplashFinished = () => {
 
 .warning-message {
   color: white;
-  font-family: 'League', sans-serif;
+  font-family: 'NeoSansArabic', 'League', sans-serif;
   font-size: 24px;
   text-align: center;
   background: #1a1616;
@@ -56,6 +116,7 @@ const handleSplashFinished = () => {
 .min-h-screen {
   min-height: 100vh;
   background: #100E0E;
+  position: relative;
 }
 
 body, html {
@@ -63,4 +124,12 @@ body, html {
   padding: 0;
   overflow-x: hidden;
 }
+
+/* تطبيق الخط العربي على جميع العناصر عند اللغة العربية */
+[data-lang="ar"] .warning-message {
+  font-family: 'NeoSansArabic', sans-serif !important;
+  letter-spacing: normal !important;
+}
+
+
 </style>

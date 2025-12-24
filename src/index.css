@@ -1,7 +1,24 @@
-@import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@400..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+
+@font-face {
+  font-family: 'NeoSansArabic';
+  src: url('/fonts/alfont_com_NeoSansArabic.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+  font-display: block; 
+}
+
+
+
+
+
 
 
 
@@ -9,7 +26,7 @@ body {
     --sb-track-color: #100E0E;
     --sb-thumb-color: #E9480E;
     --sb-size: 8px;
-    font-family: 'League Spartan', sans-serif; /* تطبيق الخط على الجسم */
+    font-family: 'Bebas Neue', 'Inter',sans-serif; 
     --primary:var(--sb-thumb-color);
     --secondary:var(--sb-track-color);
     --white: #FFF;
@@ -40,6 +57,81 @@ body {
   }
 
 
+  body[data-lang="ar"],
+body[data-lang="ar"] * {
+  font-family: 'NeoSansArabic'!important;
 
+
+}
+
+html {
+  font-family: inherit !important;
+}
+
+[data-lang="ar"] {
+  font-family: 'NeoSansArabic'!important;
+}
+
+
+body[data-lang="ar"] {
+  font-family: 'NeoSansArabic'!important;
+}
+
+
+  
+
+
+
+
+
+
+
+#youtube-iframe {
+  /* إخفاء شعار YouTube */
+  position: relative !important;
+}
+
+#youtube-iframe::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 60px !important;
+  background: linear-gradient(to top, rgba(16, 14, 14, 0.9) 0%, transparent 100%) !important;
+  pointer-events: none !important;
+  z-index: 9999 !important;
+}
+
+/* إخفاء عناصر YouTube غير المرغوب فيها */
+#youtube-iframe .ytp-watermark,
+#youtube-iframe .ytp-chrome-top .ytp-title-channel-logo,
+#youtube-iframe .ytp-show-cards-title {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+/* حل خاص لمتصفح سفاري */
+_::-webkit-full-page-media, _:future, :root .safari_only {
+  #youtube-iframe {
+    -webkit-mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+    mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+  }
+}
+
+/* حل لمتصفح Firefox */
+@-moz-document url-prefix() {
+  #youtube-iframe {
+    filter: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'><filter id='removeLogo'><feFlood flood-color='rgba(16,14,14,0.8)' result='mask'/><feComposite in='SourceGraphic' in2='mask' operator='out'/></filter></svg>#removeLogo");
+  }
+}
+
+/* حل لـ Edge */
+@supports (-ms-ime-align:auto) {
+  #youtube-iframe {
+    clip-path: inset(0 0 50px 0);
+  }
+}
 
 
