@@ -898,7 +898,7 @@ textarea {
 }
 
 @media (max-width: 480px) {
-  .latest-part { height: 300px; }
+  .latest-part { height: 300px;padding-top: 0px; }
   .title { font-size: 28px; }
   .submit-btn { width: 100%; max-width: 100%; }
 }
