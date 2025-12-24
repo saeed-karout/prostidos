@@ -43,9 +43,7 @@
                             <div class="subtitle-card">
                                 {{ $t('timeLine.section1.desc1') }}
                             </div>
-                            <div class="Deliverables">
-                                {{ $t('timeLine.section1.deliverables1') }}
-                            </div>
+                            
                             <div class="card-glow"></div>
                         </div>
 
@@ -66,9 +64,7 @@
                             <div class="subtitle-card">
                                 {{ $t('timeLine.section1.desc2') }}
                             </div>
-                            <div class="Deliverables">
-                                {{ $t('timeLine.section1.deliverables2') }}
-                            </div>
+                            
                             <div class="card-glow"></div>
                         </div>
                     </div>
@@ -88,9 +84,7 @@
                         <div class="subtitle-card">
                             {{ $t('timeLine.section2.desc') }}
                         </div>
-                        <div class="Deliverables">
-                            {{ $t('timeLine.section2.deliverables') }}
-                        </div>
+                        
                         <div class="card-glow"></div>
                     </div>
                 </div>
@@ -115,9 +109,7 @@
                             <div class="subtitle-card">
                                 {{ $t('timeLine.section3.desc1') }}
                             </div>
-                            <div class="Deliverables">
-                                {{ $t('timeLine.section3.deliverables1') }}
-                            </div>
+                            
                             <div class="card-glow"></div>
                         </div>
 
@@ -138,9 +130,7 @@
                             <div class="subtitle-card">
                                 {{ $t('timeLine.section3.desc2') }}
                             </div>
-                            <div class="Deliverables">
-                                {{ $t('timeLine.section3.deliverables2') }}
-                            </div>
+                            
                             <div class="card-glow"></div>
                         </div>
                     </div>
@@ -160,9 +150,7 @@
                         <div class="subtitle-card">
                             {{ $t('timeLine.section4.desc') }}
                         </div>
-                        <div class="Deliverables">
-                            {{ $t('timeLine.section4.deliverables') }}
-                        </div>
+                        
                         <div class="card-glow"></div>
                     </div>
                 </div>
@@ -187,9 +175,7 @@
                             <div class="subtitle-card">
                                 {{ $t('timeLine.section5.desc1') }}
                             </div>
-                            <div class="Deliverables">
-                                {{ $t('timeLine.section5.deliverables1') }}
-                            </div>
+                            
                             <div class="card-glow"></div>
                         </div>
 
@@ -210,9 +196,7 @@
                             <div class="subtitle-card">
                                 {{ $t('timeLine.section5.desc2') }}
                             </div>
-                            <div class="Deliverables">
-                                {{ $t('timeLine.section5.deliverables2') }}
-                            </div>
+                            
                             <div class="card-glow"></div>
                         </div>
                     </div>

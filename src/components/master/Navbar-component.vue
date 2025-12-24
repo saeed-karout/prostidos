@@ -58,11 +58,7 @@
           <!-- Mobile Menu Button -->
           <div class="md:hidden flex items-center ml-auto">
             <button @click="toggleMobileMenu" type="button" class="text-white focus:outline-none" ref="menuButton">
-              <div class="burger-icon" :class="{ 'open': isMobileMenuOpen }">
-                <span></span>
-                <span></span>
-                <span></span>
-              </div>
+              <img src="/icons/menu.svg" class="w-8" alt="menu">
             </button>
           </div>
         </div>
@@ -88,7 +84,7 @@
             </div>
             
             <!-- Close Button -->
-            <button @click="closeMobileMenu" class="absolute top-6 right-6 p-1 rounded-full flex justify-center items-center border-[1px]  transition-colors">
+            <button @click="closeMobileMenu" class="absolute top-6 right-6 p-1 rounded-full flex justify-center items-center   transition-colors">
               <font-awesome-icon icon="fa-solid fa-xmark" class="text-white w-5" />
             </button>
           </div>
@@ -181,7 +177,7 @@
           <!-- Footer -->
           <div class="p-6 border-t border-white/10">
             <div class="text-center">
-              <p class="text-white/60 text-sm mb-4">{{ $t('nav.followUs') }}</p>
+              <!-- <p class="text-white/60 text-sm mb-4">{{ $t('nav.followUs') }}</p> -->
               <div class="flex justify-center gap-4">
                 <a href="https://x.com/prostdios_sa" target="_blank" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#E9480E] transition-colors">
                   <font-awesome-icon icon="fa-brands fa-x-twitter" class="text-white" />
