@@ -155,7 +155,7 @@ function scrollToSection(sectionId) {
   if (element) {
     element.scrollIntoView({ behavior: 'smooth', block: 'start' });
   } else {
-    console.error(`Element with ID ${sectionId} not found`);
+    // console.error(`Element with ID ${sectionId} not found`);
   }
 }
 
@@ -208,7 +208,7 @@ function onYouTubeIframeAPIReady() {
       },
       events: {
         onReady: (event) => {
-          console.log('YouTube Player Ready on Safari:', isSafari.value);
+          // console.log('YouTube Player Ready on Safari:', isSafari.value);
           
           // تعيين الجودة المفضلة
           event.target.setPlaybackQuality('hd720');
@@ -239,7 +239,8 @@ function onYouTubeIframeAPIReady() {
         },
         onStateChange: (event) => {
           if (event.data === YT.PlayerState.PLAYING) {
-            console.log('YouTube video is playing');
+            // console.log('YouTube video is playing');
+
             showFallback.value = false;
             
             // عند التشغيل، تأكد من الجودة العالية
@@ -268,7 +269,7 @@ function onYouTubeIframeAPIReady() {
           }
         },
         onError: (event) => {
-          console.error('YouTube Player Error:', event.data);
+          // console.error('YouTube Player Error:', event.data);
           showFallback.value = true;
           
           // إذا كان هناك خطأ، حاول مع جودة أقل كبديل
@@ -281,7 +282,7 @@ function onYouTubeIframeAPIReady() {
           }
         },
         onPlaybackQualityChange: (event) => {
-          console.log('Playback quality changed to:', event.data);
+          // console.log('Playback quality changed to:', event.data);
           
           // إذا تغيرت الجودة إلى منخفضة، حاول رفعها
           if (event.data && !event.data.includes('hd')) {
@@ -295,7 +296,7 @@ function onYouTubeIframeAPIReady() {
       }
     });
   } catch (error) {
-    console.error('Error initializing YouTube player:', error);
+    // console.error('Error initializing YouTube player:', error);
     showFallback.value = true;
   }
 }
@@ -312,7 +313,7 @@ function startTimeChecking() {
           player.playVideo();
         }
       } catch (error) {
-        console.log('Error checking time:', error);
+        // console.log('Error checking time:', error);
       }
     }
   }, 1000);
@@ -397,7 +398,7 @@ const createFloatingParticles = () => {
 
 let observer;
 onMounted(() => {
-  console.log('Hero section mounted - Safari:', isSafari.value);
+  // console.log('Hero section mounted - Safari:', isSafari.value);
   
   initYouTubePlayer();
   
@@ -447,7 +448,7 @@ onUnmounted(() => {
       player.destroy();
       player = null;
     } catch (error) {
-      console.log('Error destroying player:', error);
+      // console.log('Error destroying player:', error);
     }
   }
   

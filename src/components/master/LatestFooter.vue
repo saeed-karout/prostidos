@@ -79,7 +79,7 @@ function scrollToSection(sectionId) {
 .main {
     background-color: #151212;
     color: white;
-    z-index: 50;
+    z-index: 40;
     padding: 40px 60px;
     position: relative;
     display: flex;

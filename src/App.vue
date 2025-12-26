@@ -53,7 +53,7 @@ const handleWhatsAppClick = () => {
 // تحديث document dir عند تغيير اللغة
 watch(locale, (newLocale) => {
   // تحديث سمة dir في document
-  document.documentElement.setAttribute('dir', newLocale === 'ar' ? 'rtl' : 'ltr');
+  // document.documentElement.setAttribute('dir', newLocale === 'ar' ? 'rtl' : 'ltr');
   document.documentElement.setAttribute('lang', newLocale);
   
   // إضافة data-lang attribute للـ body

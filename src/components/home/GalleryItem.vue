@@ -277,7 +277,7 @@ const handleButtonLeave = () => {
 
 // دالة معالجة أخطاء الفيديو
 const onVideoError = (e) => {
-  console.error('Video error:', e);
+  // console.error('Video error:', e);
   
   if (videoEl.value && props.isFirstItem) {
     setTimeout(() => {
@@ -290,7 +290,7 @@ const onVideoError = (e) => {
 // دالة عند بدء تشغيل الفيديو
 const onVideoPlaying = () => {
   isVideoPlaying.value = true;
-  console.log('Video started playing');
+  // console.log('Video started playing');
 };
 
 // دالة تحميل الفيديو
@@ -334,16 +334,16 @@ const safePlayVideo = async () => {
       playPromise
         .then(() => {
           isVideoPlaying.value = true;
-          console.log('Video playing successfully');
+          // console.log('Video playing successfully');
         })
         .catch((error) => {
-          console.log('Autoplay prevented:', error);
+          // console.log('Autoplay prevented:', error);
           // تشغيل الفيديو عند التفاعل مع المستخدم
           setupUserInteractionPlay();
         });
     }
   } catch (error) {
-    console.error('Video play error:', error);
+    // console.error('Video play error:', error);
   }
 };
 
@@ -355,7 +355,7 @@ const setupUserInteractionPlay = () => {
       videoEl.value.play()
         .then(() => {
           isVideoPlaying.value = true;
-          console.log('Video started after user interaction');
+          // console.log('Video started after user interaction');
         })
         .catch(e => console.log('Still cannot play:', e));
     }
@@ -578,21 +578,7 @@ const updateFirstItem = (progress, elementTop, elementBottom, elementHeight, win
     }
   }
   
-  // تسجيل التغيرات للتصحيح
-  if (props.isFirstItem && props.index === 0) {
-    console.log('First Video State:', {
-      isFullscreen: isFullscreen.value,
-      isExpanding: isExpanding.value,
-      shouldBeFullscreen,
-      shouldBeExpanding,
-      elementTop,
-      windowHeight,
-      scrollThreshold: windowHeight * scrollThreshold,
-      isScrolledPast,
-      isVideoPlaying: isVideoPlaying.value,
-      isVideoLoaded: isVideoLoaded.value
-    });
-  }
+
 };
 
 // تطبيق أنماط خلف المحتوى

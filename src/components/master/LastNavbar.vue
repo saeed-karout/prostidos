@@ -1,9 +1,9 @@
 <template>
     <nav :class="navClasses">
         <div class="main">
-            <div class="flex items-center justify-between w-full ">
+            <div class="flex items-center  justify-center w-full h-[72px] mx-auto">
                 <!-- Left Side: Logo (مخفي في الشاشات العادية) -->
-                <div class="flex flex-row items-center " style="display: none;">
+                <div class="flex flex-row items-center hidden md:flex" >
                     <router-link to="/" class="flex items-center">
                         <img class="w-[123.5px] h-[32px]" src="/logos/logo.svg" alt="Your Company Logo">
                     </router-link>
@@ -43,12 +43,9 @@
                         <!-- Email -->
                         <div class="email-section" :class="{ 'mt-4': isHomeMenuOpen }">
                             <a :href="emailHref" class="email-item">
-                                <div class="email-icon">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                                    </svg>
-                                </div>
+                              
+                                    <font-awesome-icon icon="fa-regular fa-envelope" class="w-7 h-7 text-[#F0531C]" />
+                              
                             </a>
                         </div>
                     </div>
@@ -62,14 +59,16 @@
                 <!-- Mobile Menu Button (Hidden on Desktop) -->
                 <div class="md:hidden flex justify-between items-center ml-auto  w-full">
                     
-                    <button @click="toggleMobileMenu" type="button" class="text-white focus:outline-none" ref="menuButton">
-                        <img src="/icons/menu.svg" class="w-8" alt="menu">
-                    </button>
-
                     <div class="flex items-center ">
                         <img class="w-[123.5px] h-[32px]" src="/logos/logo.svg" alt="Your Company Logo">
                     </div>
 
+                    
+                    <button @click="toggleMobileMenu" type="button" class="text-white focus:outline-none" ref="menuButton">
+                        <img src="/icons/menu.svg" class="w-8" alt="menu">
+                    </button>
+
+                  
                     
                 </div>
             </div>
@@ -524,6 +523,7 @@ const navClasses = computed(() => {
     justify-content: space-between;
     align-items: center;
     overflow: hidden;
+ 
 }
 
 @media (max-width: 760px) {
@@ -538,7 +538,7 @@ const navClasses = computed(() => {
     flex-direction: column;
     align-items: center;
     gap: 15px;
-    padding: 20px 0px;
+    padding: 40px 0px;
     background: rgba(16, 14, 14, 0.95);
     backdrop-filter: blur(10px);
     border-radius: 20px 0 0 20px;
@@ -597,7 +597,7 @@ const navClasses = computed(() => {
 
 .nav-text {
     color: white;
-    font-size: 14px;
+    font-size: 20px;
     font-weight: 500;
     letter-spacing: 0.5px;
     white-space: nowrap;
@@ -620,7 +620,7 @@ const navClasses = computed(() => {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0px;
+    gap: 4px;
     padding: 8px;
     background: rgba(255, 255, 255, 0.05);
     border-radius: 10px;
@@ -639,7 +639,7 @@ const navClasses = computed(() => {
 
 .language-text {
     color: white;
-    font-size: 14px;
+    font-size: 20px;
     font-weight: 500;
 }
 
