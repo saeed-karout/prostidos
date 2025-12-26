@@ -829,18 +829,18 @@ textarea {
   }
 
   .form-label {
-    font-size: 1.125rem;
+    font-size: 1.7rem;
   }
 
   input, textarea {
     padding: 18px 22px;
-    font-size: 1.125rem;
+    font-size: 1.325rem;
   }
 
   .submit-btn {
     max-width: 250px;
     padding: 20px 45px;
-    font-size: 1.375rem;
+    font-size: 1.5rem;
   }
 
   /* تحسينات إضافية للديسكتوب */

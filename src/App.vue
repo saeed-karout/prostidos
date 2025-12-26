@@ -2,7 +2,7 @@
   <div :data-lang="$i18n.locale">
     <SplashScreen v-if="showSplash" @finished="handleSplashFinished" />
     <div v-else class="min-h-screen bg-[#100E0E] relative">
-      <Navbar />
+      <LastNavbar />
       <RouterView />
       <FooterComp />
       <!-- إضافة مكون WhatsApp Float هنا -->
@@ -22,7 +22,7 @@
 import { onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { RouterView } from 'vue-router';
-import Navbar from './components/master/Navbar-component.vue';
+
 import FooterComp from './components/master/LatestFooter.vue';
 import SplashScreen from './components/StartedCom.vue';
 import WhatsAppFloat from './components/WhatsAppFloat.vue'; // المسار الصحيح
@@ -33,6 +33,7 @@ import whatsappData from '@/assets/data/whatsapp.json'; // تأكد من الم�
 
 // Import CSS
 import 'tailwindcss/tailwind.css';
+import LastNavbar from './components/master/LastNavbar.vue';
 
 const { locale } = useI18n();
 const showSplash = ref(true);
