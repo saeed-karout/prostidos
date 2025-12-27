@@ -421,7 +421,7 @@ function scrollToSection(sectionId) {
     }
 
     .email {
-        font-size: 1.2rem;
+        font-size: 1rem;
         font-weight: 500;
         text-align: center;
         display: block;
@@ -429,7 +429,7 @@ function scrollToSection(sectionId) {
     }
 
     .countries {
-        font-size: 1rem;
+        font-size: .8rem;
         text-align: center;
         opacity: 0.9;
         /* margin-top: 10px; */

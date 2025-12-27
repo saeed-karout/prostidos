@@ -482,7 +482,7 @@ onUnmounted(() => observer?.disconnect());
 
 .contact-section {
   transform: translateY(-2px);
-  box-shadow: 0 10px 40px rgba(233, 72, 14, 0.1);
+  box-shadow: 0 10px 40px 14px rgba(233, 72, 14, 0.2);
   border-radius: 20px;
 
 }

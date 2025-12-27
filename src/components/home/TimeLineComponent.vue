@@ -479,7 +479,7 @@ onMounted(() => {
     width: 100%;
     height: 100%;
     pointer-events: none;
-    z-index: 12;
+    z-index: 2;
     overflow: hidden;
 }
 
@@ -672,7 +672,7 @@ onMounted(() => {
 .footer {
     display: flex;
     width: 100%;
-    max-width: 672px;
+    max-width: 872px;
     flex-direction: column;
     align-items: center;
     gap: 24px;
@@ -686,13 +686,13 @@ onMounted(() => {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 8px;
+    gap: 20px;
 }
 
 .footer-text .title {
     color: #FFF;
     font-family: "Bebas Neue";
-    font-size: 28px;
+    font-size: 36px;
     font-style: normal;
     font-weight: 400;
     line-height: 125%;
@@ -702,7 +702,7 @@ onMounted(() => {
     color: #FFF;
     text-align: center;
     font-family: Inter;
-    font-size: 18px;
+    font-size: 24px;
     font-style: normal;
     font-weight: 400;
     line-height: 125%;

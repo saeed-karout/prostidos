@@ -74,7 +74,7 @@ const futureWorks = computed(() => [
     title: t('featuredWorks.EventCoverage.subtitle', 'Live Events'),
     workKey: 'EventCoverage',
     buttonText: t('btn-watch', 'Watch Full Session'),
-    buttonLink: "https://drive.google.com/file/d/1mwaNSyN_62Co961e2bwIihLRcrqtsn3g/view",
+    buttonLink: "https://www.youtube.com/watch?v=zYWGjqvC7uc",
     showDescription: true
   }
 ]);
@@ -320,7 +320,7 @@ onUnmounted(() => {
 /* Future Works Section */
 .future-works-section {
   position: relative;
-  padding: 40px 0 0;
+  padding:  0 0;
   overflow: visible;
   z-index: 100;
   min-height: auto !important;
@@ -329,11 +329,11 @@ onUnmounted(() => {
 
 .section-header {
   text-align: center;
-  padding: 0 20px;
+  padding: 20px 20px;
   position: relative;
   z-index: 200;
   pointer-events: none;
-  /* background: #100E0E; */
+  background: #100E0E;
 
 }
 
