@@ -388,7 +388,7 @@ onUnmounted(() => {
 /* تحسينات للهواتف */
 @media (max-width: 768px) {
   .future-works-section {
-    padding: 30px 0 0;
+    padding: 0px 0 0;
   }
 
   .section-header {
