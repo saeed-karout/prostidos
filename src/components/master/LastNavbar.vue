@@ -9,48 +9,6 @@
                     </router-link>
                 </div>
 
-                <!-- Vertical Navigation Menu (Desktop Only) - Right Side -->
-                <div  class="hidden md:flex fixed right-0 top-1/2 z-50" style="transform: translate(0, 100%);">
-                   
-
-                    <div class="vertical-nav-menu" :class="{ 'expanded': isHomeMenuOpen }">
-                        <!-- Navigation Items -->
-                        <div class="nav-items rotate-[-90deg]">
-                            <!-- Home with dropdown functionality -->
-                            <div @click="toggleHomeMenu" 
-                                class="nav-item group cursor-pointer main-nav-item"
-                                :class="{ 'active': isActive('/') }">
-                                <div class="nav-dot"></div>
-                                <span class="nav-text">{{ $t('nav.home') }}</span>
-                            </div>
-                        </div>
-
-                        <!-- Language Switcher -->
-                        <div class="language-section" :class="{ 'mt-4': isHomeMenuOpen }">
-                            <div class="language-item" @click="toggleLanguage">
-                                <div class="language-icon">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                            d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/>
-                                    </svg>
-                                </div>
-                                <span class="language-text">
-                                    {{ currentLanguage === 'en' ? 'ar' : 'en' }}
-                                </span>
-                            </div>
-                        </div>
-
-                        <!-- Email -->
-                        <div class="email-section" :class="{ 'mt-4': isHomeMenuOpen }">
-                            <a :href="emailHref" class="email-item">
-                              
-                                    <font-awesome-icon icon="fa-regular fa-envelope" class="w-7 h-7 text-[#F0531C]" />
-                              
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Right Side: Empty Space for Balance -->
                 <div class="flex items-center justify-end">
                     <!-- This space is intentionally left blank for balance -->
@@ -74,6 +32,46 @@
             </div>
         </div>
     </nav>
+
+    <!-- Vertical Navigation Menu (Desktop Only) - Independent Positioning -->
+    <div class="hidden md:flex fixed right-0 top-1/2 -translate-y-1/2 z-50">
+        <div class="vertical-nav-menu" :class="{ 'expanded': isHomeMenuOpen }">
+            <!-- Navigation Items -->
+            <div class="nav-items rotate-[-90deg]">
+                <!-- Home with dropdown functionality -->
+                <div @click="toggleHomeMenu" 
+                    class="nav-item group cursor-pointer main-nav-item"
+                    :class="{ 'active': isActive('/') }">
+                    <div class="nav-dot"></div>
+                    <span class="nav-text">{{ $t('nav.home') }}</span>
+                </div>
+            </div>
+
+            <!-- Language Switcher -->
+            <div class="language-section" :class="{ 'mt-4': isHomeMenuOpen }">
+                <div class="language-item" @click="toggleLanguage">
+                    <div class="language-icon">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/>
+                        </svg>
+                    </div>
+                    <span class="language-text">
+                        {{ currentLanguage === 'en' ? 'ar' : 'en' }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Email -->
+            <div class="email-section" :class="{ 'mt-4': isHomeMenuOpen }">
+                <a :href="emailHref" class="email-item">
+                  
+                        <font-awesome-icon icon="fa-regular fa-envelope" class="w-7 h-7 text-[#F0531C]" />
+                  
+                </a>
+            </div>
+        </div>
+    </div>
 
     <!-- Desktop Full Screen Menu (يظهر عند النقر على Home) -->
     <transition name="desktop-full-menu">
@@ -706,7 +704,9 @@ const navClasses = computed(() => {
     padding: 40px;
     box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
     z-index: 1;
-    height: 90%;
+    /* height: 90%; */
+    overflow: auto;
+    scrollbar-width: none;
 }
 
 .desktop-menu-header {
@@ -932,9 +932,7 @@ const navClasses = computed(() => {
     margin-right: auto;
 }
 
-[dir="rtl"] .rotate-[-90deg] {
-    transform: rotate(90deg) !important;
-}
+
 
 [dir="rtl"] .desktop-menu-item:hover {
     transform: translateX(-10px);

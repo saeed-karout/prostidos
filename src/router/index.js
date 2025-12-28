@@ -5,13 +5,8 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    component: () => import('../views/HomeView.vue') // Lazy load HomeView
-  },
-  {
-    path: '/contact',
-    name: 'contact',
-    component: () => import('../views/ContactView.vue') // Lazy load ContactView
-  },
+    component: () => import('../views/HomeView.vue')
+  }
   
 ]
 

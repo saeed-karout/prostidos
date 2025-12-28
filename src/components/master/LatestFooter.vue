@@ -282,6 +282,14 @@ function scrollToSection(sectionId) {
     filter: brightness(0) invert(1);
 }
 
+.email{
+    font-size: 1.3rem;
+}
+
+.countries{
+    font-size: 1.1rem;
+}
+
 /* =========================================== */
 /* تعديلات بسيطة للتابلت فقط */
 /* =========================================== */
