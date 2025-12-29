@@ -794,14 +794,39 @@ const handleScroll = () => {
 // مستمع تغيير الحجم
 const handleResize = () => {
   updateItemPosition();
-};
 
+  // إذا تغير الوضع من ديسكتوب إلى موبايل أو العكس (نادر لكن مفيد)
+  if (props.isFirstItem) {
+    const isMobile = window.innerWidth <= 768;
+    if (isMobile && isFullscreen.value) {
+      // إذا كنا في ديسكتوب وأصبح موبايل → نخرج من fullscreen
+      isFullscreen.value = false;
+      isContentVisible.value = false;
+      nextTick(() => {
+        if (tvContainer.value) {
+          tvContainer.value.style.opacity = '0';
+          tvContainer.value.style.transform = 'translate(-50%, 50%) scale(0.3)';
+        }
+      });
+    } else if (!isMobile && !isFullscreen.value) {
+      // إذا كنا في موبايل وأصبح ديسكتوب → ندخل fullscreen
+      isFullscreen.value = true;
+      isContentVisible.value = true;
+      nextTick(() => {
+        applyFullscreenStyles();
+        if (tvContainer.value) tvContainer.value.style.opacity = '1';
+      });
+    }
+  }
+};
+const isMobile = window.innerWidth <= 768;
 // دورة الحياة
 onMounted(() => {
-  if (props.isFirstItem && tvContainer.value) {
-    tvContainer.value.style.opacity = '0';
-    tvContainer.value.style.transform = 'translate(-50%, 50%) scale(0.3)';
-  } else if (videoContainer.value) {
+  // if (props.isFirstItem && tvContainer.value) {
+  //   tvContainer.value.style.opacity = '0';
+  //   tvContainer.value.style.transform = 'translate(-50%, 50%) scale(0.3)';
+  // } else 
+  if (videoContainer.value) {
     videoContainer.value.style.opacity = '0';
   }
   
@@ -814,13 +839,55 @@ onMounted(() => {
   setTimeout(updateItemPosition, 100);
   
   if (props.isFirstItem) {
-    setTimeout(() => {
-      if (videoEl.value) {
-        videoEl.value.load();
-        setTimeout(safePlayVideo, 1000);
-      }
-    }, 1500);
+    if (isMobile) {
+      // ===== وضع الموبايل =====
+      // لا نفعل أي أنيميشن أو توسع أو fullscreen تلقائي
+      // نترك الفيديو كما هو (صغير في الأعلى) ويعمل فقط عند السكرول مثل الباقيين
+      isFullscreen.value = false;
+      isContentVisible.value = false;
+      isExpanding.value = false;
+      isVisible.value = false;
+
+      // نضمن أن الحاوية تبدأ بحالتها الطبيعية (scale صغير و opacity منخفض)
+      nextTick(() => {
+        if (tvContainer.value) {
+          tvContainer.value.style.opacity = '0';
+          tvContainer.value.style.transform = 'translate(-50%, 50%) scale(0.3)';
+        }
+      });
+    } else {
+      // ===== وضع الديسكتوب فقط =====
+      // نفعل fullscreen مباشرة بدون أنيميشن
+      isFullscreen.value = true;
+      isContentVisible.value = true;
+      isVisible.value = true;
+      isExpanding.value = false;
+
+      nextTick(() => {
+        if (tvContainer.value) {
+          applyFullscreenStyles();
+          tvContainer.value.style.opacity = '1';
+        }
+
+        if (videoEl.value) {
+          videoEl.value.load();
+          setTimeout(safePlayVideo, 500);
+        }
+      });
+    }
+  } else {
+    // الفيديوهات الأخرى → السلوك الطبيعي في كل الأجهزة
+    if (videoContainer.value) {
+      videoContainer.value.style.opacity = '0';
+    }
   }
+
+  window.addEventListener('scroll', handleScroll, { passive: true });
+  window.addEventListener('resize', handleResize);
+  window.addEventListener('touchmove', handleScroll, { passive: true });
+
+  setupUserInteractionPlay();
+  setTimeout(updateItemPosition, 100);
   
   if (videoEl.value) {
     videoEl.value.muted = true;
@@ -828,14 +895,12 @@ onMounted(() => {
   }
 });
 
+
 onUnmounted(() => {
   if (rafId) {
     cancelAnimationFrame(rafId);
   }
-  window.removeEventListener('scroll', handleScroll);
-  window.removeEventListener('resize', handleResize);
-  window.removeEventListener('touchmove', handleScroll);
-  
+ 
   if (videoEl.value) {
     videoEl.value.pause();
     videoEl.value.src = '';

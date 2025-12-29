@@ -3,7 +3,7 @@
         <div class="main">
             <div class="flex items-center  justify-center w-full h-[72px] mx-auto">
                 <!-- Left Side: Logo (مخفي في الشاشات العادية) -->
-                <div class=" flex-row items-center hidden md:flex" >
+                <div class=" flex-row items-center hidden lg:flex" >
                     <router-link to="/" class="flex items-center">
                         <img class="w-[123.5px] h-[32px]" src="/logos/logo.svg" alt="Your Company Logo">
                     </router-link>
@@ -15,7 +15,7 @@
                 </div>
 
                 <!-- Mobile Menu Button (Hidden on Desktop) -->
-                <div class="md:hidden flex justify-between items-center ml-auto  w-full">
+                <div class="lg:hidden flex justify-between items-center ml-auto  w-full">
                     
                     <div class="flex items-center ">
                         <img class="w-[123.5px] h-[32px]" src="/logos/logo.svg" alt="Your Company Logo">
