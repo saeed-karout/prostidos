@@ -1,5 +1,5 @@
 <template>
-    <div class="main" ref="footerRef">
+    <div class="main" :dir="locale === 'ar' ? 'ltr' : 'ltr'" ref="footerRef">
         <div class="content">
             <div class="one-column">
                 <div class="row">{{ $t('footer.part') }}</div>
@@ -293,9 +293,15 @@ function scrollToSection(sectionId) {
 /* =========================================== */
 /* تعديلات بسيطة للتابلت فقط */
 /* =========================================== */
-@media (min-width: 769px) and (max-width: 1024px) {
+@media (min-width: 1201px) and (max-width: 1424px) {
     .main {
         padding: 40px 40px;
+    }
+    .email{
+        font-size: 1rem;
+    }
+    .countries{
+        font-size: .8rem;
     }
 
     .two-column {
@@ -328,7 +334,7 @@ function scrollToSection(sectionId) {
 /* =========================================== */
 /* تصميم الموبايل المحسّن */
 /* =========================================== */
-@media (max-width: 768px) {
+@media (max-width: 1200px) {
     .main {
         padding: 40px 24px;
         background-color: #151212;

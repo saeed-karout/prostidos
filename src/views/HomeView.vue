@@ -1,7 +1,6 @@
 <script setup>
 import GalleryItem from '@/components/home/GalleryItem.vue';
 import HeroComponent from '@/components/home/HeroComponent.vue';
-import LatestSection from '@/components/home/LatestSection.vue';
 import TimeLineComponent from '@/components/home/TimeLineComponent.vue';
 
 import beachyVideo from '@/assets/new-video/beachy.mp4';

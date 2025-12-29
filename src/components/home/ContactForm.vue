@@ -1,5 +1,5 @@
 <template>
-  <section class="contact-section" id="contact" ref="sectionContainer">
+  <section class="contact-section" id="contact" ref="sectionContainer" :dir="locale === 'ar' ? 'rtl' : 'ltr'">
     <!-- الجزء العلوي: LatestSection (العنوان + اللوجو + التأثيرات) -->
     <div class="latest-part" ref="latestPart">
       <div class="frame">
@@ -117,10 +117,10 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, onUnmounted, computed } from 'vue';
+import { ref, reactive, onMounted, onUnmounted, computed, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 
 // Refs
 const sectionContainer = ref(null);
@@ -218,14 +218,11 @@ const startAnimations = () => {
   if (hasAnimated.value) return;
   hasAnimated.value = true;
 
-  // تأثيرات خلفية
   if (effectsElement.value) effectsElement.value.classList.add('active');
 
-  // Detect if desktop
   const isDesktop = window.innerWidth >= 768;
 
   if (isDesktop) {
-    // Desktop animations (slower timing)
     setTimeout(() => logoElement.value?.classList.add('active'), 300);
     setTimeout(() => titleElement.value?.classList.add('active'), 600);
     setTimeout(() => subtitleElement.value?.classList.add('active'), 900);
@@ -249,7 +246,6 @@ const startAnimations = () => {
     animateInput(messageGroup, 1600);
     setTimeout(() => submitBtn.value?.classList.add('active'), 1800);
   } else {
-    // Mobile animations (original timing)
     setTimeout(() => logoElement.value?.classList.add('active'), 200);
     setTimeout(() => titleElement.value?.classList.add('active'), 400);
     setTimeout(() => subtitleElement.value?.classList.add('active'), 600);
@@ -275,6 +271,15 @@ const startAnimations = () => {
   }
 };
 
+// Watch for language change to re-trigger animations if needed
+watch(locale, () => {
+  hasAnimated.value = false;
+  if (sectionContainer.value && observer) {
+    observer.unobserve(sectionContainer.value);
+    observer.observe(sectionContainer.value);
+  }
+});
+
 onMounted(() => {
   observer = new IntersectionObserver(entries => {
     if (entries[0].isIntersecting && !hasAnimated.value) {
@@ -290,44 +295,56 @@ onUnmounted(() => observer?.disconnect());
 </script>
 
 <style scoped>
+/* ============================================= */
+/*              Base Styles                      */
+/* ============================================= */
 .contact-section {
   width: 100%;
   background: #100E0E;
   overflow: hidden;
-  height: 100%;
+  height: auto;
+  padding: 30px 20px;
+  box-sizing: border-box;
+  box-shadow: 0 10px 40px 14px rgba(233, 72, 14, 0.2);
+  border-radius: 20px;
 }
 
-/* Latest Part */
+/* ============================================= */
+/*              Latest Part Styles               */
+/* ============================================= */
 .latest-part {
   position: relative;
-  height: 400px;
+  height: auto;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: 30px;
 }
 
 .frame {
   position: relative;
   width: 100%;
-  max-width: 600px;
   height: 100%;
-  padding: 0 64px;
+  padding: 40px 24px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 32px;
+  gap: 24px;
   background: linear-gradient(to bottom right, rgba(233, 72, 14, 0.50) 0%, rgba(16, 14, 14, 0.50) 50%) bottom right / 50% 50% no-repeat,
               linear-gradient(to bottom left, rgba(233, 72, 14, 0.50) 0%, rgba(16, 14, 14, 0.50) 50%) bottom left / 50% 50% no-repeat,
               linear-gradient(to top left, rgba(233, 72, 14, 0.50) 0%, rgba(16, 14, 14, 0.50) 50%) top left / 50% 50% no-repeat,
               linear-gradient(to top right, rgba(233, 72, 14, 0.50) 0%, rgba(16, 14, 14, 0.50) 50%) top right / 50% 50% no-repeat,
               url(/images/bg-last-section.jpg) center/cover no-repeat;
-  border-radius: 20px 20px 0 0;
+  border-radius: 16px;
   overflow: hidden;
   isolation: isolate;
+  box-sizing: border-box;
 }
 
-/* تأثيرات الخلفية المتحركة */
+/* ============================================= */
+/*              Background Effects               */
+/* ============================================= */
 .background-effects {
   position: absolute;
   top: 0;
@@ -368,7 +385,9 @@ onUnmounted(() => observer?.disconnect());
   66% { transform: scale(0.95) translate(-10px, 15px); }
 }
 
-/* أنيميشن اللوجو */
+/* ============================================= */
+/*              Logo Animation                   */
+/* ============================================= */
 .logo {
   display: flex;
   flex-direction: column;
@@ -387,7 +406,7 @@ onUnmounted(() => observer?.disconnect());
 }
 
 .logo img {
-  width: 100%;
+  width: 80px;
   transition: transform 0.5s ease;
 }
 
@@ -400,18 +419,21 @@ onUnmounted(() => observer?.disconnect());
   50% { transform: translateY(-8px); }
 }
 
-/* أنيميشن العنوان */
+/* ============================================= */
+/*              Title & Subtitle                 */
+/* ============================================= */
 .content {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 16px;
+  text-align: center;
 }
 
 .title {
   color: #FFF;
   font-family: "Bebas Neue";
-  font-size: 40px;
+  font-size: 32px;
   font-weight: 400;
   line-height: 125%;
   position: relative;
@@ -419,6 +441,8 @@ onUnmounted(() => observer?.disconnect());
   opacity: 0;
   transform: translateY(20px);
   transition: opacity 0.8s ease 0.4s, transform 0.8s ease 0.4s;
+  word-break: break-word;
+  hyphens: auto;
 }
 
 .title.active {
@@ -451,12 +475,14 @@ onUnmounted(() => observer?.disconnect());
 .subtitle {
   color: #FFF;
   font-family: Inter;
-  font-size: 22px;
+  font-size: 16px;
   font-weight: 400;
-  line-height: 125%;
+  line-height: 140%;
   opacity: 0;
   transform: translateY(20px);
   transition: opacity 0.8s ease 0.6s, transform 0.8s ease 0.6s;
+  max-width: 90%;
+  margin: 0 auto;
 }
 
 .subtitle.active {
@@ -464,80 +490,110 @@ onUnmounted(() => observer?.disconnect());
   transform: translateY(0);
 }
 
-/* Form Part */
+/* ============================================= */
+/*              Form Part Styles                 */
+/* ============================================= */
 .form-part {
   background: #100E0E;
-}
-
-.form-wrapper {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 40px;
-  /* border: 1px solid rgba(255, 255, 255, 0.1); */
-  border-radius: 0 0 20px 20px;
-  backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
   width: 100%;
 }
 
-.contact-section {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 40px 14px rgba(233, 72, 14, 0.2);
-  border-radius: 20px;
-
+.form-wrapper {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0px 0px;
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(16, 14, 10, 0.9);
 }
 
 .form {
   display: flex;
   flex-direction: column;
   gap: 24px;
+  width: 100%;
 }
 
+/* ============================================= */
+/*              Form Elements                    */
+/* ============================================= */
 .form-group {
   display: flex;
   flex-direction: column;
   gap: 8px;
   position: relative;
+  transition: all 0.3s ease;
 }
 
 .form-label {
   color: #FFFFFF;
-  font-size: 1rem;
+  font-size: 21px;
+  line-height: 125%;
   font-weight: 500;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
 }
 
 input, textarea {
   width: 100%;
   padding: 14px 16px;
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 8px;
   color: #FFFFFF;
-  font-size: 1rem;
+  font-size: 16px;
   transition: all 0.3s ease;
   outline: none;
-  letter-spacing: 1px;
-  line-height: 1;
+  letter-spacing: 0.5px;
+  line-height: 1.5;
+  font-family: Inter, sans-serif;
+  box-sizing: border-box;
+  text-align: start;
 }
 
 input::placeholder, textarea::placeholder {
   color: rgba(255, 255, 255, 0.4);
+  font-family: Inter, sans-serif;
 }
 
 input:focus, textarea:focus {
   border-color: #E9480E;
   box-shadow: 0 0 0 3px rgba(233, 72, 14, 0.2);
   background: rgba(255, 255, 255, 0.08);
-  line-height: 1;
 }
 
 textarea {
   min-height: 120px;
   resize: vertical;
-  line-height: 1.2;
+  line-height: 1.6;
 }
 
+/* ============================================= */
+/*              RTL Specific Styles              */
+/* ============================================= */
+.contact-section[dir="rtl"] input,
+.contact-section[dir="rtl"] textarea {
+  text-align: right;
+  direction: rtl;
+}
+
+.contact-section[dir="rtl"] .form-label,
+.contact-section[dir="rtl"] .subtitle,
+.contact-section[dir="rtl"] .success-message,
+.contact-section[dir="rtl"] .error-message-general {
+  font-family: 'Noto Sans Arabic', 'Cairo', 'Inter', sans-serif;
+  text-align: right;
+}
+
+.contact-section[dir="rtl"] .title-underline {
+  left: auto;
+  right: 0;
+}
+
+/* ============================================= */
+/*              Error States                     */
+/* ============================================= */
 .error-input {
   border-color: #ff4d4f !important;
   animation: shake 0.5s ease-in-out;
@@ -549,7 +605,9 @@ textarea {
   75% { transform: translateX(5px); }
 }
 
-[dir="rtl"] .error-input { animation: shakeRTL 0.5s ease-in-out; }
+.contact-section[dir="rtl"] .error-input {
+  animation: shakeRTL 0.5s ease-in-out;
+}
 
 @keyframes shakeRTL {
   0%, 100% { transform: translateX(0); }
@@ -559,20 +617,25 @@ textarea {
 
 .error-message {
   color: #ff4d4f;
-  font-size: 0.875rem;
+  font-size: 14px;
   margin-top: 4px;
+  font-family: Inter, sans-serif;
 }
 
 .error-message-general {
   color: #ff4d4f;
-  font-size: 0.875rem;
+  font-size: 14px;
   padding: 12px;
   background: rgba(255, 77, 79, 0.1);
   border-radius: 8px;
   text-align: center;
   margin-top: 16px;
+  font-family: Inter, sans-serif;
 }
 
+/* ============================================= */
+/*              Submit Button                    */
+/* ============================================= */
 .submit-btn {
   display: inline-flex;
   align-items: center;
@@ -583,7 +646,7 @@ textarea {
   color: white;
   border: none;
   border-radius: 50px;
-  font-size: 1.25rem;
+  font-size: 18px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -595,7 +658,8 @@ textarea {
   align-self: center;
   opacity: 0;
   transform: translateY(20px);
-  transition: opacity 0.8s ease 0.8s, transform 0.8s ease 0.8s;
+  font-family: "Bebas Neue", sans-serif;
+  letter-spacing: 1px;
 }
 
 .submit-btn.active {
@@ -626,6 +690,9 @@ textarea {
   cursor: not-allowed;
 }
 
+/* ============================================= */
+/*              Loading Spinner                  */
+/* ============================================= */
 .spinner {
   width: 20px;
   height: 20px;
@@ -647,8 +714,16 @@ textarea {
   100% { stroke-dasharray: 90, 150; stroke-dashoffset: -124; }
 }
 
-.submitting-text { display: inline-flex; align-items: center; gap: 8px; }
+.submitting-text { 
+  display: inline-flex; 
+  align-items: center; 
+  gap: 8px; 
+  font-family: Inter, sans-serif;
+}
 
+/* ============================================= */
+/*              Success Message                  */
+/* ============================================= */
 .success-message {
   display: flex;
   align-items: center;
@@ -659,46 +734,97 @@ textarea {
   border: 1px solid rgba(76, 175, 80, 0.3);
   border-radius: 8px;
   color: #4caf50;
-  font-size: 1rem;
+  font-size: 16px;
   font-weight: 600;
   text-align: center;
   margin-top: 16px;
+  font-family: Inter, sans-serif;
 }
 
-.success-icon { width: 24px; height: 24px; fill: #4caf50; }
-
-.fade-enter-active, .fade-leave-active { transition: opacity 0.5s ease; }
-.fade-enter-from, .fade-leave-to { opacity: 0; }
+.success-icon { 
+  width: 24px; 
+  height: 24px; 
+  fill: #4caf50; 
+}
 
 /* ============================================= */
-/*              Desktop Styles                   */
+/*              Transitions                      */
 /* ============================================= */
+.fade-enter-active, .fade-leave-active { 
+  transition: opacity 0.5s ease; 
+}
 
-@media (min-width: 768px) {
+.fade-enter-from, .fade-leave-to { 
+  opacity: 0; 
+}
+
+/* ============================================= */
+/*              Responsive & Media Queries       */
+/* ============================================= */
+@media (max-width: 767px) {
+  .contact-section { padding: 20px 16px; }
+  .latest-part { margin-bottom: 20px; }
+  .frame { padding: 30px 20px; border-radius: 12px; }
+  .title { font-size: 32px; }
+  .subtitle { font-size: 16px; padding: 0 10px; }
+  .logo img { width: 70px; }
+  .submit-btn { width: 100%; max-width: none; padding: 16px 24px; }
+}
+
+@media (max-width: 480px) {
+  .frame { padding: 24px 16px; }
+  .title { font-size: 28px; }
+  .subtitle { font-size: 14px; }
+  .logo img { width: 60px; }
+  .form-label { font-size: 15px; }
+  input, textarea { font-size: 14px; padding: 12px 14px; }
+  .submit-btn { font-size: 16px; padding: 14px 20px; }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .contact-section { padding: 40px 30px; display: flex; flex-direction: column; }
+  .title { font-size: 44px; }
+  .subtitle { font-size: 20px; max-width: 80%; }
+  .logo img { width: 100px; }
+  .submit-btn { max-width: 200px; padding: 10px 20px; font-size: 22px; }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) and (orientation: landscape) {
+  .contact-section { flex-direction: row; gap: 40px; align-items: stretch; }
+  .latest-part, .form-part { flex: 1; }
+}
+
+@media (min-width: 1024px) and (max-width: 1199px) {
+  .contact-section { flex-direction: row; padding: 50px 40px; gap: 50px; align-items: stretch; max-width: 1200px; margin: 0 auto; }
+  .latest-part { flex: 1; }
+  .form-part { flex: 1; display: flex; align-items: center; }
+  .frame { height: 100%; min-height: 300px; padding: 0 40px; border-radius: 20px 0 0 20px; }
+  .form-wrapper { height: 100%; padding: 60px 40px; border-radius: 0 20px 20px 0; display: flex; align-items: center; }
+  .title { font-size: 52px; }
+  .subtitle { font-size: 22px; max-width: 90%; }
+  .logo img { width: 120px; }
+}
+
+@media (min-width: 1200px) {
   .contact-section {
     display: flex;
     flex-direction: row;
-    min-height: 400px;
-    max-height: 600px;
-    /* max-width: 1200px; */
-    width: 100%;
-    /* margin: 40px auto; */
+    height: auto;
+    min-height: auto;
+    padding: 45px 40px;
+    margin: 0px auto;
+    max-width: 1400px;
     border-radius: 20px;
-    overflow: hidden;
-    /* box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); */
-    background: #100E0E;
-    padding: 50px;
-    margin: 0 auto;
-    
-    
+    align-items: stretch;
+    gap: 0;
   }
 
   .latest-part {
     flex: 1;
     height: auto;
-    border-radius: 20px ;
+    margin-bottom: 0;
+    border-radius: 20px 0 0 20px;
     position: relative;
-    overflow: hidden;
   }
 
   .latest-part::before {
@@ -723,93 +849,21 @@ textarea {
     flex: 1;
     display: flex;
     align-items: center;
-    background: #100E0E;
   }
 
   .frame {
     height: 100%;
-    min-height: 600px;
     border-radius: 20px 0 0 20px;
-    padding: 0 40px;
-    justify-content: center;
-    max-width: none;
-  }
-
-  .form-wrapper {
-    border-radius: 0 20px 20px 0;
-    height: 100%;
-    margin: 0;
-    padding: 60px 40px;
-    border: none;
-    /* border-left: 1px solid rgba(255, 255, 255, 0.1); */
-    max-width: none;
-    display: flex;
-    align-items: center;
-    min-height: 600px;
-  }
-
-  .form {
-    max-width: 450px;
-    margin: 0 auto;
-    width: 100%;
-  }
-
-  .title {
-    font-size: 44px;
-    text-align: center;
-  }
-
-  .subtitle {
-    font-size: 18px;
-    text-align: center;
-    max-width: 90%;
-  }
-
-  .logo img {
-    width: 120px;
-  }
-
-  .submit-btn {
-    max-width: 220px;
-  }
-
-  /* Desktop specific hover effects */
-  
-
-  .form-group:hover::after,
-  .form-group:focus-within::after {
-    width: 100%;
-    opacity: 1;
-  }
-
-  .form-group:hover {
-    transform: translateX(5px);
-    transition: transform 0.3s ease;
-  }
-
-  [dir="rtl"] .form-group:hover {
-    transform: translateX(-5px);
-  }
-
-  .frame:hover .background-effects .effect-circle {
-    animation-play-state: running;
-  }
-}
-
-@media (min-width: 1024px) {
-  .contact-section {
-    min-height: 700px;
-    max-width: 1400px;
-  }
-
-  .frame {
-    min-height: 700px;
     padding: 0 60px;
   }
 
   .form-wrapper {
+    height: 100%;
+    margin: 0;
     padding: 80px 60px;
-    min-height: 700px;
+    border-radius: 0 20px 20px 0;
+    display: flex;
+    align-items: center;
   }
 
   .title {
@@ -818,101 +872,65 @@ textarea {
 
   .subtitle {
     font-size: 24px;
+    max-width: 90%;
   }
 
   .logo img {
     width: 140px;
   }
 
-  .form {
-    max-width: 500px;
-  }
-
   .form-label {
-    font-size: 1.7rem;
+    font-size: 36px;
+    line-height: 125%;
   }
 
   input, textarea {
     padding: 18px 22px;
-    font-size: 1.325rem;
+    font-size: 16px;
   }
 
   .submit-btn {
     max-width: 250px;
     padding: 20px 45px;
-    font-size: 1.5rem;
+    font-size: 20px;
   }
 
-  /* تحسينات إضافية للديسكتوب */
   .circle-1 { width: 350px; height: 350px; }
   .circle-2 { width: 250px; height: 250px; }
   .circle-3 { width: 200px; height: 200px; }
-
-  .background-effects {
-    will-change: transform;
-  }
-  
-  .effect-circle {
-    will-change: transform, opacity;
-  }
 }
 
 @media (min-width: 1440px) {
-  .contact-section {
-    min-height: 800px;
-    max-width: 1600px;
-  }
-
-  .frame {
-    min-height: 800px;
-  }
-
-  .form-wrapper {
-    min-height: 800px;
-  }
-
-  .title {
-    font-size: 72px;
-  }
-
-  .subtitle {
-    font-size: 28px;
-  }
-
-  .logo img {
-    width: 160px;
-  }
+  .contact-section { max-width: 1600px; padding: 45px 40px; }
+  .title { font-size: 72px; }
+  .subtitle { font-size: 28px; }
+  .logo img { width: 160px; }
+  input, textarea { font-size: 25px; }
+  .submit-btn { max-width: 280px; padding: 22px 50px; font-size: 22px; }
 }
 
 /* ============================================= */
-/*              Mobile Styles                    */
+/*              Reduced Motion & Accessibility   */
 /* ============================================= */
-
-@media (max-width: 767px) {
-  .latest-part { height: 350px; padding-top: 30px; }
-  .frame { padding: 0 32px; }
-  .title { font-size: 32px; }
-  .subtitle { font-size: 16px; }
-  .form-wrapper { padding: 30px 20px; }
-  .submit-btn { max-width: 180px; }
-}
-
-@media (max-width: 480px) {
-  .latest-part { height: 300px;padding-top: 0px; }
-  .title { font-size: 28px; }
-  .submit-btn { width: 100%; max-width: 100%; }
-}
-
-/* RTL Support */
-[dir="rtl"] .title-underline { left: auto; right: 0; }
-[dir="rtl"] input, [dir="rtl"] textarea { text-align: right; }
-
-/* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+  .logo.active img, .background-effects.active .effect-circle { animation: none; }
+}
+
+@media (prefers-contrast: high) {
+  .contact-section { border: 2px solid #E9480E; }
+  input:focus, textarea:focus { outline: 3px solid #E9480E; outline-offset: 2px; }
+}
+
+@media (prefers-color-scheme: light) {
+  .contact-section { background: #f5f5f5; }
+  .form-wrapper { background: rgba(255, 255, 255, 0.9); }
+  .form-label { color: #333; }
+  input, textarea { background: rgba(0, 0, 0, 0.05); border-color: rgba(0, 0, 0, 0.2); color: #333; }
+  input::placeholder, textarea::placeholder { color: rgba(0, 0, 0, 0.4); }
 }
 </style>

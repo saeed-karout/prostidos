@@ -2,8 +2,9 @@
   <div class="relative h-screen w-full overflow-hidden" ref="heroSection" :dir="locale === 'ar' ? 'rtl' : 'ltr'">
     <!-- Video Background -->
     <div class="youtube-container absolute top-0 left-0 w-full h-full z-0" ref="youtubeContainer">
-      <!-- Overlay لإخفاء شعار يوتيوب -->
-      <div class="youtube-overlay"></div>
+      <!-- Overlay مزدوج لإخفاء شعار يوتيوب -->
+      <div class="youtube-overlay youtube-overlay-top"></div>
+      <div class="youtube-overlay youtube-overlay-bottom"></div>
       
       <iframe 
         id="youtube-iframe"
@@ -31,7 +32,10 @@
       <div class="w-full flex flex-col gap-[16px]">
         <!-- Text2 with animation -->
         <div class="text2 animated-text" ref="text2El">
-          {{ $t('hero.text2') }}
+          <div v-for="(sentence, index) in splitSentences" :key="index" class="sentence-line">
+            <span class="typed-text">{{ typedTexts[index] }}</span>
+            <span class="cursor" v-if="index === currentLine && isTyping">|</span>
+          </div>
         </div>
 
         <!-- Description container -->
@@ -84,7 +88,7 @@ import { ref, onMounted, onUnmounted, nextTick, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import YouTubeModal from '@/components/YouTubeModal.vue';
 
-const { locale } = useI18n();
+const { t,locale } = useI18n();
 
 // Refs
 const heroSection = ref(null);
@@ -100,6 +104,41 @@ const bookBtn = ref(null);
 const watchBtn = ref(null);
 const particlesContainer = ref(null);
 
+const fullText = computed(() => t('hero.text2'));
+const splitSentences = computed(() => {
+  return fullText.value
+    .split(/(?<=\.)/) // يقسم بعد النقطة مباشرة (يحتفظ بالنقطة)
+    .map(s => s.trim())
+    .filter(s => s.length > 0);
+});
+
+
+const currentLine = ref(0);
+const typedTexts = ref([]); // النصوص المكتوبة حاليًا لكل سطر
+const isTyping = ref(false);
+
+async function typeWriter() {
+  typedTexts.value = splitSentences.value.map(() => ''); // إعادة تهيئة
+
+  for (let i = 0; i < splitSentences.value.length; i++) {
+    currentLine.value = i;
+    isTyping.value = true;
+
+    const sentence = splitSentences.value[i];
+    typedTexts.value[i] = '';
+
+    for (let j = 0; j < sentence.length; j++) {
+      typedTexts.value[i] += sentence[j];
+      await nextTick(); // لتحديث الـ DOM
+      await new Promise(resolve => setTimeout(resolve, 50)); // سرعة الكتابة (قابلة للتعديل)
+    }
+
+    // تأخير قصير بعد انتهاء الجملة قبل البدء بالتالية
+    await new Promise(resolve => setTimeout(resolve, 500));
+  }
+
+  isTyping.value = false;
+}
 // YouTube Config
 const VIDEO_ID = 'XXbVgVoZ-oY';
 const START_TIME = 29;
@@ -121,30 +160,35 @@ const youtubeSrc = computed(() => {
     autoplay: '1',
     mute: '1',
     controls: '0',
-    modestbranding: '1',
     playsinline: '1',
     rel: '0',
     iv_load_policy: '3',
     disablekb: '1',
     fs: '0',
-    showinfo: '0',
     enablejsapi: '1',
     start: START_TIME,
     origin: window.location.origin,
     widget_referrer: window.location.href,
     playsInline: '1',
     webkitPlaysInline: '1',
-    modestbranding: '2',
-    showinfo: '0',
-    // إضافة معاملات الجودة
-    vq: 'hd1080', // فرض دقة 1080p
-    quality: 'hd720', // معامل إضافي للجودة
-    default: 'hd720', // الدقة الافتراضية
+    // إضافة معلمات إضافية لإخفاء الاسم والشعار
+    modestbranding: '1', // 1 لإخفاء الشعار، 0 للظهور
+    showinfo: '0', // إخفاء معلومات الفيديو
+    // إخفاء شعار YouTube في الزاوية
+    branding: '0', // إخفاء العلامة التجارية
+    // إعدادات الجودة
+    vq: 'hd1080',
+    quality: 'hd720',
+    default: 'hd720',
     // تحسين التدفق للجودة العالية
-    fmt: '37', // تنسيق 720p MP4
-    // تحسين البطاقة
+    fmt: '37',
+    // إخفاء الأزرار
     cc_load_policy: '0',
-    hl: 'en', // لغة الواجهة
+    hl: 'en',
+    // إعدادات إضافية لإخفاء الواجهة
+    autohide: '1', // إخفاء عناصر التحكم تلقائياً
+    color: 'white', // لون مؤشر التشغيل
+    wmode: 'transparent', // لمنع ظهور عناصر فوقية
   });
   
   return `https://www.youtube-nocookie.com/embed/${VIDEO_ID}?${params.toString()}`;
@@ -189,7 +233,6 @@ function initYouTubePlayer() {
   }
 }
 
-
 function onYouTubeIframeAPIReady() {
   try {
     player = new YT.Player('youtube-iframe', {
@@ -202,17 +245,21 @@ function onYouTubeIframeAPIReady() {
         cc_load_policy: 0,
         iv_load_policy: 3,
         start: START_TIME,
+        // إضافة إعدادات إضافية لإخفاء الاسم
+        branding: 0,
+        wmode: 'transparent',
         // إعدادات الجودة
         vq: 'hd720',
         quality: 'hd720'
       },
       events: {
         onReady: (event) => {
-          // console.log('YouTube Player Ready on Safari:', isSafari.value);
-          
           // تعيين الجودة المفضلة
           event.target.setPlaybackQuality('hd720');
           event.target.setPlaybackRate(1);
+          
+          // إخفاء عناصر واجهة YouTube عبر CSS injection
+          hideYouTubeUI(event.target);
           
           if (isSafari.value) {
             setTimeout(() => {
@@ -234,14 +281,15 @@ function onYouTubeIframeAPIReady() {
           }
           
           startTimeChecking();
-          
-         
         },
         onStateChange: (event) => {
           if (event.data === YT.PlayerState.PLAYING) {
-            // console.log('YouTube video is playing');
-
             showFallback.value = false;
+            
+            // إعادة إخفاء الواجهة عند التشغيل
+            if (player) {
+              hideYouTubeUI(player);
+            }
             
             // عند التشغيل، تأكد من الجودة العالية
             setTimeout(() => {
@@ -272,7 +320,6 @@ function onYouTubeIframeAPIReady() {
           // console.error('YouTube Player Error:', event.data);
           showFallback.value = true;
           
-          // إذا كان هناك خطأ، حاول مع جودة أقل كبديل
           if (event.data === 2 || event.data === 5 || event.data === 100) {
             setTimeout(() => {
               if (player && player.setPlaybackQuality) {
@@ -282,8 +329,6 @@ function onYouTubeIframeAPIReady() {
           }
         },
         onPlaybackQualityChange: (event) => {
-          // console.log('Playback quality changed to:', event.data);
-          
           // إذا تغيرت الجودة إلى منخفضة، حاول رفعها
           if (event.data && !event.data.includes('hd')) {
             setTimeout(() => {
@@ -298,6 +343,76 @@ function onYouTubeIframeAPIReady() {
   } catch (error) {
     // console.error('Error initializing YouTube player:', error);
     showFallback.value = true;
+  }
+}
+
+// دالة لإخفاء واجهة YouTube عبر حقن CSS
+function hideYouTubeUI(player) {
+  try {
+    // إضافة CSS عبر JavaScript لإخفاء العناصر
+    const css = `
+      .ytp-chrome-top,
+      .ytp-title-channel,
+      .ytp-title-text,
+      .ytp-watermark,
+      .ytp-show-cards-title,
+      .ytp-cards-teaser,
+      .ytp-chrome-top-buttons,
+      .ytp-chrome-controls,
+      .ytp-gradient-top,
+      .ytp-gradient-bottom {
+        display: none !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+      }
+      
+      .youtube-iframe body {
+        overflow: hidden !important;
+      }
+      
+      /* إخفاء عنوان الفيديو في الزاوية اليسرى العليا */
+      .ytp-title {
+        display: none !important;
+      }
+      
+      /* إخفاء شعار YouTube */
+      .ytp-watermark {
+        display: none !important;
+      }
+      
+      /* إخفاء أي نصوص أو عناوين */
+      .ytp-title-link,
+      .ytp-title-channel-logo,
+      .ytp-title-expanded-heading,
+      .ytp-title-expanded-title,
+      .ytp-title-expanded-overlay,
+      .ytp-chrome-top .ytp-show-watch-later-title,
+      .ytp-chrome-top .ytp-share-button-visible {
+        display: none !important;
+      }
+    `;
+    
+    // حقن CSS في الـ iframe
+    const iframe = document.getElementById('youtube-iframe');
+    if (iframe && iframe.contentDocument) {
+      const style = iframe.contentDocument.createElement('style');
+      style.textContent = css;
+      iframe.contentDocument.head.appendChild(style);
+    }
+    
+    // محاولة أخرى عبر postMessage
+    setTimeout(() => {
+      if (player && player.hideVideoInfo) {
+        try {
+          player.hideVideoInfo();
+        } catch (e) {
+          // console.log('Could not hide video info via API');
+        }
+      }
+    }, 1000);
+    
+  } catch (error) {
+    // console.log('Error hiding YouTube UI:', error);
   }
 }
 
@@ -398,8 +513,7 @@ const createFloatingParticles = () => {
 
 let observer;
 onMounted(() => {
-  // console.log('Hero section mounted - Safari:', isSafari.value);
-  
+  typeWriter();
   initYouTubePlayer();
   
   if (isSafari.value) {
@@ -437,7 +551,59 @@ onMounted(() => {
   if (heroSection.value) observer.observe(heroSection.value);
 
   window.addEventListener('resize', createFloatingParticles);
+  
+  // إضافة CSS إضافي بعد التحميل
+  setTimeout(() => {
+    addExtraYouTubeHidingCSS();
+  }, 2000);
 });
+
+// دالة لإضافة CSS إضافي لإخفاء اسم الفيديو
+function addExtraYouTubeHidingCSS() {
+  const style = document.createElement('style');
+  style.textContent = `
+    /* CSS قوي لإخفاء اسم الفيديو في YouTube */
+    #youtube-iframe {
+      position: relative !important;
+    }
+    
+    #youtube-iframe::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 60px;
+      background: linear-gradient(to bottom, rgba(16, 14, 14, 0.95), transparent);
+      z-index: 9999;
+      pointer-events: none;
+    }
+    
+    /* إخفاء أي نصوص في أعلى الـ iframe */
+    .youtube-container iframe {
+      filter: brightness(1.1) contrast(1.1);
+    }
+    
+    /* منع ظهور أي عناصر واجهة */
+    .youtube-iframe .html5-video-player * {
+      -webkit-user-select: none !important;
+      -moz-user-select: none !important;
+      -ms-user-select: none !important;
+      user-select: none !important;
+    }
+    
+    /* إخفاء المؤشرات الزرقاء */
+    .youtube-iframe .ytp-watermark,
+    .youtube-iframe .ytp-chrome-top,
+    .youtube-iframe .ytp-title-text,
+    .youtube-iframe .ytp-title-channel {
+      display: none !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
+    }
+  `;
+  document.head.appendChild(style);
+}
 
 onUnmounted(() => {
   if (observer) observer.disconnect();
@@ -461,7 +627,7 @@ onUnmounted(() => {
 
 <style scoped>
 /* ============================================= */
-/* أنماط YouTube Container - نفس الشكل تماماً */
+/* أنماط YouTube Container - محسنة لإخفاء الاسم */
 /* ============================================= */
 .youtube-container {
   position: absolute;
@@ -473,6 +639,9 @@ onUnmounted(() => {
   z-index: 0;
   background: #000;
   isolation: isolate;
+  /* منع أي نصوص من الظهور */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .youtube-iframe {
@@ -485,40 +654,73 @@ onUnmounted(() => {
   min-height: 56.25vw;
   transform: translate(-50%, -50%);
   pointer-events: none;
-  /* إخفاء شعار YouTube */
-  filter: brightness(1.05) contrast(1.05) saturate(1.1);
+  /* إخفاء شعار YouTube والاسم */
+  filter: brightness(1.1) contrast(1.1) saturate(1.1) blur(0.3px);
   /* منع أي تأثيرات غير مرغوب فيها */
   -webkit-transform-style: preserve-3d;
   transform-style: preserve-3d;
   /* تحسينات لأداء سفاري */
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
-
-
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* تحسين للأجهزة عالية الدقة */
+  /* إخفاء الشعار */
+  -webkit-mask-image: linear-gradient(to bottom, black 97%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 97%, transparent 100%);
+  
   @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
     transform: translate(-50%, -50%) scale(0.999);
   }
 }
 
-/* Overlay لإخفاء شعار YouTube */
+/* Overlay مزدوج لإخفاء شعار YouTube والاسم */
 .youtube-overlay {
   position: absolute;
-  bottom: 0;
   left: 0;
   width: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.youtube-overlay-top {
+  top: 0;
+  height: 80px;
+  background: linear-gradient(to bottom, 
+    rgba(16, 14, 14, 1) 0%,
+    rgba(16, 14, 14, 0.95) 20%,
+    rgba(16, 14, 14, 0.7) 50%,
+    transparent 100%);
+}
+
+.youtube-overlay-bottom {
+  bottom: 0;
   height: 120px;
   background: linear-gradient(to top, 
     rgba(16, 14, 14, 1) 0%,
     rgba(16, 14, 14, 0.95) 20%,
     rgba(16, 14, 14, 0.7) 50%,
     transparent 100%);
-  z-index: 2;
+}
+
+/* إضافة طبقة إضافية لإخفاء الاسم */
+.youtube-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 70px;
+  background: linear-gradient(to bottom, 
+    rgba(16, 14, 14, 0.98) 0%,
+    rgba(16, 14, 14, 0.9) 30%,
+    rgba(16, 14, 14, 0.7) 60%,
+    transparent 100%);
+  z-index: 3;
   pointer-events: none;
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
 }
 
 /* Fallback styling */
@@ -534,41 +736,48 @@ onUnmounted(() => {
   transition: opacity 0.5s ease;
 }
 
-/* حلول خاصة لمتصفح سفاري لإخفاء الشعار */
+/* حلول خاصة لمتصفح سفاري لإخفاء الشعار والاسم */
 @media not all and (min-resolution:.001dpcm) {
   @supports (-webkit-appearance:none) and (stroke-color:transparent) {
     .youtube-iframe {
-      -webkit-transform: translate(-50%, -50%) scale(1.01);
-      transform: translate(-50%, -50%) scale(1.01);
-      /* إخفاء كامل للشعار في سفاري */
-      -webkit-mask-image: -webkit-radial-gradient(circle, white 100%, black 100%);
-      mask-image: radial-gradient(circle, white 100%, black 100%);
-      -webkit-clip-path: inset(0 0 0 0);
-      clip-path: inset(0 0 0 0);
+      -webkit-transform: translate(-50%, -50%) scale(1.02);
+      transform: translate(-50%, -50%) scale(1.02);
+      /* إخفاء كامل للشعار والاسم في سفاري */
+      -webkit-mask-image: linear-gradient(to bottom, 
+        black 85%, 
+        rgba(0, 0, 0, 0.95) 90%,
+        rgba(0, 0, 0, 0.85) 95%,
+        black 100%);
+      mask-image: linear-gradient(to bottom, 
+        black 85%, 
+        rgba(0, 0, 0, 0.95) 90%,
+        rgba(0, 0, 0, 0.85) 95%,
+        black 100%);
+      -webkit-clip-path: inset(10px 0 0 0);
+      clip-path: inset(10px 0 0 0);
     }
     
-    .youtube-overlay {
-      height: 150px;
-      background: linear-gradient(to top, 
+    .youtube-overlay-top {
+      height: 100px;
+      background: linear-gradient(to bottom, 
         rgba(16, 14, 14, 1) 0%,
-        rgba(16, 14, 14, 0.98) 30%,
-        rgba(16, 14, 14, 0.85) 60%,
+        rgba(16, 14, 14, 0.98) 40%,
+        rgba(16, 14, 14, 0.9) 70%,
         transparent 100%);
-      /* زيادة opacity في سفاري */
-      backdrop-filter: blur(2px);
-      -webkit-backdrop-filter: blur(2px);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
     }
     
     /* إضافة layer إضافية لسفاري */
     .youtube-container::after {
       content: '';
       position: absolute;
-      bottom: 0;
+      top: 0;
       left: 0;
       width: 100%;
-      height: 80px;
-      background: rgba(16, 14, 14, 0.9);
-      z-index: 3;
+      height: 90px;
+      background: rgba(16, 14, 14, 0.95);
+      z-index: 4;
       pointer-events: none;
       mix-blend-mode: multiply;
     }
@@ -579,23 +788,33 @@ onUnmounted(() => {
 @supports (-webkit-touch-callout: none) {
   .youtube-iframe {
     -webkit-overflow-scrolling: touch;
+    -webkit-mask-image: linear-gradient(to bottom, 
+      black 88%, 
+      rgba(0, 0, 0, 0.97) 92%,
+      rgba(0, 0, 0, 0.9) 96%,
+      black 100%);
+    mask-image: linear-gradient(to bottom, 
+      black 88%, 
+      rgba(0, 0, 0, 0.97) 92%,
+      rgba(0, 0, 0, 0.9) 96%,
+      black 100%);
   }
   
-  .youtube-overlay {
-    height: 130px;
-    background: linear-gradient(to top, 
+  .youtube-overlay-top {
+    height: 110px;
+    background: linear-gradient(to bottom, 
       rgba(16, 14, 14, 1) 0%,
-      rgba(16, 14, 14, 0.97) 40%,
-      rgba(16, 14, 14, 0.8) 70%,
+      rgba(16, 14, 14, 0.98) 50%,
+      rgba(16, 14, 14, 0.85) 80%,
       transparent 100%);
   }
 }
 
 /* تحسينات للتشغيل في Chrome و Firefox */
 @supports (backdrop-filter: blur(10px)) or (-webkit-backdrop-filter: blur(10px)) {
-  .youtube-overlay {
-    backdrop-filter: blur(1px);
-    -webkit-backdrop-filter: blur(1px);
+  .youtube-overlay-top {
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
   }
 }
 
@@ -604,11 +823,33 @@ onUnmounted(() => {
   /* إخفاء عناصر واجهة YouTube */
   .ytp-chrome-top,
   .ytp-show-cards-title,
-  .ytp-watermark {
+  .ytp-watermark,
+  .ytp-title-text,
+  .ytp-title-channel,
+  .ytp-title-expanded-heading,
+  .ytp-title-expanded-title {
     display: none !important;
     opacity: 0 !important;
     visibility: hidden !important;
+    pointer-events: none !important;
   }
+}
+
+/* CSS خاص لإخفاء عنوان الفيديو */
+.youtube-iframe-hider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  background: linear-gradient(to bottom, 
+    rgba(16, 14, 14, 1) 0%,
+    rgba(16, 14, 14, 0.95) 30%,
+    rgba(16, 14, 14, 0.85) 60%,
+    rgba(16, 14, 14, 0.7) 80%,
+    transparent 100%);
+  z-index: 999;
+  pointer-events: none;
 }
 
 /* ============================================= */
@@ -820,6 +1061,21 @@ onUnmounted(() => {
   box-shadow: 0 8px 25px rgba(233, 72, 14, 0.5) !important;
 }
 
+.typed-text {
+  display: inline-block;
+}
+
+.cursor {
+  animation: blink 0.7s infinite;
+  color: #E9480E;
+  font-weight: bold;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
 /* Button Text */
 .btn-contact-text,
 .btn-watch-text {
@@ -1020,8 +1276,12 @@ onUnmounted(() => {
   }
   
   /* زيادة الـ overlay على الموبايل */
-  .youtube-overlay {
-    height: 100px;
+  .youtube-overlay-top {
+    height: 90px;
+  }
+  
+  .youtube-container::before {
+    height: 80px;
   }
 }
 
@@ -1059,8 +1319,14 @@ onUnmounted(() => {
     font-size: 1.1rem;
   }
   
-  .youtube-overlay {
-    height: 80px;
+  .youtube-overlay-top {
+    height: 70px;
+  }
+  
+  .youtube-container::before {
+    height: 60px;
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
   }
 }
 
@@ -1068,10 +1334,6 @@ onUnmounted(() => {
   .content-wrapper {
     top: 35%;
   }
-
-
-
- 
 
   .text2 {
     font-size: 38px;
@@ -1095,8 +1357,12 @@ onUnmounted(() => {
                 0 0 15px rgba(233, 72, 14, 0.2) !important;
   }
   
-  .youtube-overlay {
+  .youtube-overlay-top {
     height: 60px;
+  }
+  
+  .youtube-container::before {
+    height: 50px;
   }
 }
 
@@ -1135,53 +1401,105 @@ onUnmounted(() => {
   .youtube-iframe {
     -webkit-transform: translate(-50%, -50%) scale(1.02);
     transform: translate(-50%, -50%) scale(1.02);
+    -webkit-mask-image: linear-gradient(to bottom, 
+      black 90%, 
+      rgba(0, 0, 0, 0.98) 94%,
+      rgba(0, 0, 0, 0.92) 98%,
+      black 100%);
+    mask-image: linear-gradient(to bottom, 
+      black 90%, 
+      rgba(0, 0, 0, 0.98) 94%,
+      rgba(0, 0, 0, 0.92) 98%,
+      black 100%);
   }
   
-  .youtube-overlay {
-    backdrop-filter: blur(3px);
-    -webkit-backdrop-filter: blur(3px);
+  .youtube-overlay-top {
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    height: 100px;
   }
 }
 
 /* إخفاء الشعار في Chrome */
 @media screen and (-webkit-min-device-pixel-ratio:0) {
   .youtube-iframe {
-    -webkit-mask-image: linear-gradient(to bottom, black 90%, transparent 100%);
-    mask-image: linear-gradient(to bottom, black 90%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, 
+      black 85%, 
+      rgba(0, 0, 0, 0.97) 90%,
+      rgba(0, 0, 0, 0.92) 95%,
+      black 100%);
+    mask-image: linear-gradient(to bottom, 
+      black 85%, 
+      rgba(0, 0, 0, 0.97) 90%,
+      rgba(0, 0, 0, 0.92) 95%,
+      black 100%);
   }
 }
 
-/* حل نهائي لإخفاء شعار YouTube */
+/* حل نهائي لإخفاء شعار YouTube والاسم */
 .youtube-iframe {
   /* إزالة أي علامات تجارية */
-  .ytp-watermark {
+  .ytp-watermark,
+  .ytp-title,
+  .ytp-title-text,
+  .ytp-title-channel,
+  .ytp-chrome-top,
+  .ytp-show-watch-later-title,
+  .ytp-share-button-visible {
     display: none !important;
     opacity: 0 !important;
-  }
-  
-  /* إخفاء شعار YouTube */
-  .ytp-chrome-top .ytp-title-channel-logo {
-    display: none !important;
+    visibility: hidden !important;
   }
 }
 
-/* Force hide YouTube logo */
-.youtube-iframe[src*="youtube"] {
-  /* إخفاء كامل للشعار */
+/* إضافة CSS إضافي لإخفاء الاسم */
+.youtube-title-hider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 80px;
+  background: linear-gradient(to bottom, 
+    rgba(16, 14, 14, 1) 0%,
+    rgba(16, 14, 14, 0.98) 25%,
+    rgba(16, 14, 14, 0.92) 50%,
+    rgba(16, 14, 14, 0.85) 75%,
+    rgba(16, 14, 14, 0.7) 90%,
+    transparent 100%);
+  z-index: 999;
+  pointer-events: none;
+}
+
+/* Force hide all YouTube branding */
+#youtube-iframe {
+  /* إضافة طبقة إضافية فوق الـ iframe */
   position: relative;
 }
 
-.youtube-iframe[src*="youtube"]::after {
+#youtube-iframe::after {
   content: '';
   position: absolute;
-  bottom: 0;
+  top: 0;
   left: 0;
   width: 100%;
-  height: 50px;
-  background: linear-gradient(to top, rgba(16, 14, 14, 1), transparent);
+  height: 100px;
+  background: linear-gradient(to bottom, 
+    rgba(16, 14, 14, 1) 0%,
+    rgba(16, 14, 14, 0.96) 20%,
+    rgba(16, 14, 14, 0.88) 40%,
+    rgba(16, 14, 14, 0.75) 60%,
+    rgba(16, 14, 14, 0.6) 80%,
+    transparent 100%);
+  z-index: 9999;
   pointer-events: none;
-  z-index: 1;
 }
 
 /* Reduced motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
 </style>

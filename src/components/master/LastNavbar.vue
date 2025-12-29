@@ -3,7 +3,7 @@
         <div class="main">
             <div class="flex items-center  justify-center w-full h-[72px] mx-auto">
                 <!-- Left Side: Logo (مخفي في الشاشات العادية) -->
-                <div class="flex flex-row items-center hidden md:flex" >
+                <div class=" flex-row items-center hidden md:flex" >
                     <router-link to="/" class="flex items-center">
                         <img class="w-[123.5px] h-[32px]" src="/logos/logo.svg" alt="Your Company Logo">
                     </router-link>
@@ -704,9 +704,15 @@ const navClasses = computed(() => {
     padding: 40px;
     box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
     z-index: 1;
-    /* height: 90%; */
-    overflow: auto;
+    height: auto;
+    max-height: 90vh;
+    overflow-y: auto;
     scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.desktop-menu-content::-webkit-scrollbar {
+    display: none;
 }
 
 .desktop-menu-header {
@@ -745,7 +751,7 @@ const navClasses = computed(() => {
     display: flex;
     align-items: center;
     gap: 30px;
-    padding: 25px 30px;
+    padding: 18px 20px;
     background: rgba(255, 255, 255, 0.03);
     border-radius: 20px;
     transition: all 0.3s ease;

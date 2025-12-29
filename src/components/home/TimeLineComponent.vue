@@ -31,6 +31,8 @@
                             class="card cinematic-card" 
                             @mouseenter="startTitleAnimation" 
                             @mouseleave="resetTitleAnimation"
+                            :class="{ 'rtl-card': locale === 'ar' }"
+                            :key="locale"
                         >
                             <div class="card-icon-wrapper">
                                 <img src="/icons/TimeLine/search-status.svg" class="icon" :alt="$t('timeLine.section1.title1')">
@@ -43,7 +45,6 @@
                             <div class="subtitle-card">
                                 {{ $t('timeLine.section1.desc1') }}
                             </div>
-                            
                             <div class="card-glow"></div>
                         </div>
 
@@ -52,6 +53,8 @@
                             class="card cinematic-card" 
                             @mouseenter="startTitleAnimation" 
                             @mouseleave="resetTitleAnimation"
+                            :class="{ 'rtl-card': locale === 'ar' }"
+                            :key="locale"
                         >
                             <div class="card-icon-wrapper">
                                 <img src="/icons/TimeLine/command.svg" class="icon" :alt="$t('timeLine.section1.title2')">
@@ -64,7 +67,6 @@
                             <div class="subtitle-card">
                                 {{ $t('timeLine.section1.desc2') }}
                             </div>
-                            
                             <div class="card-glow"></div>
                         </div>
                     </div>
@@ -72,7 +74,11 @@
 
                 <!-- Section 2: Pre-Production -->
                 <div class="section-content responsive-section" ref="section2Ref">
-                    <div class="card single-card cinematic-card" @mouseenter="startTitleAnimation" @mouseleave="resetTitleAnimation">
+                    <div class="card single-card cinematic-card" 
+                         @mouseenter="startTitleAnimation" 
+                         @mouseleave="resetTitleAnimation"
+                         :class="{ 'rtl-card': locale === 'ar' }"
+                         :key="locale">
                         <div class="card-icon-wrapper">
                             <img src="/icons/TimeLine/magicpen.svg" class="icon" :alt="$t('timeLine.section2.title')">
                             <div class="icon-glow"></div>
@@ -84,7 +90,6 @@
                         <div class="subtitle-card">
                             {{ $t('timeLine.section2.desc') }}
                         </div>
-                        
                         <div class="card-glow"></div>
                     </div>
                 </div>
@@ -97,6 +102,8 @@
                             class="card cinematic-card" 
                             @mouseenter="startTitleAnimation" 
                             @mouseleave="resetTitleAnimation"
+                            :class="{ 'rtl-card': locale === 'ar' }"
+                            :key="locale"
                         >
                             <div class="card-icon-wrapper">
                                 <img src="/icons/TimeLine/main-component.svg" class="icon" :alt="$t('timeLine.section3.title1')">
@@ -109,7 +116,6 @@
                             <div class="subtitle-card">
                                 {{ $t('timeLine.section3.desc1') }}
                             </div>
-                            
                             <div class="card-glow"></div>
                         </div>
 
@@ -118,6 +124,8 @@
                             class="card cinematic-card" 
                             @mouseenter="startTitleAnimation" 
                             @mouseleave="resetTitleAnimation"
+                            :class="{ 'rtl-card': locale === 'ar' }"
+                            :key="locale"
                         >
                             <div class="card-icon-wrapper">
                                 <img src="/icons/TimeLine/forward-item.svg" class="icon" :alt="$t('timeLine.section3.title2')">
@@ -130,7 +138,6 @@
                             <div class="subtitle-card">
                                 {{ $t('timeLine.section3.desc2') }}
                             </div>
-                            
                             <div class="card-glow"></div>
                         </div>
                     </div>
@@ -138,7 +145,11 @@
 
                 <!-- Section 4: Review & Feedback -->
                 <div class="section-content responsive-section" ref="section4Ref">
-                    <div class="card single-card cinematic-card" @mouseenter="startTitleAnimation" @mouseleave="resetTitleAnimation">
+                    <div class="card single-card cinematic-card" 
+                         @mouseenter="startTitleAnimation" 
+                         @mouseleave="resetTitleAnimation"
+                         :class="{ 'rtl-card': locale === 'ar' }"
+                         :key="locale">
                         <div class="card-icon-wrapper">
                             <img src="/icons/TimeLine/recovery-convert.svg" class="icon" :alt="$t('timeLine.section4.title')">
                             <div class="icon-glow"></div>
@@ -150,7 +161,6 @@
                         <div class="subtitle-card">
                             {{ $t('timeLine.section4.desc') }}
                         </div>
-                        
                         <div class="card-glow"></div>
                     </div>
                 </div>
@@ -163,6 +173,8 @@
                             class="card cinematic-card" 
                             @mouseenter="startTitleAnimation" 
                             @mouseleave="resetTitleAnimation"
+                            :class="{ 'rtl-card': locale === 'ar' }"
+                            :key="locale"
                         >
                             <div class="card-icon-wrapper">
                                 <img src="/icons/TimeLine/shapes.svg" class="icon" :alt="$t('timeLine.section5.title1')">
@@ -175,7 +187,6 @@
                             <div class="subtitle-card">
                                 {{ $t('timeLine.section5.desc1') }}
                             </div>
-                            
                             <div class="card-glow"></div>
                         </div>
 
@@ -184,6 +195,8 @@
                             class="card cinematic-card" 
                             @mouseenter="startTitleAnimation" 
                             @mouseleave="resetTitleAnimation"
+                            :class="{ 'rtl-card': locale === 'ar' }"
+                            :key="locale"
                         >
                             <div class="card-icon-wrapper">
                                 <img src="/icons/TimeLine/unlimited.svg" class="icon" :alt="$t('timeLine.section5.title2')">
@@ -196,7 +209,6 @@
                             <div class="subtitle-card">
                                 {{ $t('timeLine.section5.desc2') }}
                             </div>
-                            
                             <div class="card-glow"></div>
                         </div>
                     </div>
@@ -211,7 +223,7 @@
                     {{ $t('timeLine.footer.description') }}
                 </div>
             </div>
-            <a href="https://vimeo.com/artvelmedia" target="_blank" class="btn-container cinematic-btn" >
+            <a href="https://vimeo.com/artvelmedia" target="_blank" class="btn-container cinematic-btn">
                 {{ $t('timeLine.footer.button') }}
                 <div class="btn-glow"></div>
             </a>
@@ -239,17 +251,6 @@ const section3Ref = ref(null)
 const section4Ref = ref(null)
 const section5Ref = ref(null)
 
-// دالة للتمرير إلى المعرض
-const scrollToGallery = () => {
-    const gallerySection = document.getElementById('future-works')
-    if (gallerySection) {
-        gallerySection.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'start' 
-        })
-    }
-}
-
 // دالة لتفعيل أنيميشن العنوان عند الهوفر
 const startTitleAnimation = (event) => {
     const card = event.currentTarget
@@ -258,10 +259,8 @@ const startTitleAnimation = (event) => {
     const iconGlow = card.querySelector('.icon-glow')
     const cardGlow = card.querySelector('.card-glow')
     
-    // إعادة تعيين الأنيميشن أولاً
     gsap.killTweensOf([titleHighlight, titleText, iconGlow, cardGlow])
     
-    // أنيميشن تلون العنوان
     gsap.timeline()
         .to(titleHighlight, {
             width: '100%',
@@ -285,7 +284,6 @@ const startTitleAnimation = (event) => {
             ease: "power2.out"
         }, "-=0.4")
     
-    // تأثير رفع الكارد
     gsap.to(card, {
         y: -8,
         duration: 0.4,
@@ -322,7 +320,6 @@ const resetTitleAnimation = (event) => {
             duration: 0.3
         }, "-=0.2")
     
-    // إعادة الكارد إلى مكانه
     gsap.to(card, {
         y: 0,
         duration: 0.4,
@@ -331,7 +328,6 @@ const resetTitleAnimation = (event) => {
 }
 
 onMounted(() => {
-    // تأثير تغيير الشفافية واللون مع السكرول للشاشات الكبيرة
     if (coloredSvgRef.value) {
         gsap.fromTo(coloredSvgRef.value, 
             {
@@ -353,7 +349,6 @@ onMounted(() => {
         )
     }
 
-    // تأثير الرسم التدريجي من الأعلى إلى الأسفل للشاشات الكبيرة
     if (coloredSvgRef.value) {
         gsap.fromTo(coloredSvgRef.value, 
             {
@@ -373,7 +368,6 @@ onMounted(() => {
         )
     }
 
-    // تأثير ظهور الكروت
     gsap.utils.toArray('.responsive-section').forEach((section) => {
         gsap.fromTo(section, 
             {
@@ -395,7 +389,6 @@ onMounted(() => {
         )
     })
     
-    // أنيميشن للزر في الفوتر
     const btn = document.querySelector('.cinematic-btn')
     if (btn) {
         btn.addEventListener('mouseenter', () => {
@@ -420,7 +413,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* الـ CSS يبقى كما هو بدون تغيير */
 .main {
     display: flex;
     width: 100%;
@@ -468,10 +460,8 @@ onMounted(() => {
     align-items: center;
     gap: 64px;
     position: relative;
-    min-height: 250vh;
 }
 
-/* حاوية صورة SVG */
 .timeline-svg-container {
     position: absolute;
     left: 0;
@@ -483,7 +473,6 @@ onMounted(() => {
     overflow: hidden;
 }
 
-/* إخفاء SVG الجوال في الشاشات الكبيرة */
 .desktop-svg {
     display: block;
 }
@@ -512,7 +501,6 @@ onMounted(() => {
     clip-path: inset(100% 0% 0% 0%);
 }
 
-/* التصميم المتجاوب للكاردات */
 .sections-wrapper {
     display: flex;
     flex-direction: column;
@@ -550,6 +538,30 @@ onMounted(() => {
     overflow: hidden;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     cursor: pointer;
+}
+
+.cinematic-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: start;
+}
+
+.cinematic-card.rtl-card {
+    align-items: flex-end;
+    text-align: end;
+}
+
+.cinematic-card.rtl-card .title-card,
+.cinematic-card.rtl-card .subtitle-card {
+    width: 100%;
+    text-align: right;
+}
+
+.cinematic-card.rtl-card .title-highlight {
+    left: auto;
+    right: 0;
+    transform-origin: right;
 }
 
 .cinematic-card:hover {
@@ -609,10 +621,9 @@ onMounted(() => {
     font-size: 28px;
     font-style: normal;
     font-weight: 400;
-    line-height: 125%;
+    line-height: 150%;
     position: relative;
     display: inline-block;
-    /* overflow: hidden; */
 }
 
 .title-text {
@@ -634,7 +645,6 @@ onMounted(() => {
     transition: width 0.6s ease;
 }
 
-/* إزالة التدرج من العنصر الأب وإبقاؤه على النص مباشرة */
 .cinematic-card:hover .title-text {
     background: linear-gradient(135deg, #E9480E 0%, #FF6B35 50%, #FF8E53 100%);
     -webkit-background-clip: text;
@@ -643,20 +653,9 @@ onMounted(() => {
 }
 
 .subtitle-card {
-    color: var(--Black-black-2, #FDFDFD);
+    color: #FDFDFD;
     font-family: Inter;
     font-size: 18px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 125%;
-    position: relative;
-    z-index: 2;
-}
-
-.Deliverables {
-    color: var(--Black-black-6, #C3C3C3);
-    font-family: Inter;
-    font-size: 14px;
     font-style: normal;
     font-weight: 400;
     line-height: 125%;
@@ -715,8 +714,8 @@ onMounted(() => {
     align-items: center;
     gap: 8px;
     border-radius: 144px;
-    background: var(--Black-black-10, #343232);
-    color: var(--NOrange-norange-1, #FFF);
+    background: #343232;
+    color: #FFF;
     font-family: "Bebas Neue";
     font-size: 24px;
     font-style: normal;
@@ -747,164 +746,53 @@ onMounted(() => {
     pointer-events: none;
 }
 
-/* تصميم متجاوب للجوال */
+/* Responsive */
 @media (max-width: 1024px) {
-    .main {
-        padding: 60px 32px;
-        gap: 48px;
-    }
-    
-    .header .title {
-        font-size: 36px;
-    }
-    
-    .header .subtitle {
-        font-size: 20px;
-    }
-    
-    .content {
-        padding: 0 16px;
-        gap: 48px;
-        min-height: 200vh;
-    }
-    
-    .card-container {
-        flex-direction: column;
-        gap: 32px;
-    }
-    
-    .card {
-        max-width: 100%;
-    }
-    
-    .single-card {
-        max-width: 100%;
-    }
+    .main { padding: 60px 32px; gap: 48px; }
+    .header .title { font-size: 36px; }
+    .header .subtitle { font-size: 20px; }
+    .content { padding: 0 16px; gap: 48px; }
+    .card-container { flex-direction: column; gap: 32px; }
+    .card, .single-card { max-width: 100%; }
 }
 
 @media (max-width: 768px) {
-    .main {
-        padding: 40px 20px;
-        gap: 40px;
-    }
-    
-    .header .title {
-        font-size: 32px;
-    }
-    
-    .header .subtitle {
-        font-size: 18px;
-    }
-    
-    .content {
-        padding: 0 12px;
-        gap: 40px;
-        min-height: 200vh;
-    }
-    
-    .sections-wrapper {
-        gap: 80px;
-    }
-    
-    .title-card {
-        font-size: 24px;
-    }
-    
-    .subtitle-card {
-        font-size: 16px;
-    }
-    
-    .footer-text .title {
-        font-size: 24px;
-    }
-    
-    .footer-text .subtitle {
-        font-size: 16px;
-    }
-    
-    .footer .btn-container {
-        padding: 14px 32px;
-        font-size: 20px;
-    }
-    
-    /* تبديل SVG للجوال */
-    .desktop-svg {
-        display: none;
-    }
-    
-    .mobile-svg {
-        display: block;
-    }
-    
-    /* تحسين تأثيرات الهوفر للجوال */
-    .cinematic-card:active {
-        border-color: rgba(233, 72, 14, 0.4);
-        transform: translateY(-2px);
-    }
+    .main { padding: 40px 20px; gap: 40px; }
+    .header .title { font-size: 32px; }
+    .header .subtitle { font-size: 18px; }
+    .content { padding: 0 12px; gap: 40px; }
+    .sections-wrapper { gap: 80px; }
+    .title-card { font-size: 24px; }
+    .subtitle-card { font-size: 16px; }
+    .footer-text .title { font-size: 24px; }
+    .footer-text .subtitle { font-size: 16px; }
+    .footer .btn-container { padding: 14px 32px; font-size: 20px; }
+    .desktop-svg { display: none; }
+    .mobile-svg { display: block; }
+    .cinematic-card:active { border-color: rgba(233, 72, 14, 0.4); transform: translateY(-2px); }
 }
 
 @media (max-width: 480px) {
-    .main {
-        padding: 32px 16px;
-        gap: 32px;
-    }
-    
-    .header .title {
-        font-size: 28px;
-    }
-    
-    .header .subtitle {
-        font-size: 16px;
-    }
-    
-    .content {
-        padding: 0 8px;
-        gap: 32px;
-        min-height: 280vh;
-    }
-    
-    .sections-wrapper {
-        gap: 60px;
-    }
-    
-    .card {
-        padding: 20px;
-    }
-    
-    .title-card {
-        font-size: 22px;
-    }
-    
-    .subtitle-card {
-        font-size: 15px;
-    }
-    
-    .Deliverables {
-        font-size: 13px;
-    }
-    
-    .footer-text .title {
-        font-size: 22px;
-    }
-    
-    .footer-text .subtitle {
-        font-size: 15px;
-    }
-    
-    .footer .btn-container {
-        padding: 12px 30px;
-        font-size: 20px;
-    }
+    .main { padding: 32px 16px; gap: 32px; }
+    .header .title { font-size: 28px; }
+    .header .subtitle { font-size: 16px; }
+    .content { padding: 0 8px; gap: 32px; }
+    .sections-wrapper { gap: 60px; }
+    .card { padding: 20px; }
+    .title-card { font-size: 22px; }
+    .subtitle-card { font-size: 15px; }
+    .footer-text .title { font-size: 22px; }
+    .footer-text .subtitle { font-size: 15px; }
+    .footer .btn-container { padding: 12px 30px; font-size: 20px; }
 }
 
-/* دعم اللغة العربية */
+/* دعم اللغة العربية العام */
 :global([dir="rtl"]) .header,
 :global([dir="rtl"]) .footer-text {
     text-align: center;
 }
 
 :global([dir="rtl"]) .subtitle-card,
-:global([dir="rtl"]) .Deliverables,
 :global([dir="rtl"]) .footer-text .subtitle {
     font-family: 'Cairo', 'Inter', sans-serif;
     text-align: right;

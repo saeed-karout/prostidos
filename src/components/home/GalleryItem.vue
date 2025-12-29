@@ -260,7 +260,7 @@ const description = computed(() => {
 });
 
 const getZIndex = () => {
-  if (shouldBeBehindContent.value) return 10; // أقل من كل شيء
+  if (shouldBeBehindContent.value) return 10;
   if (isFullscreen.value && !shouldBeBehind.value) return 9999;
   if (isVisible.value) return 1000 + props.index;
   return 100 + props.index;
@@ -277,8 +277,6 @@ const handleButtonLeave = () => {
 
 // دالة معالجة أخطاء الفيديو
 const onVideoError = (e) => {
-  // console.error('Video error:', e);
-  
   if (videoEl.value && props.isFirstItem) {
     setTimeout(() => {
       videoEl.value.load();
@@ -290,7 +288,6 @@ const onVideoError = (e) => {
 // دالة عند بدء تشغيل الفيديو
 const onVideoPlaying = () => {
   isVideoPlaying.value = true;
-  // console.log('Video started playing');
 };
 
 // دالة تحميل الفيديو
@@ -299,7 +296,6 @@ const onVideoLoaded = () => {
   if (videoEl.value) {
     videoEl.value.classList.add('loaded');
     
-    // تشغيل الفيديو إذا كان العنصر الأول
     if (props.isFirstItem && (isVisible.value || isFullscreen.value)) {
       setTimeout(safePlayVideo, 300);
     }
@@ -313,11 +309,9 @@ const safePlayVideo = async () => {
   videoLoadAttempted.value = true;
   
   try {
-    // إعادة تعيين الفيديو
     videoEl.value.currentTime = 0;
     videoEl.value.load();
     
-    // الانتظار حتى يكون الفيديو جاهزاً
     await new Promise((resolve) => {
       if (videoEl.value.readyState >= 3) {
         resolve();
@@ -327,24 +321,18 @@ const safePlayVideo = async () => {
       }
     });
     
-    // تشغيل الفيديو مع معالجة الأخطاء
     const playPromise = videoEl.value.play();
     
     if (playPromise !== undefined) {
       playPromise
         .then(() => {
           isVideoPlaying.value = true;
-          // console.log('Video playing successfully');
         })
-        .catch((error) => {
-          // console.log('Autoplay prevented:', error);
-          // تشغيل الفيديو عند التفاعل مع المستخدم
+        .catch(() => {
           setupUserInteractionPlay();
         });
     }
-  } catch (error) {
-    // console.error('Video play error:', error);
-  }
+  } catch (error) {}
 };
 
 // إعداد تشغيل عند التفاعل مع المستخدم
@@ -355,13 +343,11 @@ const setupUserInteractionPlay = () => {
       videoEl.value.play()
         .then(() => {
           isVideoPlaying.value = true;
-          // console.log('Video started after user interaction');
         })
         .catch(e => console.log('Still cannot play:', e));
     }
   };
   
-  // إضافة مستمعي أحداث للتفاعل
   document.addEventListener('click', playOnInteraction, { once: true });
   document.addEventListener('touchstart', playOnInteraction, { once: true });
   document.addEventListener('keydown', playOnInteraction, { once: true });
@@ -377,8 +363,6 @@ const togglePlay = () => {
     videoEl.value.play().then(() => {
       isPlaying.value = true;
       isVideoPlaying.value = true;
-    }).catch(e => {
-      console.log('Play error:', e);
     });
   } else {
     videoEl.value.pause();
@@ -416,7 +400,6 @@ const updateItemPosition = () => {
   const elementBottom = rect.bottom;
   const elementHeight = rect.height;
   
-  // حساب نسبة الظهور
   let progress = 0;
   
   if (elementTop < windowHeight && elementBottom > 0) {
@@ -426,7 +409,6 @@ const updateItemPosition = () => {
   
   scrollProgress.value = progress;
   
-  // تحديث الحالات بناءً على نوع العنصر
   if (props.isFirstItem) {
     updateFirstItem(progress, elementTop, elementBottom, elementHeight, windowHeight);
   } else {
@@ -434,14 +416,12 @@ const updateItemPosition = () => {
   }
 };
 
-// تحديث الفيديو الأول (التلفاز)
-// تحديث الفيديو الأول (التلفاز) - نسخة محسنة
+// تحديث الفيديو الأول
 const updateFirstItem = (progress, elementTop, elementBottom, elementHeight, windowHeight) => {
   const elementCenter = elementTop + elementHeight / 2;
   const viewportCenter = windowHeight / 2;
   const distanceFromCenter = Math.abs(elementCenter - viewportCenter);
   
-  // حساب نسبة الظهور
   let progressNormalized = progress;
   
   if (elementTop < windowHeight && elementBottom > 0) {
@@ -463,20 +443,15 @@ const updateFirstItem = (progress, elementTop, elementBottom, elementHeight, win
     isExpanding.value = shouldBeExpanding;
   }
   
-  // تحسين منطق التمرير - إضافة scroll threshold
-  const scrollThreshold = 0.3; // 30% من الشاشة
-  
-  // التحقق إذا تجاوزنا الفيديو الأول تماماً
+  const scrollThreshold = 0.3;
   const isScrolledPast = elementTop < -windowHeight * 1.5;
   
   if (isScrolledPast) {
-    // إذا تجاوزنا الفيديو الأول، نخفيه خلف المحتوى
     shouldBeBehindContent.value = true;
     shouldBeBehind.value = true;
     isContentVisible.value = false;
     keepFirstVideoFullscreen.value = false;
     
-    // تخفيض opacity للفيديو
     if (tvContainer.value) {
       tvContainer.value.style.opacity = '0.15';
       tvContainer.value.style.pointerEvents = 'none';
@@ -485,30 +460,23 @@ const updateFirstItem = (progress, elementTop, elementBottom, elementHeight, win
     shouldBeBehindContent.value = false;
     shouldBeBehind.value = false;
     
-    // منطق تحسين التمرير بين الحالات
     if (elementTop < windowHeight * scrollThreshold && 
         elementBottom > windowHeight * (1 - scrollThreshold)) {
-      // الفيديو في منطقة التمرير النشطة (30% من الشاشة)
       
       if (shouldBeFullscreen && !isFullscreen.value) {
-        // دخول إلى fullscreen عندما يكون الفيديو في المركز
         enterFirstVideoFullscreen();
       }
       
       if (shouldBeExpanding && !isExpanding.value && !isFullscreen.value) {
-        // توسع الفيديو عندما يقترب من المركز
         isExpanding.value = true;
       }
     } else {
-      // الفيديو ليس في منطقة التمرير النشطة
       if (isExpanding.value && !isFullscreen.value) {
         isExpanding.value = false;
       }
     }
     
-    // إذا كنا في fullscreen وبدأنا في التمرير بعيداً
     if (isFullscreen.value && !shouldBeFullscreen && elementTop < -windowHeight * 0.2) {
-      // نخفف الفيديو قليلاً ولكن نبقيه في الخلفية
       keepFirstVideoFullscreen.value = true;
       isContentVisible.value = false;
       
@@ -517,7 +485,6 @@ const updateFirstItem = (progress, elementTop, elementBottom, elementHeight, win
       }
     }
     
-    // إذا عدنا للفيديو الأول من الأسفل
     if (keepFirstVideoFullscreen.value && elementTop > -windowHeight * 0.05) {
       keepFirstVideoFullscreen.value = false;
       if (shouldBeFullscreen || elementTop > -windowHeight * 0.01) {
@@ -528,92 +495,82 @@ const updateFirstItem = (progress, elementTop, elementBottom, elementHeight, win
       }
     }
     
-    // إذا خرجنا من fullscreen عن طريق التمرير للأعلى
     if (isFullscreen.value && elementTop > windowHeight * 0.1) {
       exitFullscreen();
     }
   }
   
-  // تطبيق التحولات على التلفاز
   if (tvContainer.value && tvFrame.value && tvScreen.value) {
     if (isScrolledPast) {
-      // وضع خلف المحتوى
       applyBehindContentStyles();
     } else if (isFullscreen.value || keepFirstVideoFullscreen.value) {
-      // وضع Fullscreen أو الإبقاء عليه
       applyFullscreenStyles();
     } else if (shouldBeExpanding || isExpanding.value) {
-      // وضع التوسع
       applyExpandingStyles(progressNormalized);
     } else {
-      // الوضع الطبيعي
       applyNormalStyles(progressNormalized);
     }
   }
   
-  // التحكم في تشغيل الفيديو - نسخة محسنة
   if (videoEl.value && props.isFirstItem) {
     if (isScrolledPast) {
-      // إيقاف الفيديو إذا تجاوزناه تماماً
       if (!videoEl.value.paused) {
         videoEl.value.pause();
       }
     } else if ((shouldBeFullscreen || keepFirstVideoFullscreen.value) && !isVideoPlaying.value) {
-      // تشغيل الفيديو عند الدخول إلى fullscreen
       if (isVideoLoaded.value || userInteracted.value) {
         safePlayVideo();
       }
     } else if (shouldBeFullscreen || keepFirstVideoFullscreen.value) {
-      // التأكد من استمرارية التشغيل أثناء fullscreen
       if (videoEl.value.paused && !videoEl.value.ended) {
-        videoEl.value.play().catch(e => {
-          console.log('Auto-resume in fullscreen failed:', e);
-        });
+        videoEl.value.play().catch(() => {});
       }
     } else if (!shouldBeFullscreen && !shouldBeExpanding) {
-      // إيقاف الفيديو عند الخروج من المنطقة النشطة
       if (!videoEl.value.paused) {
         videoEl.value.pause();
       }
     }
   }
-  
-
 };
 
 // تطبيق أنماط خلف المحتوى
 const applyBehindContentStyles = () => {
+  if (!tvContainer.value) return;
   tvContainer.value.style.position = 'fixed';
   tvContainer.value.style.top = '0';
   tvContainer.value.style.left = '0';
   tvContainer.value.style.width = '100vw';
   tvContainer.value.style.height = '100vh';
   tvContainer.value.style.transform = 'none';
-  tvContainer.value.style.opacity = '0.15'; // شفافية عالية
-  tvContainer.value.style.zIndex = '10'; // z-index منخفض
+  tvContainer.value.style.opacity = '0.15';
+  tvContainer.value.style.zIndex = '10';
   tvContainer.value.style.transition = 'all 0.5s ease';
   tvContainer.value.style.pointerEvents = 'none';
   tvContainer.value.style.filter = 'blur(2px)';
   
-  tvFrame.value.style.borderRadius = '0';
-  tvFrame.value.style.padding = '0';
-  tvFrame.value.style.background = 'transparent';
-  tvFrame.value.style.boxShadow = 'none';
-  tvFrame.value.style.transform = 'none';
+  if (tvFrame.value) {
+    tvFrame.value.style.borderRadius = '0';
+    tvFrame.value.style.padding = '0';
+    tvFrame.value.style.background = 'transparent';
+    tvFrame.value.style.boxShadow = 'none';
+    tvFrame.value.style.transform = 'none';
+  }
   
-  tvScreen.value.style.borderRadius = '0';
-  tvScreen.value.style.width = '100%';
-  tvScreen.value.style.height = '100%';
+  if (tvScreen.value) {
+    tvScreen.value.style.borderRadius = '0';
+    tvScreen.value.style.width = '100%';
+    tvScreen.value.style.height = '100%';
+  }
   
-  // إخفاء الأجزاء الزائدة
-  const tvBezel = tvFrame.value.querySelector('.tv-bezel');
-  const tvStand = tvFrame.value.querySelector('.tv-stand');
+  const tvBezel = tvFrame.value?.querySelector('.tv-bezel');
+  const tvStand = tvFrame.value?.querySelector('.tv-stand');
   if (tvBezel) tvBezel.style.display = 'none';
   if (tvStand) tvStand.style.display = 'none';
 };
 
 // تطبيق أنماط fullscreen
 const applyFullscreenStyles = () => {
+  if (!tvContainer.value) return;
   tvContainer.value.style.position = 'fixed';
   tvContainer.value.style.top = '0';
   tvContainer.value.style.left = '0';
@@ -626,19 +583,22 @@ const applyFullscreenStyles = () => {
   tvContainer.value.style.pointerEvents = 'auto';
   tvContainer.value.style.filter = 'none';
   
-  tvFrame.value.style.borderRadius = '0';
-  tvFrame.value.style.padding = '0';
-  tvFrame.value.style.background = 'transparent';
-  tvFrame.value.style.boxShadow = 'none';
-  tvFrame.value.style.transform = 'none';
+  if (tvFrame.value) {
+    tvFrame.value.style.borderRadius = '0';
+    tvFrame.value.style.padding = '0';
+    tvFrame.value.style.background = 'transparent';
+    tvFrame.value.style.boxShadow = 'none';
+    tvFrame.value.style.transform = 'none';
+  }
   
-  tvScreen.value.style.borderRadius = '0';
-  tvScreen.value.style.width = '100%';
-  tvScreen.value.style.height = '100%';
+  if (tvScreen.value) {
+    tvScreen.value.style.borderRadius = '0';
+    tvScreen.value.style.width = '100%';
+    tvScreen.value.style.height = '100%';
+  }
   
-  // إخفاء الأجزاء الزائدة
-  const tvBezel = tvFrame.value.querySelector('.tv-bezel');
-  const tvStand = tvFrame.value.querySelector('.tv-stand');
+  const tvBezel = tvFrame.value?.querySelector('.tv-bezel');
+  const tvStand = tvFrame.value?.querySelector('.tv-stand');
   if (tvBezel) tvBezel.style.display = 'none';
   if (tvStand) tvStand.style.display = 'none';
 };
@@ -648,6 +608,7 @@ const applyExpandingStyles = (progress) => {
   const scale = 0.5 + (progress * 0.5);
   const translateY = -20 + (progress * 40);
   
+  if (!tvContainer.value) return;
   tvContainer.value.style.position = 'fixed';
   tvContainer.value.style.top = '50%';
   tvContainer.value.style.left = '50%';
@@ -659,14 +620,15 @@ const applyExpandingStyles = (progress) => {
   tvContainer.value.style.filter = 'none';
   
   const borderRadius = 20 * (1 - progress * 0.8);
-  tvFrame.value.style.borderRadius = `${borderRadius}px`;
-  tvFrame.value.style.padding = '15px';
-  tvFrame.value.style.background = 'linear-gradient(145deg, rgba(25, 25, 25, 0.95) 0%, rgba(45, 45, 45, 0.9) 50%, rgba(25, 25, 25, 0.95) 100%)';
-  tvFrame.value.style.boxShadow = '0 25px 70px rgba(0, 0, 0, 0.9), 0 0 0 2px rgba(233, 72, 14, 0.4), inset 0 0 40px rgba(0, 0, 0, 0.7), inset 0 0 0 1px rgba(255, 255, 255, 0.15)';
+  if (tvFrame.value) {
+    tvFrame.value.style.borderRadius = `${borderRadius}px`;
+    tvFrame.value.style.padding = '15px';
+    tvFrame.value.style.background = 'linear-gradient(145deg, rgba(25, 25, 25, 0.95) 0%, rgba(45, 45, 45, 0.9) 50%, rgba(25, 25, 25, 0.95) 100%)';
+    tvFrame.value.style.boxShadow = '0 25px 70px rgba(0, 0, 0, 0.9), 0 0 0 2px rgba(233, 72, 14, 0.4), inset 0 0 40px rgba(0, 0, 0, 0.7), inset 0 0 0 1px rgba(255, 255, 255, 0.15)';
+  }
   
-  // إعادة إظهار الأجزاء
-  const tvBezel = tvFrame.value.querySelector('.tv-bezel');
-  const tvStand = tvFrame.value.querySelector('.tv-stand');
+  const tvBezel = tvFrame.value?.querySelector('.tv-bezel');
+  const tvStand = tvFrame.value?.querySelector('.tv-stand');
   if (tvBezel) tvBezel.style.display = 'flex';
   if (tvStand) tvStand.style.display = 'block';
 };
@@ -676,6 +638,7 @@ const applyNormalStyles = (progress) => {
   const scale = 0.3 + (progress * 0.2);
   const translateY = 50 - (progress * 50);
   
+  if (!tvContainer.value) return;
   tvContainer.value.style.position = 'fixed';
   tvContainer.value.style.top = '50%';
   tvContainer.value.style.left = '50%';
@@ -686,14 +649,15 @@ const applyNormalStyles = (progress) => {
   tvContainer.value.style.zIndex = '1000';
   tvContainer.value.style.filter = 'none';
   
-  tvFrame.value.style.borderRadius = '20px';
-  tvFrame.value.style.padding = '15px';
-  tvFrame.value.style.background = 'linear-gradient(145deg, rgba(25, 25, 25, 0.95) 0%, rgba(45, 45, 45, 0.9) 50%, rgba(25, 25, 25, 0.95) 100%)';
-  tvFrame.value.style.boxShadow = '0 25px 70px rgba(0, 0, 0, 0.9), 0 0 0 2px rgba(233, 72, 14, 0.4), inset 0 0 40px rgba(0, 0, 0, 0.7), inset 0 0 0 1px rgba(255, 255, 255, 0.15)';
+  if (tvFrame.value) {
+    tvFrame.value.style.borderRadius = '20px';
+    tvFrame.value.style.padding = '15px';
+    tvFrame.value.style.background = 'linear-gradient(145deg, rgba(25, 25, 25, 0.95) 0%, rgba(45, 45, 45, 0.9) 50%, rgba(25, 25, 25, 0.95) 100%)';
+    tvFrame.value.style.boxShadow = '0 25px 70px rgba(0, 0, 0, 0.9), 0 0 0 2px rgba(233, 72, 14, 0.4), inset 0 0 40px rgba(0, 0, 0, 0.7), inset 0 0 0 1px rgba(255, 255, 255, 0.15)';
+  }
   
-  // إعادة إظهار الأجزاء
-  const tvBezel = tvFrame.value.querySelector('.tv-bezel');
-  const tvStand = tvFrame.value.querySelector('.tv-stand');
+  const tvBezel = tvFrame.value?.querySelector('.tv-bezel');
+  const tvStand = tvFrame.value?.querySelector('.tv-stand');
   if (tvBezel) tvBezel.style.display = 'flex';
   if (tvStand) tvStand.style.display = 'block';
 };
@@ -706,24 +670,17 @@ const enterFirstVideoFullscreen = () => {
     isFullscreen.value = true;
     isFirstVideoCompleted.value = true;
     
-    // تطبيق تأثيرات fullscreen
     if (tvContainer.value && videoEl.value) {
       videoEl.value.style.objectFit = 'cover';
       videoEl.value.style.opacity = '1';
     }
     
-    // إظهار المحتوى بعد التأثير
     setTimeout(() => {
       isContentVisible.value = true;
       isTransitioning.value = false;
       
-      // تشغيل الفيديو وضمان الاستمرارية
       if (videoEl.value) {
-        videoEl.value.play().catch(e => {
-          console.log('Fullscreen play error:', e);
-        });
-        
-        // بدء مراقبة التشغيل
+        videoEl.value.play().catch(() => {});
         ensureVideoPlayback();
       }
     }, 200);
@@ -736,7 +693,6 @@ const updateOtherItems = (progress, elementTop, elementBottom, elementHeight, wi
   const shouldBeVisible = progress > 0.05;
   const shouldTransition = progress > 0.15 && progress < 0.25;
   
-  // إذا كنا في آخر فيديو وبدأنا نخرج منه
   const isScrolledPast = elementTop < -windowHeight * 0.5;
   
   if (shouldBeVisible !== isVisible.value) {
@@ -755,12 +711,10 @@ const updateOtherItems = (progress, elementTop, elementBottom, elementHeight, wi
     isTransitioning.value = shouldTransition;
   }
   
-  // تطبيق تأثير التلاشي
   if (videoContainer.value) {
     const opacity = shouldBeFullscreen ? 1 : Math.min(progress * 2, 1);
     videoContainer.value.style.opacity = opacity.toString();
     
-    // إذا تجاوزنا الفيديو، نخفيه
     if (isScrolledPast) {
       videoContainer.value.style.opacity = '0';
     }
@@ -772,24 +726,21 @@ const ensureVideoPlayback = () => {
   
   const checkAndPlay = () => {
     if (videoEl.value && (videoEl.value.paused || videoEl.value.ended)) {
-      videoEl.value.play().catch(e => {
-        console.log('Video auto-playback failed:', e);
-        // إعادة المحاولة بعد 500 مللي ثانية
+      videoEl.value.play().catch(() => {
         setTimeout(checkAndPlay, 500);
       });
     }
   };
   
-  // التحقق من التشغيل كل 2 ثانية
   const playbackInterval = setInterval(checkAndPlay, 2000);
   
-  // تنظيف عند الخروج من fullscreen
   watch(() => isFullscreen.value, (newVal) => {
     if (!newVal) {
       clearInterval(playbackInterval);
     }
   });
 };
+
 // دخول fullscreen مع تأثير انتقال (للفيديوهات الأخرى)
 const enterFullscreenWithTransition = () => {
   isTransitioning.value = true;
@@ -797,23 +748,16 @@ const enterFullscreenWithTransition = () => {
   setTimeout(() => {
     isFullscreen.value = true;
     
-    // تطبيق تأثير الفيديو الكامل
     if (videoContainer.value && videoEl.value) {
       videoContainer.value.classList.add('fullscreen');
       videoEl.value.style.objectFit = 'cover';
       
-      // تشغيل الفيديو وضمان الاستمرارية
       if (videoEl.value.paused && isVideoLoaded.value) {
-        videoEl.value.play().catch(e => {
-          console.log('Video play error in fullscreen:', e);
-        });
-        
-        // بدء مراقبة التشغيل
+        videoEl.value.play().catch(() => {});
         ensureVideoPlayback();
       }
     }
     
-    // إظهار المحتوى بعد التأثير
     setTimeout(() => {
       isContentVisible.value = true;
       isTransitioning.value = false;
@@ -821,9 +765,8 @@ const enterFullscreenWithTransition = () => {
   }, 150);
 };
 
-// الخروج من fullscreen (للفيديوهات الأخرى فقط)
+// الخروج من fullscreen
 const exitFullscreen = () => {
-  // فقط الفيديوهات غير الأولى تخرج من fullscreen
   if (!props.isFirstItem) {
     isFullscreen.value = false;
     isContentVisible.value = false;
@@ -833,7 +776,6 @@ const exitFullscreen = () => {
       videoContainer.value.classList.remove('fullscreen');
     }
     
-    // إيقاف الفيديو
     if (videoEl.value && !videoEl.value.paused) {
       videoEl.value.pause();
     }
@@ -856,7 +798,6 @@ const handleResize = () => {
 
 // دورة الحياة
 onMounted(() => {
-  // إعداد أولي
   if (props.isFirstItem && tvContainer.value) {
     tvContainer.value.style.opacity = '0';
     tvContainer.value.style.transform = 'translate(-50%, 50%) scale(0.3)';
@@ -864,18 +805,14 @@ onMounted(() => {
     videoContainer.value.style.opacity = '0';
   }
   
-  // إضافة مستمعي الأحداث
   window.addEventListener('scroll', handleScroll, { passive: true });
   window.addEventListener('resize', handleResize);
   window.addEventListener('touchmove', handleScroll, { passive: true });
   
-  // إعداد تفاعل المستخدم
   setupUserInteractionPlay();
   
-  // تحديث أولي
   setTimeout(updateItemPosition, 100);
   
-  // تشغيل الفيديو الأول بعد تحميل الصفحة
   if (props.isFirstItem) {
     setTimeout(() => {
       if (videoEl.value) {
@@ -885,21 +822,13 @@ onMounted(() => {
     }, 1500);
   }
   
-  // إعداد mute افتراضي
   if (videoEl.value) {
     videoEl.value.muted = true;
     isMuted.value = true;
   }
-  
-  // تفعيل الـ scroll snapping
-  // if (galleryItem.value) {
-  //   galleryItem.value.style.scrollSnapAlign = 'start';
-  //   galleryItem.value.style.scrollSnapStop = 'always';
-  // }
 });
 
 onUnmounted(() => {
-  // إزالة مستمعي الأحداث
   if (rafId) {
     cancelAnimationFrame(rafId);
   }
@@ -907,7 +836,6 @@ onUnmounted(() => {
   window.removeEventListener('resize', handleResize);
   window.removeEventListener('touchmove', handleScroll);
   
-  // إيقاف الفيديو
   if (videoEl.value) {
     videoEl.value.pause();
     videoEl.value.src = '';
@@ -915,985 +843,955 @@ onUnmounted(() => {
   }
 });
 
-// مراقبة تغيير اللغة
 watch(locale, () => {
   setTimeout(updateItemPosition, 100);
 });
 </script>
 
 <style scoped>
-/* الأساسيات */
-.future-works-section {
-  contain: layout style paint;
-}
-
-.gallery-item {
-  position: relative;
-  width: 100%;
-  height: 100vh;
-  min-height: 100vh;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  isolation: isolate;
-  /* scroll-snap-align: start; */
-  /* scroll-snap-stop: always; */
-}
-
-.gallery-item.is-first-item {
-  height: 100vh; /* إرجاع للارتفاع الطبيعي */
-  min-height: 100vh;
-}
-
-.gallery-item.behind-content {
-  z-index: 10 !important;
-  pointer-events: none;
-}
-
-/* حاوية التلفاز (للفيديو الأول فقط) */
-.tv-container {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  width: 40%;
-  max-width: 800px;
-  min-width: 300px;
-  aspect-ratio: 16/9;
-  transform: translate(-50%, 50%) scale(0.3);
-  transform-origin: center center;
-  z-index: 1000;
-  opacity: 0;
-  pointer-events: auto;
-  will-change: transform, opacity, width, height;
-  transition: all 0.4s cubic-bezier(0.215, 0.61, 0.355, 1);
-  transform-style: preserve-3d;
-  backface-visibility: hidden;
-}
-
-.tv-container::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.3);
-  pointer-events: none;
-  z-index: 1;
-}
-
-.tv-container.expanding {
-  z-index: 2000;
-}
-
-/* وضع خلف المحتوى */
-.tv-container.behind {
-  opacity: 0.15 !important;
-  z-index: 10 !important;
-  pointer-events: none !important;
-  filter: blur(2px) !important;
-}
-
-/* وضع fullscreen */
-.tv-container.fullscreen,
-.tv-container.keep-fullscreen {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  max-width: none !important;
-  aspect-ratio: unset !important;
-  transform: none !important;
-  z-index: 9998 !important;
-  border-radius: 0 !important;
-  opacity: 1 !important;
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  background: #000 !important;
-  pointer-events: auto !important;
-  filter: none !important;
-}
-
-/* إصلاح خاص للفيديو في fullscreen */
-.tv-container.fullscreen .tv-video,
-.tv-container.keep-fullscreen .tv-video {
-  opacity: 1 !important;
-  visibility: visible !important;
-  display: block !important;
-  object-fit: cover !important;
-  object-position: center !important;
-  z-index: 1 !important;
-}
-
-/* إخفاء إطار التلفاز في fullscreen */
-.tv-container.fullscreen .tv-frame,
-.tv-container.keep-fullscreen .tv-frame {
-  border-radius: 0 !important;
-  padding: 0 !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  width: 100% !important;
-  height: 100% !important;
-}
-
-.tv-container.fullscreen .tv-screen,
-.tv-container.keep-fullscreen .tv-screen {
-  border-radius: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  background: transparent !important;
-}
-
-/* إخفاء التأثيرات في fullscreen */
-.tv-container.fullscreen .tv-screen-overlay,
-.tv-container.fullscreen .tv-reflection,
-.tv-container.fullscreen .tv-scanlines,
-.tv-container.keep-fullscreen .tv-screen-overlay,
-.tv-container.keep-fullscreen .tv-reflection,
-.tv-container.keep-fullscreen .tv-scanlines {
-  display: none !important;
-  opacity: 0 !important;
-}
-
-/* إطار التلفاز */
-.tv-frame {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(145deg, 
-    rgba(25, 25, 25, 0.95) 0%,
-    rgba(45, 45, 45, 0.9) 50%,
-    rgba(25, 25, 25, 0.95) 100%
-  );
-  border-radius: 20px;
-  padding: 15px;
-  box-shadow: 
-    0 25px 70px rgba(0, 0, 0, 0.9),
-    0 0 0 2px rgba(233, 72, 14, 0.4),
-    inset 0 0 40px rgba(0, 0, 0, 0.7),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.15);
-  overflow: hidden;
-  transition: all 0.3s ease;
-}
-
-/* شاشة التلفاز */
-.tv-screen {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  background: #000;
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-/* الفيديو */
-.tv-video {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  opacity: 0;
-  transition: opacity 0.6s ease;
-  background-color: #000;
-}
-
-.tv-video.loaded {
-  opacity: 1 !important;
-}
-
-/* تأثير تحميل للفيديو */
-.tv-screen::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
-  background-size: 200% 100%;
-  animation: loading 1.5s infinite;
-  z-index: 1;
-  opacity: 0.5;
-  display: none;
-}
-
-.tv-video:not(.loaded) ~ .tv-screen::before {
-  display: block;
-}
-
-@keyframes loading {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-
-/* حاوية الفيديو العادية (للفيديوهات الباقية) */
-.video-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 100;
-  opacity: 0;
-  transition: all 0.6s cubic-bezier(0.77, 0, 0.175, 1);
-  pointer-events: none;
-}
-
-.video-container.fullscreen {
-  opacity: 1 !important;
-  z-index: 9999 !important;
-  pointer-events: auto;
-}
-
-.fullscreen-video {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  opacity: 0;
-  transition: opacity 0.8s ease;
-  background-color: #000;
-}
-
-.video-container.fullscreen .fullscreen-video {
-  opacity: 1;
-  object-fit: cover;
-}
-
-.video-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    45deg,
-    rgba(0, 0, 0, 0.3) 0%,
-    transparent 50%,
-    rgba(0, 0, 0, 0.3) 100%
-  );
-  pointer-events: none;
-}
-
-.video-glow {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 80%;
-  height: 80%;
-  background: radial-gradient(
-    ellipse at center,
-    rgba(233, 72, 14, 0.1) 0%,
-    transparent 70%
-  );
-  filter: blur(60px);
-  opacity: 0;
-  transition: opacity 0.5s ease;
-}
-
-.video-container.fullscreen .video-glow {
-  opacity: 0.4;
-}
-
-/* تأثيرات شاشة التلفاز */
-.tv-screen-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    135deg,
-    rgba(0, 0, 0, 0.15) 0%,
-    transparent 50%,
-    rgba(0, 0, 0, 0.15) 100%
-  );
-  pointer-events: none;
-  z-index: 2;
-}
-
-.tv-reflection {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    135deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.05) 50%,
-    transparent 100%
-  );
-  pointer-events: none;
-  z-index: 3;
-}
-
-.tv-scanlines {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 1px,
-    rgba(0, 0, 0, 0.05) 1px,
-    rgba(0, 0, 0, 0.05) 2px
-  );
-  pointer-events: none;
-  z-index: 4;
-  animation: scanlines 10s linear infinite;
-  opacity: 0.7;
-  mix-blend-mode: overlay;
-}
-
-@keyframes scanlines {
-  0% { background-position: 0 0; }
-  100% { background-position: 0 4px; }
-}
-
-/* إطار التلفاز السفلي */
-.tv-bezel {
-  position: absolute;
-  bottom: -50px;
-  left: 0;
-  width: 100%;
-  height: 50px;
-  background: linear-gradient(
-    to top,
-    rgba(35, 35, 35, 0.95) 0%,
-    rgba(25, 25, 25, 0.98) 100%
-  );
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 25px;
-  border-radius: 0 0 20px 20px;
-  z-index: 1;
-}
-
-.tv-brand {
-  color: rgba(233, 72, 14, 0.9);
-  font-family: 'Inter', sans-serif;
-  font-size: 16px;
-  font-weight: 600;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-.tv-controls {
-  display: flex;
-  gap: 20px;
-}
-
-.tv-control {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: rgba(233, 72, 14, 0.7);
-  position: relative;
-  cursor: pointer !important;
-  transition: all 0.3s ease;
-  pointer-events: auto !important;
-}
-
-.tv-control:hover {
-  background: rgba(233, 72, 14, 1);
-  transform: scale(1.3);
-  box-shadow: 0 0 10px rgba(233, 72, 14, 0.5);
-}
-
-.tv-control::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 4px;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.5);
-  border-radius: 50%;
-}
-
-.tv-stand {
-  position: absolute;
-  bottom: -80px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 140px;
-  height: 25px;
-  background: linear-gradient(
-    to bottom,
-    rgba(40, 40, 40, 0.95) 0%,
-    rgba(20, 20, 20, 0.98) 100%
-  );
-  border-radius: 4px 4px 12px 12px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
-}
-
-/* طبقة الانتقال */
-.transition-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: #000;
-  z-index: 9998;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-}
-
-.transition-overlay.active {
-  opacity: 0.7;
-  animation: transitionPulse 0.6s ease;
-}
-
-@keyframes transitionPulse {
-  0%, 100% { opacity: 0.7; }
-  50% { opacity: 0.9; }
-}
-
-/* المحتوى */
-.content {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 9999;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 40px;
-  width: 90%;
-  max-width: 1200px;
-  pointer-events: none;
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.content.visible {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: all !important;
-  z-index: 9999 !important;
-  animation: contentReveal 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-
-@keyframes contentReveal {
-  from {
+  /* ============================================= */
+  /*              Base Styles                      */
+  /* ============================================= */
+  .future-works-section {
+    contain: layout style paint;
+  }
+  
+  .gallery-item {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  
+  .gallery-item.is-first-item {
+    height: 100vh;
+    min-height: 100vh;
+  }
+  
+  .gallery-item.behind-content {
+    z-index: 10 !important;
+    pointer-events: none;
+  }
+  
+  /* حاوية التلفاز */
+  .tv-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 40%;
+    max-width: 800px;
+    min-width: 300px;
+    aspect-ratio: 16/9;
+    transform: translate(-50%, 50%) scale(0.3);
+    transform-origin: center center;
+    z-index: 1000;
     opacity: 0;
-    transform: translate(-50%, -40%);
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, -50%);
-  }
-}
-
-/* إصلاح تفاعل العناصر في المحتوى */
-.content.visible * {
-  pointer-events: auto !important;
-}
-
-/* العنوان */
-.title-wrapper {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
-
-.title {
-  position: relative;
-  color: #FFF;
-  font-family: "Bebas Neue", sans-serif;
-  font-size: clamp(60px, 8vw, 100px);
-  font-weight: 400;
-  line-height: 1;
-  letter-spacing: -1px;
-  text-align: center;
-  transition: transform 0.3s ease;
-  cursor: default;
-}
-
-.content.visible .title:hover {
-  transform: scale(1.02);
-}
-
-.title-text {
-  position: relative;
-  z-index: 3;
-  display: block;
-  text-shadow: 
-    0 2px 4px rgba(0, 0, 0, 0.8),
-    0 4px 12px rgba(0, 0, 0, 0.6),
-    0 0 30px rgba(233, 72, 14, 0.4),
-    0 0 60px rgba(233, 72, 14, 0.2);
-}
-
-.title-shadow {
-  position: absolute;
-  top: 4px;
-  left: 4px;
-  color: rgba(0, 0, 0, 0.3);
-  z-index: 1;
-  filter: blur(4px);
-}
-
-.title-glow {
-  position: absolute;
-  top: 0;
-  left: 0;
-  color: rgba(233, 72, 14, 0.3);
-  z-index: 2;
-  filter: blur(15px);
-  animation: titleGlowPulse 4s ease-in-out infinite;
-}
-
-@keyframes titleGlowPulse {
-  0%, 100% { opacity: 0.3; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(1.05); }
-}
-
-.title-underline {
-  width: 200px;
-  height: 3px;
-  background: linear-gradient(90deg, 
-    transparent, 
-    var(--primary-color), 
-    transparent);
-  margin-top: 15px;
-  border-radius: 2px;
-}
-
-/* العنوان الفرعي */
-.subtitle-wrapper {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  margin-top: 10px;
-}
-
-.subtitle {
-  color: #FFF;
-  font-family: 'Inter', sans-serif;
-  font-size: clamp(18px, 2.5vw, 28px);
-  font-weight: 500;
-  line-height: 1.4;
-  letter-spacing: 8px;
-  text-transform: uppercase;
-  text-align: center;
-  position: relative;
-  cursor: default;
-}
-
-.subtitle-text {
-  position: relative;
-  z-index: 2;
-  text-shadow: 
-    0 1px 2px rgba(0, 0, 0, 0.8),
-    0 2px 8px rgba(0, 0, 0, 0.6);
-}
-
-.subtitle-decoration {
-  position: absolute;
-  right: -30px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 20px;
-  color: var(--primary-color);
-  opacity: 0.7;
-  animation: spinDecoration 10s linear infinite;
-}
-
-@keyframes spinDecoration {
-  0% { transform: translateY(-50%) rotate(0deg); }
-  100% { transform: translateY(-50%) rotate(360deg); }
-}
-
-.subtitle-line {
-  width: 150px;
-  height: 1px;
-  background: linear-gradient(90deg, 
-    transparent, 
-    rgba(255, 255, 255, 0.3), 
-    transparent);
-}
-
-/* الوصف */
-.description-wrapper {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  margin-top: 24px;
-  max-width: 800px;
-  text-align: center;
-}
-
-.description {
-  color: rgba(255, 255, 255, 0.85);
-  font-family: 'Inter', sans-serif;
-  font-size: clamp(16px, 1.8vw, 20px);
-  font-weight: 300;
-  line-height: 1.6;
-  position: relative;
-  padding: 0 20px;
-  cursor: default;
-}
-
-.description-text {
-  position: relative;
-  z-index: 2;
-  display: block;
-  text-shadow: 
-    0 1px 2px rgba(0, 0, 0, 0.6),
-    0 2px 6px rgba(0, 0, 0, 0.4);
-}
-
-.description-line {
-  width: 300px;
-  height: 1px;
-  background: linear-gradient(90deg, 
-    transparent, 
-    rgba(233, 72, 14, 0.5), 
-    transparent);
-  border-radius: 1px;
-}
-
-/* الزر */
-.btn-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-  text-decoration: none;
-  position: relative;
-  z-index: 10001;
-  pointer-events: auto !important;
-  cursor: pointer !important;
-}
-
-.btn {
-  position: relative;
-  height: 65px;
-  padding: 18px 48px;
-  border-radius: 144px;
-  background: linear-gradient(135deg, 
-    rgba(52, 50, 50, 0.9) 0%, 
-    rgba(28, 26, 26, 0.9) 100%);
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  border: 2px solid transparent;
-  cursor: pointer !important;
-  transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  backdrop-filter: blur(10px);
-  box-shadow: 
-    0 10px 30px rgba(0, 0, 0, 0.4),
-    0 0 40px rgba(233, 72, 14, 0.1),
-    inset 0 0 20px rgba(255, 255, 255, 0.05);
-  pointer-events: auto !important;
-}
-
-.btn:hover {
-  transform: translateY(-5px) scale(1.05);
-  background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.95) 0%, 
-    rgba(255, 255, 255, 0.9) 100%);
-  box-shadow: 
-    0 20px 40px rgba(233, 72, 14, 0.3),
-    0 0 60px rgba(233, 72, 14, 0.2),
-    inset 0 0 30px rgba(255, 255, 255, 0.1);
-  border: 2px solid var(--primary-color);
-}
-
-.btn:hover .btn-text {
-  color: #000;
-  letter-spacing: 2px;
-}
-
-.btn-wrapper:hover .btn {
-  transform: translateY(-3px) scale(1.03);
-  box-shadow: 
-    0 15px 30px rgba(233, 72, 14, 0.4),
-    0 0 50px rgba(233, 72, 14, 0.3),
-    inset 0 0 20px rgba(255, 255, 255, 0.1);
-}
-
-.btn-text {
-  color: var(--accent-color);
-  font-family: "Bebas Neue", sans-serif;
-  font-size: 24px;
-  font-weight: 400;
-  line-height: 1.2;
-  letter-spacing: 1px;
-  transition: all 0.3s ease;
-  color: white;
-  position: relative;
-  z-index: 3;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-.btn-glow {
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  background: linear-gradient(135deg, 
-    rgba(233, 72, 14, 0.2) 0%,
-    rgba(233, 72, 14, 0.1) 50%,
-    rgba(233, 72, 14, 0.2) 100%);
-  border-radius: 144px;
-  z-index: 1;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.btn:hover .btn-glow {
-  opacity: 1;
-}
-
-.btn-border {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border: 2px solid transparent;
-  border-radius: 144px;
-  background: linear-gradient(135deg, 
-    rgba(233, 72, 14, 0.5) 0%,
-    rgba(233, 72, 14, 0.3) 50%,
-    rgba(233, 72, 14, 0.5) 100%);
-  background-clip: padding-box;
-  z-index: 2;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.btn:hover .btn-border {
-  opacity: 1;
-}
-
-.btn-shine {
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(
-    to right,
-    transparent 0%,
-    rgba(255, 255,255, 0.1) 50%,
-    transparent 100%
-  );
-  transform: rotate(30deg);
-  z-index: 3;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.btn:hover .btn-shine {
-  opacity: 1;
-  animation: shine 1s ease;
-}
-
-@keyframes shine {
-  0% { left: -50%; }
-  100% { left: 150%; }
-}
-
-/* تحسينات للاستجابة */
-@media (max-width: 1200px) {
-  .tv-container {
-    width: 50% !important;
+    pointer-events: auto;
+    will-change: transform, opacity, width, height;
+    transition: all 0.4s cubic-bezier(0.215, 0.61, 0.355, 1);
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   
   .tv-container.expanding {
-    width: 70% !important;
-  }
-}
-
-@media (max-width: 768px) {
-  .gallery-item.is-first-item {
-    height: 100vh;
-    min-height: 100vh;
+    z-index: 2000;
   }
   
-  .tv-container {
-    width: 85% !important;
+  .tv-container.behind {
+    opacity: 0.15 !important;
+    z-index: 10 !important;
+    pointer-events: none !important;
+    filter: blur(2px) !important;
   }
   
-  .tv-container.expanding {
+  /* وضع fullscreen مع مركزية مثالية */
+  .tv-container.fullscreen,
+  .tv-container.keep-fullscreen {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: none !important;
+    aspect-ratio: unset !important;
+    transform: none !important;
+    z-index: 9998 !important;
+    border-radius: 0 !important;
+    opacity: 1 !important;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    background: #000 !important;
+    pointer-events: auto !important;
+    filter: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  
+  /* الفيديو في fullscreen */
+  .tv-container.fullscreen .tv-video,
+  .tv-container.keep-fullscreen .tv-video {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
     width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    transform: translate(-50%, -50%) !important;
+    opacity: 1 !important;
   }
   
-  .tv-frame {
-    padding: 10px;
-    border-radius: 15px;
-  }
-  
-  .tv-bezel {
-    height: 40px;
-    bottom: -40px;
-    padding: 0 15px;
-  }
-  
-  .tv-brand {
-    font-size: 14px;
-  }
-  
-  .tv-stand {
-    bottom: -60px;
-    width: 100px;
-    height: 20px;
-  }
-  
-  .content {
-    width: 95%;
-    gap: 30px;
-  }
-  
-  .title {
-    font-size: clamp(40px, 6vw, 60px);
-  }
-  
-  .subtitle {
-    font-size: clamp(16px, 2vw, 20px);
-    letter-spacing: 6px;
-  }
-  
-  .description {
-    font-size: clamp(14px, 1.5vw, 18px);
-  }
-  
-  .btn {
-    height: 55px;
-    padding: 16px 32px;
-  }
-  
-  .btn-text {
-    font-size: 20px;
-  }
-  
-  .title-underline {
-    width: 150px;
-  }
-  
-  .subtitle-line {
-    width: 100px;
-  }
-  
-  .description-line {
-    width: 200px;
-  }
-}
-
-@media (max-width: 480px) {
-  .gallery-item.is-first-item {
-    height: 100vh;
-    min-height: 100vh;
-  }
-  
-  .tv-container {
+  /* إطار التلفاز في fullscreen */
+  .tv-container.fullscreen .tv-frame,
+  .tv-container.keep-fullscreen .tv-frame {
+    border-radius: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
     width: 100% !important;
+    height: 100% !important;
   }
   
+  /* الشاشة في fullscreen */
+  .tv-container.fullscreen .tv-screen,
+  .tv-container.keep-fullscreen .tv-screen {
+    border-radius: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: transparent !important;
+    position: relative !important;
+    overflow: hidden !important;
+  }
+  
+  /* إخفاء التأثيرات في fullscreen */
+  .tv-container.fullscreen .tv-screen-overlay,
+  .tv-container.fullscreen .tv-reflection,
+  .tv-container.fullscreen .tv-scanlines,
+  .tv-container.keep-fullscreen .tv-screen-overlay,
+  .tv-container.keep-fullscreen .tv-reflection,
+  .tv-container.keep-fullscreen .tv-scanlines {
+    display: none !important;
+  }
+  
+  /* إطار التلفاز */
   .tv-frame {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(145deg, 
+      rgba(25, 25, 25, 0.95) 0%,
+      rgba(45, 45, 45, 0.9) 50%,
+      rgba(25, 25, 25, 0.95) 100%
+    );
+    border-radius: 20px;
+    padding: 15px;
+    box-shadow: 
+      0 25px 70px rgba(0, 0, 0, 0.9),
+      0 0 0 2px rgba(233, 72, 14, 0.4),
+      inset 0 0 40px rgba(0, 0, 0, 0.7),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+  
+  /* شاشة التلفاز */
+  .tv-screen {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: #000;
     border-radius: 12px;
-    padding: 8px;
+    overflow: hidden;
   }
   
+  /* الفيديو */
+  .tv-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    background-color: #000;
+  }
+  
+  .tv-video.loaded {
+    opacity: 1 !important;
+  }
+  
+  /* حاوية الفيديو العادية */
+  .video-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 100;
+    opacity: 0;
+    transition: all 0.6s cubic-bezier(0.77, 0, 0.175, 1);
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  
+  .video-container.fullscreen {
+    opacity: 1 !important;
+    z-index: 9999 !important;
+    pointer-events: auto;
+  }
+  
+  .fullscreen-video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: opacity 0.8s ease;
+    background-color: #000;
+  }
+  
+  .video-container.fullscreen .fullscreen-video {
+    opacity: 1;
+  }
+  
+  /* تأثيرات الفيديو العادي */
+  .video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      45deg,
+      rgba(0, 0, 0, 0.3) 0%,
+      transparent 50%,
+      rgba(0, 0, 0, 0.3) 100%
+    );
+    pointer-events: none;
+  }
+  
+  .video-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    height: 80%;
+    background: radial-gradient(
+      ellipse at center,
+      rgba(233, 72, 14, 0.1) 0%,
+      transparent 70%
+    );
+    filter: blur(60px);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  
+  .video-container.fullscreen .video-glow {
+    opacity: 0.4;
+  }
+  
+  /* تأثيرات شاشة التلفاز */
+  .tv-screen-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      135deg,
+      rgba(0, 0, 0, 0.15) 0%,
+      transparent 50%,
+      rgba(0, 0, 0, 0.15) 100%
+    );
+    pointer-events: none;
+    z-index: 2;
+  }
+  
+  .tv-reflection {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      135deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.05) 50%,
+      transparent 100%
+    );
+    pointer-events: none;
+    z-index: 3;
+  }
+  
+  .tv-scanlines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 1px,
+      rgba(0, 0, 0, 0.05) 1px,
+      rgba(0, 0, 0, 0.05) 2px
+    );
+    pointer-events: none;
+    z-index: 4;
+    animation: scanlines 10s linear infinite;
+    opacity: 0.7;
+    mix-blend-mode: overlay;
+  }
+  
+  @keyframes scanlines {
+    0% { background-position: 0 0; }
+    100% { background-position: 0 4px; }
+  }
+  
+  /* تفاصيل إطار التلفاز */
   .tv-bezel {
-    height: 30px;
-    bottom: -30px;
-    padding: 0 10px;
+    position: absolute;
+    bottom: -50px;
+    left: 0;
+    width: 100%;
+    height: 50px;
+    background: linear-gradient(
+      to top,
+      rgba(35, 35, 35, 0.95) 0%,
+      rgba(25, 25, 25, 0.98) 100%
+    );
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 25px;
+    border-radius: 0 0 20px 20px;
+    z-index: 1;
   }
   
   .tv-brand {
-    font-size: 12px;
-    letter-spacing: 1px;
+    color: rgba(233, 72, 14, 0.9);
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  }
+  
+  .tv-controls {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .tv-control {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(233, 72, 14, 0.7);
+    position: relative;
+    cursor: pointer !important;
+    transition: all 0.3s ease;
+    pointer-events: auto !important;
+  }
+  
+  .tv-control:hover {
+    background: rgba(233, 72, 14, 1);
+    transform: scale(1.3);
+    box-shadow: 0 0 10px rgba(233, 72, 14, 0.5);
+  }
+  
+  .tv-control::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 4px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
   }
   
   .tv-stand {
-    bottom: -45px;
-    width: 80px;
-    height: 15px;
+    position: absolute;
+    bottom: -80px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 140px;
+    height: 25px;
+    background: linear-gradient(
+      to bottom,
+      rgba(40, 40, 40, 0.95) 0%,
+      rgba(20, 20, 20, 0.98) 100%
+    );
+    border-radius: 4px 4px 12px 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
   }
   
+  /* طبقة الانتقال */
+  .transition-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+    z-index: 9998;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  
+  .transition-overlay.active {
+    opacity: 0.7;
+    animation: transitionPulse 0.6s ease;
+  }
+  
+  @keyframes transitionPulse {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 0.9; }
+  }
+  
+  /* المحتوى */
   .content {
-    gap: 25px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    width: 90%;
+    max-width: 1200px;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .content.visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: all !important;
+    z-index: 9999 !important;
+    animation: contentReveal 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+  
+  @keyframes contentReveal {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -40%);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, -50%);
+    }
+  }
+  
+  .content.visible * {
+    pointer-events: auto !important;
+  }
+  
+  /* العنوان */
+  .title-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
   }
   
   .title {
-    font-size: clamp(45px, 5vw, 48px);
+    position: relative;
+    color: #FFF;
+    font-family: "Bebas Neue", sans-serif;
+    font-size: clamp(60px, 8vw, 100px);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -1px;
+    text-align: center;
+    transition: transform 0.3s ease;
+    cursor: default;
   }
   
-  .subtitle {
-    font-size: 14px;
-    letter-spacing: 4px;
+  .content.visible .title:hover {
+    transform: scale(1.02);
   }
   
-  .description {
-    font-size: 14px;
-    line-height: 1.4;
-    padding: 0 16px;
+  .title-text {
+    position: relative;
+    z-index: 3;
+    display: block;
+    text-shadow: 
+      0 2px 4px rgba(0, 0, 0, 0.8),
+      0 4px 12px rgba(0, 0, 0, 0.6),
+      0 0 30px rgba(233, 72, 14, 0.4),
+      0 0 60px rgba(233, 72, 14, 0.2);
   }
   
-  .btn {
-    height: 50px;
-    padding: 14px 28px;
+  .title-shadow {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    color: rgba(0, 0, 0, 0.3);
+    z-index: 1;
+    filter: blur(4px);
   }
   
-  .btn-text {
-    font-size: 18px;
+  .title-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: rgba(233, 72, 14, 0.3);
+    z-index: 2;
+    filter: blur(15px);
+    animation: titleGlowPulse 4s ease-in-out infinite;
+  }
+  
+  @keyframes titleGlowPulse {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.05); }
   }
   
   .title-underline {
-    width: 120px !important;
+    width: 200px;
+    height: 3px;
+    background: linear-gradient(90deg, 
+      transparent, 
+      #E9480E, 
+      transparent);
+    margin-top: 15px;
+    border-radius: 2px;
+  }
+  
+  /* العنوان الفرعي */
+  .subtitle-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  
+  .subtitle {
+    color: #FFF;
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(18px, 2.5vw, 28px);
+    font-weight: 500;
+    line-height: 1.4;
+    letter-spacing: 8px;
+    text-transform: uppercase;
+    text-align: center;
+    position: relative;
+    cursor: default;
+  }
+  
+  .subtitle-text {
+    position: relative;
+    z-index: 2;
+    text-shadow: 
+      0 1px 2px rgba(0, 0, 0, 0.8),
+      0 2px 8px rgba(0, 0, 0, 0.6);
+  }
+  
+  .subtitle-decoration {
+    position: absolute;
+    right: -30px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 20px;
+    color: #E9480E;
+    opacity: 0.7;
+    animation: spinDecoration 10s linear infinite;
+  }
+  
+  @keyframes spinDecoration {
+    0% { transform: translateY(-50%) rotate(0deg); }
+    100% { transform: translateY(-50%) rotate(360deg); }
   }
   
   .subtitle-line {
-    width: 80px !important;
+    width: 150px;
+    height: 1px;
+    background: linear-gradient(90deg, 
+      transparent, 
+      rgba(255, 255, 255, 0.3), 
+      transparent);
+  }
+  
+  /* الوصف */
+  .description-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin-top: 24px;
+    max-width: 800px;
+    text-align: center;
+  }
+  
+  .description {
+    color: rgba(255, 255, 255, 0.85);
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(16px, 1.8vw, 20px);
+    font-weight: 300;
+    line-height: 1.6;
+    position: relative;
+    padding: 0 20px;
+    cursor: default;
+  }
+  
+  .description-text {
+    position: relative;
+    z-index: 2;
+    display: block;
+    text-shadow: 
+      0 1px 2px rgba(0, 0, 0, 0.6),
+      0 2px 6px rgba(0, 0, 0, 0.4);
   }
   
   .description-line {
-    width: 150px !important;
+    width: 300px;
+    height: 1px;
+    background: linear-gradient(90deg, 
+      transparent, 
+      rgba(233, 72, 14, 0.5), 
+      transparent);
+    border-radius: 1px;
   }
-}
-
-/* إيقاف الأنيميشن للذين يفضلون تقليل الحركة */
-@media (prefers-reduced-motion: reduce) {
-  .tv-container,
-  .video-container,
-  .content,
-  .transition-overlay {
-    transition: none !important;
-    animation: none !important;
+  
+  /* الزر */
+  .btn-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    text-decoration: none;
+    position: relative;
+    z-index: 10001;
+    pointer-events: auto !important;
+    cursor: pointer !important;
   }
-}
-
-/* تحسينات للأداء */
-* {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-</style>
+  
+  .btn {
+    position: relative;
+    height: 65px;
+    padding: 18px 48px;
+    border-radius: 144px;
+    background: linear-gradient(135deg, 
+      rgba(52, 50, 50, 0.9) 0%, 
+      rgba(28, 26, 26, 0.9) 100%);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 2px solid transparent;
+    cursor: pointer !important;
+    transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    backdrop-filter: blur(10px);
+    box-shadow: 
+      0 10px 30px rgba(0, 0, 0, 0.4),
+      0 0 40px rgba(233, 72, 14, 0.1),
+      inset 0 0 20px rgba(255, 255, 255, 0.05);
+    pointer-events: auto !important;
+  }
+  
+  .btn:hover {
+    transform: translateY(-5px) scale(1.05);
+    background: linear-gradient(135deg, 
+      rgba(255, 255, 255, 0.95) 0%, 
+      rgba(255, 255, 255, 0.9) 100%);
+    box-shadow: 
+      0 20px 40px rgba(233, 72, 14, 0.3),
+      0 0 60px rgba(233, 72, 14, 0.2),
+      inset 0 0 30px rgba(255, 255, 255, 0.1);
+    border: 2px solid #E9480E;
+  }
+  
+  .btn:hover .btn-text {
+    color: #000;
+    letter-spacing: 2px;
+  }
+  
+  .btn-text {
+    color: white;
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 24px;
+    font-weight: 400;
+    line-height: 1.2;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 3;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  }
+  
+  .btn-glow {
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(135deg, 
+      rgba(233, 72, 14, 0.2) 0%,
+      rgba(233, 72, 14, 0.1) 50%,
+      rgba(233, 72, 14, 0.2) 100%);
+    border-radius: 144px;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .btn:hover .btn-glow {
+    opacity: 1;
+  }
+  
+  .btn-border {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 2px solid transparent;
+    border-radius: 144px;
+    background: linear-gradient(135deg, 
+      rgba(233, 72, 14, 0.5) 0%,
+      rgba(233, 72, 14, 0.3) 50%,
+      rgba(233, 72, 14, 0.5) 100%);
+    background-clip: padding-box;
+    z-index: 2;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .btn:hover .btn-border {
+    opacity: 1;
+  }
+  
+  .btn-shine {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      transparent 100%
+    );
+    transform: rotate(30deg);
+    z-index: 3;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .btn:hover .btn-shine {
+    opacity: 1;
+    animation: shine 1s ease;
+  }
+  
+  @keyframes shine {
+    0% { left: -50%; }
+    100% { left: 150%; }
+  }
+  
+  /* تحسينات للاستجابة */
+  @media (max-width: 1200px) {
+    .tv-container {
+      width: 50% !important;
+    }
+    
+    .tv-container.expanding {
+      width: 70% !important;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .gallery-item.is-first-item {
+      height: 100vh;
+      min-height: 100vh;
+    }
+    
+    .tv-container {
+      width: 85% !important;
+    }
+    
+    .tv-container.expanding {
+      width: 100% !important;
+    }
+    
+    .tv-frame {
+      padding: 10px;
+      border-radius: 15px;
+    }
+    
+    .tv-bezel {
+      height: 40px;
+      bottom: -40px;
+      padding: 0 15px;
+    }
+    
+    .tv-brand {
+      font-size: 14px;
+    }
+    
+    .tv-stand {
+      bottom: -60px;
+      width: 100px;
+      height: 20px;
+    }
+    
+    .content {
+      width: 95%;
+      gap: 30px;
+    }
+    
+    .title {
+      font-size: clamp(40px, 6vw, 60px);
+    }
+    
+    .subtitle {
+      font-size: clamp(16px, 2vw, 20px);
+      letter-spacing: 6px;
+    }
+    
+    .description {
+      font-size: clamp(14px, 1.5vw, 18px);
+    }
+    
+    .btn {
+      height: 55px;
+      padding: 16px 32px;
+    }
+    
+    .btn-text {
+      font-size: 20px;
+    }
+    
+    .title-underline {
+      width: 150px;
+    }
+    
+    .subtitle-line {
+      width: 100px;
+    }
+    
+    .description-line {
+      width: 200px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .gallery-item.is-first-item {
+      height: 100vh;
+      min-height: 100vh;
+    }
+    
+    .tv-container {
+      width: 100% !important;
+    }
+    
+    .tv-frame {
+      border-radius: 12px;
+      padding: 8px;
+    }
+    
+    .tv-bezel {
+      height: 30px;
+      bottom: -30px;
+      padding: 0 10px;
+    }
+    
+    .tv-brand {
+      font-size: 12px;
+      letter-spacing: 1px;
+    }
+    
+    .tv-stand {
+      bottom: -45px;
+      width: 80px;
+      height: 15px;
+    }
+    
+    .content {
+      gap: 25px;
+    }
+    
+    .title {
+      font-size: clamp(45px, 5vw, 48px);
+    }
+    
+    .subtitle {
+      font-size: 14px;
+      letter-spacing: 4px;
+    }
+    
+    .description {
+      font-size: 14px;
+      line-height: 1.4;
+      padding: 0 16px;
+    }
+    
+    .btn {
+      height: 50px;
+      padding: 14px 28px;
+    }
+    
+    .btn-text {
+      font-size: 18px;
+    }
+    
+    .title-underline {
+      width: 120px !important;
+    }
+    
+    .subtitle-line {
+      width: 80px !important;
+    }
+    
+    .description-line {
+      width: 150px !important;
+    }
+  }
+  
+  /* إيقاف الأنيميشن للذين يفضلون تقليل الحركة */
+  @media (prefers-reduced-motion: reduce) {
+    .tv-container,
+    .video-container,
+    .content,
+    .transition-overlay {
+      transition: none !important;
+      animation: none !important;
+    }
+  }
+  
+  /* تحسينات للأداء */
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  </style>
