@@ -30,7 +30,7 @@
     <div class="absolute flex flex-col gap-[40px] z-20 content-wrapper"
     :class="contentAlignmentClass"
     ref="contentContainer">
-      <div class="w-full flex flex-col gap-[16px]">
+      <div class="w-full flex flex-col gap-[25px]">
         <!-- Text2 with animation -->
         <div class="text2 animated-text" ref="text2El">
           <div v-for="(sentence, index) in splitSentences" :key="index" class="sentence-line">
@@ -40,7 +40,7 @@
         </div>
 
         <!-- Description container -->
-        <div class="flex flex-col gap-[8px]" ref="descriptionContainer">
+        <div class="flex flex-col gap-[11px]" ref="descriptionContainer">
           <div class="description animated-text" ref="descriptionEl">
             {{ $t('hero.descriptions') }}
           </div>
@@ -736,8 +736,10 @@
   top: 28%;
   max-width: 950px;
   z-index: 20;
-  padding: 0 70px;
+  /* padding: 0 70px; */
 }
+
+
   
 .content-wrapper.text-right .buttons {
   justify-content: flex-end;
@@ -781,6 +783,7 @@
     bottom: -12px;
     left: 0;
     width: 0;
+    margin-bottom: -10px;
     height: 4px;
     background: linear-gradient(90deg, #E9480E, transparent);
     transition: width 1s ease 1.2s;
