@@ -794,6 +794,7 @@
   
   .in-view .text2::after {
     width: 220px;
+    
   }
   
   .description {
@@ -1134,21 +1135,22 @@
   
   @media (max-width: 575px) {
     .content-wrapper {
-      top: 35%;
-      left: 0;
+      top: 44%;
+      left: 20px;
     }
     [dir="rtl"] .content-wrapper{
-      right: 0;
+      right: 20px;
     }
   
     .text2 {
-      font-size: 38px;
+      font-size: 40px;
+      line-height: 170%;
     }
   
     .btn-contact-hero,
     .btn-watch-hero {
       padding: 0.75rem 1.25rem;
-      font-size: 18px;
+      font-size: 20px;
     }
   
     .youtube-overlay-top {
