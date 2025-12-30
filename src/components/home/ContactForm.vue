@@ -811,6 +811,7 @@ textarea {
     flex-direction: row;
     height: auto;
     min-height: auto;
+    max-height: 780px;
     padding: 45px 40px;
     margin: 0px auto;
     max-width: 1400px;
@@ -927,10 +928,10 @@ textarea {
 }
 
 @media (prefers-color-scheme: light) {
-  .contact-section { background: #f5f5f5; }
-  .form-wrapper { background: rgba(255, 255, 255, 0.9); }
-  .form-label { color: #333; }
-  input, textarea { background: rgba(0, 0, 0, 0.05); border-color: rgba(0, 0, 0, 0.2); color: #333; }
-  input::placeholder, textarea::placeholder { color: rgba(0, 0, 0, 0.4); }
+  /* .contact-section { background: #f5f5f5; } */
+  /* .form-wrapper { background: rgba(255, 255, 255, 0.9); } */
+  /* .form-label { color: #333; } */
+  /* input, textarea { background: rgba(0, 0, 0, 0.05); border-color: rgba(0, 0, 0, 0.2); color: #333; } */
+  /* input::placeholder, textarea::placeholder { color: rgba(0, 0, 0, 0.4); } */
 }
 </style>

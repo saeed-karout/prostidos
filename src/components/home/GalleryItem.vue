@@ -26,7 +26,8 @@
         'fullscreen': isFullscreen,
         'expanding': isExpanding,
         'keep-fullscreen': keepFirstVideoFullscreen,
-        'behind': shouldBeBehind
+        'behind': shouldBeBehind,
+        'appearing': isAppearing
       }"
       :data-first-video="isFirstItem"
       :data-fullscreen="isFullscreen"
@@ -246,6 +247,10 @@ const userInteracted = ref(false);
 const keepFirstVideoFullscreen = ref(false);
 const shouldBeBehindContent = ref(false);
 const shouldBeBehind = ref(false);
+const isAppearing = ref(false);
+
+// === جديد: تتبع ما إذا كان المستخدم وصل قرب نهاية الصفحة ===
+const isNearEnd = ref(false);
 
 // Computed Properties
 const finalButtonText = computed(() => {
@@ -277,6 +282,7 @@ const handleButtonLeave = () => {
 
 // دالة معالجة أخطاء الفيديو
 const onVideoError = (e) => {
+  console.error('Video error:', e);
   if (videoEl.value && props.isFirstItem) {
     setTimeout(() => {
       videoEl.value.load();
@@ -285,65 +291,91 @@ const onVideoError = (e) => {
   }
 };
 
-// دالة عند بدء تشغيل الفيديو
 const onVideoPlaying = () => {
   isVideoPlaying.value = true;
 };
 
-// دالة تحميل الفيديو
 const onVideoLoaded = () => {
   isVideoLoaded.value = true;
   if (videoEl.value) {
     videoEl.value.classList.add('loaded');
+    videoEl.value.style.opacity = '1';
+    videoEl.value.style.visibility = 'visible';
     
-    if (props.isFirstItem && (isVisible.value || isFullscreen.value)) {
-      setTimeout(safePlayVideo, 300);
+    if (props.isFirstItem) {
+      if (tvScreen.value) {
+        setTimeout(() => {
+          if (tvScreen.value) tvScreen.value.classList.add('appearing');
+        }, 100);
+      }
+      
+      if ((isVisible.value || isFullscreen.value)) {
+        setTimeout(() => {
+          if (videoEl.value) {
+            videoEl.value.classList.add('playing');
+            safePlayVideo();
+          }
+        }, 300);
+      }
     }
   }
 };
 
-// دالة تشغيل الفيديو بشكل آمن
+const onVideoEnded = () => {
+  if (props.isFirstItem) {
+    restartVideo();
+  }
+};
+
+const onVideoPause = () => {
+  isVideoPlaying.value = false;
+};
+
 const safePlayVideo = async () => {
   if (!videoEl.value || videoLoadAttempted.value) return;
   
   videoLoadAttempted.value = true;
   
   try {
-    videoEl.value.currentTime = 0;
-    videoEl.value.load();
+    videoEl.value.classList.add('playing');
     
-    await new Promise((resolve) => {
-      if (videoEl.value.readyState >= 3) {
-        resolve();
-      } else {
-        videoEl.value.addEventListener('canplay', resolve, { once: true });
-        videoEl.value.addEventListener('loadeddata', resolve, { once: true });
+    if (videoEl.value.readyState >= 3) {
+      const playPromise = videoEl.value.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            isVideoPlaying.value = true;
+            setTimeout(() => {
+              videoEl.value.classList.remove('playing');
+            }, 1500);
+          })
+          .catch((error) => {
+            console.log('Auto-play prevented:', error);
+            setupUserInteractionPlay();
+          });
       }
-    });
-    
-    const playPromise = videoEl.value.play();
-    
-    if (playPromise !== undefined) {
-      playPromise
-        .then(() => {
-          isVideoPlaying.value = true;
-        })
-        .catch(() => {
-          setupUserInteractionPlay();
-        });
+    } else {
+      const waitForReady = () => {
+        if (videoEl.value.readyState >= 3) {
+          safePlayVideo();
+        } else {
+          setTimeout(waitForReady, 100);
+        }
+      };
+      waitForReady();
     }
-  } catch (error) {}
+  } catch (error) {
+    console.error('Error playing video:', error);
+    setupUserInteractionPlay();
+  }
 };
 
-// إعداد تشغيل عند التفاعل مع المستخدم
 const setupUserInteractionPlay = () => {
   const playOnInteraction = () => {
     userInteracted.value = true;
     if (videoEl.value && !isVideoPlaying.value) {
       videoEl.value.play()
-        .then(() => {
-          isVideoPlaying.value = true;
-        })
+        .then(() => { isVideoPlaying.value = true; })
         .catch(e => console.log('Still cannot play:', e));
     }
   };
@@ -353,10 +385,8 @@ const setupUserInteractionPlay = () => {
   document.addEventListener('keydown', playOnInteraction, { once: true });
 };
 
-// دوال التحكم في الفيديو
 const togglePlay = () => {
   if (!videoEl.value) return;
-  
   userInteracted.value = true;
   
   if (videoEl.value.paused) {
@@ -373,7 +403,6 @@ const togglePlay = () => {
 
 const toggleSound = () => {
   if (!videoEl.value) return;
-  
   userInteracted.value = true;
   videoEl.value.muted = !videoEl.value.muted;
   isMuted.value = videoEl.value.muted;
@@ -381,7 +410,6 @@ const toggleSound = () => {
 
 const restartVideo = () => {
   if (!videoEl.value) return;
-  
   userInteracted.value = true;
   videoEl.value.currentTime = 0;
   videoEl.value.play().then(() => {
@@ -390,7 +418,49 @@ const restartVideo = () => {
   });
 };
 
-// دالة تحديث العنصر بناءً على السكرول
+// === جديد: فحص ما إذا كان المستخدم قريبًا من نهاية الصفحة ===
+const checkIfNearPageEnd = () => {
+  const scrollTop = window.scrollY || document.documentElement.scrollTop;
+  const windowHeight = window.innerHeight;
+  const documentHeight = document.documentElement.scrollHeight;
+
+  // إذا بقي أقل من 1.5 شاشة حتى النهاية → نعتبره وصل للنهاية
+  const remaining = documentHeight - (scrollTop + windowHeight);
+  const threshold = windowHeight * 1.5;
+
+  if (remaining <= threshold && !isNearEnd.value) {
+    isNearEnd.value = true;
+    forceFirstVideoToFullscreen();
+  }
+};
+
+// === جديد: إجبار الفيديو الأول على fullscreen عند الوصول لنهاية الصفحة ===
+const forceFirstVideoToFullscreen = () => {
+  if (!props.isFirstItem || isFullscreen.value || window.innerWidth <= 768) return;
+
+  console.log('🟢 Forcing first video to fullscreen – user near page end');
+
+  isFullscreen.value = true;
+  isContentVisible.value = true;
+  keepFirstVideoFullscreen.value = true;
+
+  nextTick(() => {
+    if (tvContainer.value) {
+      applyFullscreenStyles();
+      tvContainer.value.classList.add('fullscreen', 'keep-fullscreen');
+    }
+
+    if (videoEl.value) {
+      videoEl.value.style.opacity = '1';
+      videoEl.value.style.visibility = 'visible';
+      videoEl.value.style.objectFit = 'cover';
+      if (videoEl.value.paused) {
+        videoEl.value.play().catch(() => {});
+      }
+    }
+  });
+};
+
 const updateItemPosition = () => {
   if (!galleryItem.value) return;
   
@@ -416,7 +486,6 @@ const updateItemPosition = () => {
   }
 };
 
-// تحديث الفيديو الأول
 const updateFirstItem = (progress, elementTop, elementBottom, elementHeight, windowHeight) => {
   const elementCenter = elementTop + elementHeight / 2;
   const viewportCenter = windowHeight / 2;
@@ -431,6 +500,29 @@ const updateFirstItem = (progress, elementTop, elementBottom, elementHeight, win
   
   scrollProgress.value = progressNormalized;
   
+  // === إزالة شروط الموبايل من المنطق ===
+  const visibilityThreshold = 0.10;
+  const isVisibleEnough = progressNormalized >= visibilityThreshold;
+  
+  const isAtMiddle = distanceFromCenter < windowHeight * 0.3;
+  const isAtTop = elementTop < windowHeight * 0.2 && elementTop > -windowHeight * 0.2;
+  
+  // === التعديل: إزالة !isMobile ===
+  if (isVisibleEnough && !isVisible.value && props.isFirstItem) {
+    startVideoAppearance();
+  }
+  
+  if (isAtMiddle && isVisible.value && !isExpanding.value && !isFullscreen.value && props.isFirstItem) {
+    expandVideo();
+  }
+  
+  if (isAtTop && isExpanding.value && !isFullscreen.value && props.isFirstItem) {
+    startVideoExit();
+  }
+  
+  if ((isVisible.value || isExpanding.value || isFullscreen.value) && props.isFirstItem && videoEl.value) {
+    ensureVideoVisibility();
+  }
   const shouldBeVisible = progressNormalized > 0.05;
   const shouldBeExpanding = distanceFromCenter < windowHeight * 0.4 && progressNormalized > 0.2;
   const shouldBeFullscreen = distanceFromCenter < windowHeight * 0.2 && progressNormalized > 0.4;
@@ -443,7 +535,7 @@ const updateFirstItem = (progress, elementTop, elementBottom, elementHeight, win
     isExpanding.value = shouldBeExpanding;
   }
   
-  const scrollThreshold = 0.3;
+  const scrollThreshold = 0.2;
   const isScrolledPast = elementTop < -windowHeight * 1.5;
   
   if (isScrolledPast) {
@@ -460,9 +552,7 @@ const updateFirstItem = (progress, elementTop, elementBottom, elementHeight, win
     shouldBeBehindContent.value = false;
     shouldBeBehind.value = false;
     
-    if (elementTop < windowHeight * scrollThreshold && 
-        elementBottom > windowHeight * (1 - scrollThreshold)) {
-      
+    if (elementTop < windowHeight * scrollThreshold && elementBottom > windowHeight * (1 - scrollThreshold)) {
       if (shouldBeFullscreen && !isFullscreen.value) {
         enterFirstVideoFullscreen();
       }
@@ -516,15 +606,18 @@ const updateFirstItem = (progress, elementTop, elementBottom, elementHeight, win
     if (isScrolledPast) {
       if (!videoEl.value.paused) {
         videoEl.value.pause();
+        videoEl.value.style.opacity = '0.5';
       }
     } else if ((shouldBeFullscreen || keepFirstVideoFullscreen.value) && !isVideoPlaying.value) {
       if (isVideoLoaded.value || userInteracted.value) {
         safePlayVideo();
+        ensureVideoVisibility();
       }
     } else if (shouldBeFullscreen || keepFirstVideoFullscreen.value) {
       if (videoEl.value.paused && !videoEl.value.ended) {
         videoEl.value.play().catch(() => {});
       }
+      videoEl.value.style.opacity = '1';
     } else if (!shouldBeFullscreen && !shouldBeExpanding) {
       if (!videoEl.value.paused) {
         videoEl.value.pause();
@@ -533,7 +626,78 @@ const updateFirstItem = (progress, elementTop, elementBottom, elementHeight, win
   }
 };
 
-// تطبيق أنماط خلف المحتوى
+const startVideoAppearance = () => {
+  if (!props.isFirstItem || isAppearing.value) return; // إزالة شرط الموبايل
+  
+  isAppearing.value = true;
+  isVisible.value = true;
+  
+  if (tvContainer.value) {
+    tvContainer.value.style.opacity = '0';
+    tvContainer.value.style.transform = 'translate(-50%, 70%) scale(0.4)';
+    tvContainer.value.style.pointerEvents = 'none';
+    tvContainer.value.style.transition = 'all 1s cubic-bezier(0.215, 0.61, 0.355, 1)';
+    
+    setTimeout(() => {
+      tvContainer.value.style.opacity = '0.8';
+      tvContainer.value.style.transform = 'translate(-50%, 30%) scale(0.6)';
+      tvContainer.value.style.pointerEvents = 'auto';
+      
+      if (tvScreen.value) {
+        tvScreen.value.classList.add('appearing');
+      }
+      
+      if (videoEl.value) {
+        if (!isVideoLoaded.value) videoEl.value.load();
+        
+        setTimeout(() => {
+          videoEl.value.style.opacity = '1';
+          videoEl.value.style.visibility = 'visible';
+          videoEl.value.classList.add('playing');
+          safePlayVideo();
+        }, 300);
+      }
+    }, 100);
+  }
+};
+
+const expandVideo = () => {
+  if (!props.isFirstItem || isExpanding.value || isFullscreen.value) return; // إزالة شرط الموبايل
+  
+  isExpanding.value = true;
+  
+  if (tvContainer.value) {
+    tvContainer.value.style.transition = 'all 0.8s cubic-bezier(0.215, 0.61, 0.355, 1)';
+    tvContainer.value.style.opacity = '1';
+    tvContainer.value.style.transform = 'translate(-50%, 5%) scale(0.8)';
+    
+    if (videoEl.value) {
+      videoEl.value.style.opacity = '1';
+      videoEl.value.style.transition = 'opacity 0.3s ease';
+      
+      if (videoEl.value.paused) {
+        setTimeout(() => {
+          videoEl.value.classList.add('playing');
+          safePlayVideo();
+        }, 400);
+      }
+    }
+  }
+};
+
+const startVideoExit = () => {
+  if (!props.isFirstItem || !isExpanding.value || isFullscreen.value) return; // إزالة شرط الموبايل
+  
+  if (tvContainer.value) {
+    tvContainer.value.style.transition = 'all 0.6s cubic-bezier(0.215, 0.61, 0.355, 1)';
+    tvContainer.value.style.opacity = '1';
+    tvContainer.value.style.transform = 'translate(-50%, -5%) scale(0.95)';
+    
+    setTimeout(() => {
+      enterFirstVideoFullscreen();
+    }, 300);
+  }
+};
 const applyBehindContentStyles = () => {
   if (!tvContainer.value) return;
   tvContainer.value.style.position = 'fixed';
@@ -568,9 +732,9 @@ const applyBehindContentStyles = () => {
   if (tvStand) tvStand.style.display = 'none';
 };
 
-// تطبيق أنماط fullscreen
 const applyFullscreenStyles = () => {
   if (!tvContainer.value) return;
+  
   tvContainer.value.style.position = 'fixed';
   tvContainer.value.style.top = '0';
   tvContainer.value.style.left = '0';
@@ -579,9 +743,10 @@ const applyFullscreenStyles = () => {
   tvContainer.value.style.transform = 'none';
   tvContainer.value.style.opacity = '1';
   tvContainer.value.style.zIndex = '9998';
-  tvContainer.value.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+  tvContainer.value.style.transition = 'all 0.5s ease';
   tvContainer.value.style.pointerEvents = 'auto';
   tvContainer.value.style.filter = 'none';
+  tvContainer.value.style.background = 'transparent';
   
   if (tvFrame.value) {
     tvFrame.value.style.borderRadius = '0';
@@ -589,21 +754,37 @@ const applyFullscreenStyles = () => {
     tvFrame.value.style.background = 'transparent';
     tvFrame.value.style.boxShadow = 'none';
     tvFrame.value.style.transform = 'none';
+    tvFrame.value.style.border = 'none';
   }
   
   if (tvScreen.value) {
     tvScreen.value.style.borderRadius = '0';
     tvScreen.value.style.width = '100%';
     tvScreen.value.style.height = '100%';
+    tvScreen.value.style.background = 'transparent';
+    tvScreen.value.style.border = 'none';
+  }
+  
+  if (videoEl.value) {
+    videoEl.value.style.opacity = '1';
+    videoEl.value.style.visibility = 'visible';
+    videoEl.value.style.objectFit = 'cover';
+    videoEl.value.style.width = '100%';
+    videoEl.value.style.height = '100%';
+    videoEl.value.style.position = 'absolute';
+    videoEl.value.style.top = '0';
+    videoEl.value.style.left = '0';
+    videoEl.value.style.zIndex = '9999';
   }
   
   const tvBezel = tvFrame.value?.querySelector('.tv-bezel');
   const tvStand = tvFrame.value?.querySelector('.tv-stand');
+  const overlays = tvScreen.value?.querySelectorAll('.tv-screen-overlay, .tv-reflection, .tv-scanlines');
   if (tvBezel) tvBezel.style.display = 'none';
   if (tvStand) tvStand.style.display = 'none';
+  if (overlays) overlays.forEach(el => el.style.display = 'none');
 };
 
-// تطبيق أنماط التوسع
 const applyExpandingStyles = (progress) => {
   const scale = 0.5 + (progress * 0.5);
   const translateY = -20 + (progress * 40);
@@ -633,7 +814,6 @@ const applyExpandingStyles = (progress) => {
   if (tvStand) tvStand.style.display = 'block';
 };
 
-// تطبيق الأنماط الطبيعية
 const applyNormalStyles = (progress) => {
   const scale = 0.3 + (progress * 0.2);
   const translateY = 50 - (progress * 50);
@@ -662,32 +842,95 @@ const applyNormalStyles = (progress) => {
   if (tvStand) tvStand.style.display = 'block';
 };
 
-// دخول الفيديو الأول إلى fullscreen
 const enterFirstVideoFullscreen = () => {
+  if (isTransitioning.value || !props.isFirstItem) return;
+  
+  console.log('🟢 Entering fullscreen (mobile allowed)');
+  requestFullscreenOnMobile();
   isTransitioning.value = true;
+  isExpanding.value = false;
+  
+  if (tvScreen.value) {
+    tvScreen.value.classList.remove('appearing');
+  }
+  
+  if (videoEl.value) {
+    videoEl.value.style.opacity = '1';
+    videoEl.value.style.visibility = 'visible';
+    videoEl.value.style.zIndex = '9999';
+  }
   
   setTimeout(() => {
     isFullscreen.value = true;
     isFirstVideoCompleted.value = true;
     
     if (tvContainer.value && videoEl.value) {
-      videoEl.value.style.objectFit = 'cover';
-      videoEl.value.style.opacity = '1';
-    }
-    
-    setTimeout(() => {
-      isContentVisible.value = true;
-      isTransitioning.value = false;
+      tvContainer.value.style.transition = 'none';
+      applyFullscreenStyles();
       
-      if (videoEl.value) {
-        videoEl.value.play().catch(() => {});
-        ensureVideoPlayback();
-      }
-    }, 200);
-  }, 150);
+      videoEl.value.style.opacity = '1';
+      videoEl.value.style.visibility = 'visible';
+      videoEl.value.style.objectFit = 'cover';
+      videoEl.value.style.zIndex = '9999';
+      
+      setTimeout(() => {
+        tvContainer.value.style.transition = 'all 0.5s cubic-bezier(0.215, 0.61, 0.355, 1)';
+        
+        if (videoEl.value.paused) {
+          videoEl.value.play().catch(() => {
+            setTimeout(() => { 
+              if (videoEl.value) videoEl.value.play().catch(() => {}); 
+            }, 300);
+          });
+        }
+        
+        setTimeout(() => {
+          isContentVisible.value = true;
+          isTransitioning.value = false;
+        }, 300);
+      }, 50);
+    }
+  }, 100);
 };
 
-// تحديث الفيديوهات الباقية
+// دالة لطلب fullscreen على الموبايل
+const requestFullscreenOnMobile = () => {
+  const isMobile = window.innerWidth <= 768;
+  
+  if (isMobile && videoEl.value && !document.fullscreenElement) {
+    // محاولة الدخول إلى fullscreen mode
+    if (videoEl.value.requestFullscreen) {
+      videoEl.value.requestFullscreen().catch(e => {
+        console.log('Fullscreen request failed:', e);
+      });
+    } else if (videoEl.value.webkitRequestFullscreen) {
+      videoEl.value.webkitRequestFullscreen();
+    } else if (videoEl.value.mozRequestFullScreen) {
+      videoEl.value.mozRequestFullScreen();
+    } else if (videoEl.value.msRequestFullscreen) {
+      videoEl.value.msRequestFullscreen();
+    }
+  }
+};
+
+const ensureVideoVisibility = () => {
+  if (!videoEl.value || !props.isFirstItem) return;
+  
+  videoEl.value.style.opacity = '1';
+  videoEl.value.style.transition = 'opacity 0.5s ease';
+  
+  if (videoEl.value.readyState < 3) {
+    videoEl.value.load();
+    setTimeout(() => { videoEl.value.style.opacity = '1'; }, 500);
+  }
+  
+  if (videoEl.value.paused && !videoEl.value.ended) {
+    videoEl.value.play().catch(() => {
+      setTimeout(() => { if (videoEl.value) videoEl.value.play().catch(() => {}); }, 300);
+    });
+  }
+};
+
 const updateOtherItems = (progress, elementTop, elementBottom, elementHeight, windowHeight) => {
   const shouldBeFullscreen = progress > 0.2;
   const shouldBeVisible = progress > 0.05;
@@ -721,27 +964,6 @@ const updateOtherItems = (progress, elementTop, elementBottom, elementHeight, wi
   }
 };
 
-const ensureVideoPlayback = () => {
-  if (!videoEl.value || !isFullscreen.value) return;
-  
-  const checkAndPlay = () => {
-    if (videoEl.value && (videoEl.value.paused || videoEl.value.ended)) {
-      videoEl.value.play().catch(() => {
-        setTimeout(checkAndPlay, 500);
-      });
-    }
-  };
-  
-  const playbackInterval = setInterval(checkAndPlay, 2000);
-  
-  watch(() => isFullscreen.value, (newVal) => {
-    if (!newVal) {
-      clearInterval(playbackInterval);
-    }
-  });
-};
-
-// دخول fullscreen مع تأثير انتقال (للفيديوهات الأخرى)
 const enterFullscreenWithTransition = () => {
   isTransitioning.value = true;
   
@@ -754,7 +976,6 @@ const enterFullscreenWithTransition = () => {
       
       if (videoEl.value.paused && isVideoLoaded.value) {
         videoEl.value.play().catch(() => {});
-        ensureVideoPlayback();
       }
     }
     
@@ -765,7 +986,6 @@ const enterFullscreenWithTransition = () => {
   }, 150);
 };
 
-// الخروج من fullscreen
 const exitFullscreen = () => {
   if (!props.isFirstItem) {
     isFullscreen.value = false;
@@ -776,30 +996,31 @@ const exitFullscreen = () => {
       videoContainer.value.classList.remove('fullscreen');
     }
     
-    if (videoEl.value && !videoEl.value.paused) {
+    if (videoEl.value) {
       videoEl.value.pause();
+      videoEl.value.style.opacity = '0.5';
     }
   }
 };
 
-// مستمع السكرول
 let rafId = null;
 const handleScroll = () => {
   if (rafId) {
     cancelAnimationFrame(rafId);
   }
-  rafId = requestAnimationFrame(updateItemPosition);
+  rafId = requestAnimationFrame(() => {
+    updateItemPosition();
+    checkIfNearPageEnd(); // ← السطر الجديد المهم
+  });
 };
 
-// مستمع تغيير الحجم
 const handleResize = () => {
   updateItemPosition();
-
-  // إذا تغير الوضع من ديسكتوب إلى موبايل أو العكس (نادر لكن مفيد)
+  checkIfNearPageEnd();
+  
   if (props.isFirstItem) {
     const isMobile = window.innerWidth <= 768;
     if (isMobile && isFullscreen.value) {
-      // إذا كنا في ديسكتوب وأصبح موبايل → نخرج من fullscreen
       isFullscreen.value = false;
       isContentVisible.value = false;
       nextTick(() => {
@@ -807,100 +1028,78 @@ const handleResize = () => {
           tvContainer.value.style.opacity = '0';
           tvContainer.value.style.transform = 'translate(-50%, 50%) scale(0.3)';
         }
-      });
-    } else if (!isMobile && !isFullscreen.value) {
-      // إذا كنا في موبايل وأصبح ديسكتوب → ندخل fullscreen
-      isFullscreen.value = true;
-      isContentVisible.value = true;
-      nextTick(() => {
-        applyFullscreenStyles();
-        if (tvContainer.value) tvContainer.value.style.opacity = '1';
       });
     }
   }
 };
-const isMobile = window.innerWidth <= 1020;
-// دورة الحياة
+
 onMounted(() => {
-  // if (props.isFirstItem && tvContainer.value) {
-  //   tvContainer.value.style.opacity = '0';
-  //   tvContainer.value.style.transform = 'translate(-50%, 50%) scale(0.3)';
-  // } else 
-  if (videoContainer.value) {
-    videoContainer.value.style.opacity = '0';
-  }
-  
-  window.addEventListener('scroll', handleScroll, { passive: true });
-  window.addEventListener('resize', handleResize);
-  window.addEventListener('touchmove', handleScroll, { passive: true });
-  
-  setupUserInteractionPlay();
-  
-  setTimeout(updateItemPosition, 100);
-  
-  if (props.isFirstItem) {
-    if (isMobile) {
-      // ===== وضع الموبايل =====
-      // لا نفعل أي أنيميشن أو توسع أو fullscreen تلقائي
-      // نترك الفيديو كما هو (صغير في الأعلى) ويعمل فقط عند السكرول مثل الباقيين
-      isFullscreen.value = false;
-      isContentVisible.value = false;
-      isExpanding.value = false;
-      isVisible.value = false;
-
-      // نضمن أن الحاوية تبدأ بحالتها الطبيعية (scale صغير و opacity منخفض)
-      nextTick(() => {
-        if (tvContainer.value) {
-          tvContainer.value.style.opacity = '0';
-          tvContainer.value.style.transform = 'translate(-50%, 50%) scale(0.3)';
-        }
-      });
-    } else {
-      // ===== وضع الديسكتوب فقط =====
-      // نفعل fullscreen مباشرة بدون أنيميشن
-      isFullscreen.value = true;
-      isContentVisible.value = true;
-      isVisible.value = true;
-      isExpanding.value = false;
-
-      nextTick(() => {
-        if (tvContainer.value) {
-          applyFullscreenStyles();
-          tvContainer.value.style.opacity = '1';
-        }
-
-        if (videoEl.value) {
-          videoEl.value.load();
-          setTimeout(safePlayVideo, 500);
-        }
-      });
-    }
-  } else {
-    // الفيديوهات الأخرى → السلوك الطبيعي في كل الأجهزة
-    if (videoContainer.value) {
-      videoContainer.value.style.opacity = '0';
-    }
-  }
-
-  window.addEventListener('scroll', handleScroll, { passive: true });
-  window.addEventListener('resize', handleResize);
-  window.addEventListener('touchmove', handleScroll, { passive: true });
-
-  setupUserInteractionPlay();
-  setTimeout(updateItemPosition, 100);
-  
   if (videoEl.value) {
     videoEl.value.muted = true;
     isMuted.value = true;
+    
+    videoEl.value.addEventListener('loadeddata', () => {
+      if (videoEl.value) {
+        videoEl.value.style.opacity = '1';
+        videoEl.value.style.visibility = 'visible';
+      }
+    });
+    
+    videoEl.value.addEventListener('canplay', () => {
+      if (videoEl.value) {
+        videoEl.value.style.opacity = '1';
+        videoEl.value.style.visibility = 'visible';
+      }
+    });
   }
+  
+  window.addEventListener('scroll', handleScroll, { passive: true });
+  window.addEventListener('resize', handleResize);
+  window.addEventListener('touchmove', handleScroll, { passive: true });
+  
+  setupUserInteractionPlay();
+  
+  nextTick(() => {
+    // === تبسيط: نفس الإعدادات لجميع الأجهزة ===
+    if (props.isFirstItem) {
+      isVisible.value = false;
+      isAppearing.value = false;
+      isExpanding.value = false;
+      isFullscreen.value = false;
+      isContentVisible.value = false;
+      
+      if (tvContainer.value) {
+        tvContainer.value.style.opacity = '0';
+        tvContainer.value.style.transform = 'translate(-50%, 80%) scale(0.3)';
+        tvContainer.value.style.transition = 'none';
+        tvContainer.value.style.pointerEvents = 'none';
+        
+        setTimeout(() => {
+          if (tvContainer.value) {
+            tvContainer.value.style.transition = 'all 1.5s cubic-bezier(0.215, 0.61, 0.355, 1)';
+          }
+        }, 100);
+      }
+      
+      if (videoEl.value) {
+        setTimeout(() => { videoEl.value.load(); }, 300);
+      }
+    } else {
+      if (videoContainer.value) {
+        videoContainer.value.style.opacity = '0';
+      }
+    }
+    
+    setTimeout(() => {
+      updateItemPosition();
+      checkIfNearPageEnd();
+    }, 100);
+  });
 });
 
-
 onUnmounted(() => {
-  if (rafId) {
-    cancelAnimationFrame(rafId);
-  }
- 
+  if (rafId) cancelAnimationFrame(rafId);
+  
   if (videoEl.value) {
     videoEl.value.pause();
     videoEl.value.src = '';
@@ -912,6 +1111,7 @@ watch(locale, () => {
   setTimeout(updateItemPosition, 100);
 });
 </script>
+
 
 <style scoped>
   /* ============================================= */
@@ -976,6 +1176,34 @@ watch(locale, () => {
     filter: blur(2px) !important;
   }
   
+  /* تأثيرات الظهور للفيديو الأول */
+  .tv-container.appearing {
+  animation: tvAppear 1.2s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
+}
+
+@keyframes tvAppear {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 50%) scale(0.3) rotateX(10deg);
+    filter: blur(10px);
+  }
+  40% {
+    opacity: 0.6;
+    transform: translate(-50%, 0%) scale(0.6) rotateX(5deg);
+    filter: blur(5px);
+  }
+  70% {
+    opacity: 0.8;
+    transform: translate(-50%, -10%) scale(0.8) rotateX(2deg);
+    filter: blur(2px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, 0%) scale(1) rotateX(0deg);
+    filter: blur(0);
+  }
+}
+  
   /* وضع fullscreen مع مركزية مثالية */
   .tv-container.fullscreen,
   .tv-container.keep-fullscreen {
@@ -990,7 +1218,7 @@ watch(locale, () => {
     z-index: 9998 !important;
     border-radius: 0 !important;
     opacity: 1 !important;
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    transition: all 0.8s cubic-bezier(0.215, 0.61, 0.355, 1) !important;
     background: #000 !important;
     pointer-events: auto !important;
     filter: none !important;
@@ -1068,30 +1296,118 @@ watch(locale, () => {
   
   /* شاشة التلفاز */
   .tv-screen {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    background: #000;
-    border-radius: 12px;
-    overflow: hidden;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.tv-screen::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  pointer-events: none;
+  z-index: 10;
+}
+  
+  /* تأثيرات شاشة التلفاز عند الظهور */
+  .tv-screen.appearing::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg,
+    transparent 30%,
+    rgba(233, 72, 14, 0.15) 50%,
+    transparent 70%);
+  z-index: 5;
+  animation: screenGlow 2s ease-in-out;
+  pointer-events: none;
+}
+  
+  @keyframes screenGlow {
+    0% {
+      opacity: 0;
+      transform: translateX(-100%);
+    }
+    20% {
+      opacity: 0.5;
+    }
+    40% {
+      opacity: 0.3;
+    }
+    60% {
+      opacity: 0.1;
+    }
+    100% {
+      opacity: 0;
+      transform: translateX(100%);
+    }
+  }
+  
+  /* تحسينات للتلفاز في fullscreen */
+  .tv-container.fullscreen .tv-screen {
+    animation: screenReveal 0.8s ease-out;
+  }
+  
+  @keyframes screenReveal {
+    0% {
+      box-shadow: inset 0 0 0 100px #000;
+    }
+    100% {
+      box-shadow: inset 0 0 0 0 #000;
+    }
   }
   
   /* الفيديو */
   .tv-video {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-    opacity: 0;
-    transition: opacity 0.6s ease;
-    background-color: #000;
-  }
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  background-color: #000;
+}
   
   .tv-video.loaded {
     opacity: 1 !important;
+  }
+  .tv-container .tv-video.loaded,
+.tv-container.expanding .tv-video.loaded,
+.tv-container.fullscreen .tv-video.loaded {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+  
+  /* تأثيرات الفيديو عند التشغيل */
+  .tv-video.playing {
+    animation: videoReveal 1.5s ease-out;
+  }
+  
+  @keyframes videoReveal {
+    0% {
+      opacity: 0;
+      filter: brightness(0.5) contrast(1.2);
+    }
+    50% {
+      filter: brightness(1.1) contrast(1.1);
+    }
+    100% {
+      opacity: 1;
+      filter: brightness(1) contrast(1);
+    }
   }
   
   /* حاوية الفيديو العادية */
@@ -1771,6 +2087,7 @@ watch(locale, () => {
   }
   
   @media (max-width: 480px) {
+  
     .gallery-item.is-first-item {
       height: 100vh;
       min-height: 100vh;
@@ -1859,4 +2176,55 @@ watch(locale, () => {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-  </style>
+
+
+
+  /* إصلاح كامل لمشكلة الشاشة السوداء في fullscreen */
+.tv-container.fullscreen .tv-video,
+.tv-container.keep-fullscreen .tv-video {
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: block !important;
+}
+
+/* إزالة أي خلفية سوداء من الشاشة في fullscreen */
+.tv-container.fullscreen .tv-screen,
+.tv-container.keep-fullscreen .tv-screen {
+  background: transparent !important;
+}
+
+/* تأكيد ظهور الفيديو في كل الحالات */
+.tv-video {
+  opacity: 1 !important;
+  background-color: transparent !important;
+}
+
+.tv-video.loaded {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* إصلاح خاص للفيديو الأول في fullscreen */
+.tv-container[data-first-video="true"].fullscreen .tv-video {
+  opacity: 1 !important;
+  visibility: visible !important;
+  z-index: 9999 !important;
+}
+
+/* إخفاء التأثيرات الزائدة في fullscreen */
+.tv-container.fullscreen .tv-screen-overlay,
+.tv-container.fullscreen .tv-reflection,
+.tv-container.fullscreen .tv-scanlines,
+.tv-container.keep-fullscreen .tv-screen-overlay,
+.tv-container.keep-fullscreen .tv-reflection,
+.tv-container.keep-fullscreen .tv-scanlines {
+  display: none !important;
+}
+
+/* التأكد من أن الشاشة فارغة في fullscreen */
+.tv-container.fullscreen .tv-screen::after {
+  display: none !important;
+}
+
+
+</style>
