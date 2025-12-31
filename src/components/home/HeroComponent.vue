@@ -1081,7 +1081,7 @@
   /* ============================================= */
   @media (max-width: 991px) {
     .content-wrapper {
-      top: 35%;
+      top: 40%;
       padding: 0 0%;
     }
   
@@ -1138,7 +1138,7 @@
   
   @media (max-width: 575px) {
     .content-wrapper {
-      top: 40%;
+      top: 50%;
       left: 20px;
     }
     [dir="rtl"] .content-wrapper{
