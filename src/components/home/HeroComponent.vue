@@ -1138,7 +1138,7 @@
   
   @media (max-width: 575px) {
     .content-wrapper {
-      top: 50%;
+      top: 32%;
       left: 20px;
     }
     [dir="rtl"] .content-wrapper{
