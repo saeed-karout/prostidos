@@ -1,5 +1,5 @@
 <template>
-    <div class="main">
+    <div class="main" ref="mainContainer" style="position: relative; z-index: 10000;">
         <div class="header">
             <div class="title">
                 {{ $t('timeLine.title') }}
@@ -237,6 +237,10 @@ import { useI18n } from 'vue-i18n'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
+
+const mainContainer = ref(null)
+
+
 gsap.registerPlugin(ScrollTrigger)
 
 const { t, locale } = useI18n()
@@ -328,88 +332,29 @@ const resetTitleAnimation = (event) => {
 }
 
 onMounted(() => {
-    if (coloredSvgRef.value) {
-        gsap.fromTo(coloredSvgRef.value, 
-            {
-                opacity: 0,
-                filter: 'brightness(0.5) saturate(0.5)'
-            },
-            {
-                opacity: 1,
-                filter: 'brightness(1) saturate(1)',
-                ease: "none",
-                scrollTrigger: {
-                    trigger: timelineSvgRef.value,
-                    start: "top 30%",
-                    end: "bottom 70%",
-                    scrub: true,
-                    markers: false
-                }
-            }
-        )
-    }
-
-    if (coloredSvgRef.value) {
-        gsap.fromTo(coloredSvgRef.value, 
-            {
-                clipPath: 'inset(100% 0% 0% 0%)'
-            },
-            {
-                clipPath: 'inset(0% 0% 0% 0%)',
-                ease: "none",
-                scrollTrigger: {
-                    trigger: timelineSvgRef.value,
-                    start: "top 20%",
-                    end: "bottom bottom",
-                    scrub: 1.5,
-                    markers: false
-                }
-            }
-        )
-    }
-
-    gsap.utils.toArray('.responsive-section').forEach((section) => {
-        gsap.fromTo(section, 
-            {
-                opacity: 0,
-                y: 30
-            },
-            {
-                opacity: 1,
-                y: 0,
-                duration: 0.8,
-                ease: "power2.out",
-                scrollTrigger: {
-                    trigger: section,
-                    start: "top 80%",
-                    end: "top 50%",
-                    toggleActions: "play none none reverse"
-                }
-            }
-        )
-    })
-    
-    const btn = document.querySelector('.cinematic-btn')
-    if (btn) {
-        btn.addEventListener('mouseenter', () => {
-            gsap.to(btn.querySelector('.btn-glow'), {
-                opacity: 0.3,
-                scale: 1.1,
-                duration: 0.4,
-                ease: "power2.out"
-            })
-        })
+    if (mainContainer.value) {
+        // إجبار العنصر على الظهور في المقدمة
+        mainContainer.value.style.zIndex = '10000';
+        mainContainer.value.style.position = 'relative';
+        mainContainer.value.style.opacity = '1';
+        mainContainer.value.style.visibility = 'visible';
         
-        btn.addEventListener('mouseleave', () => {
-            gsap.to(btn.querySelector('.btn-glow'), {
-                opacity: 0,
-                scale: 1,
-                duration: 0.3,
-                ease: "power2.out"
-            })
-        })
+        // منع أي فيديو من الظهور فوقه
+        const videos = document.querySelectorAll('video');
+        videos.forEach(video => {
+            if (video.parentElement) {
+                video.parentElement.style.zIndex = '1000';
+            }
+        });
     }
-})
+    
+    // إعادة المحاولة بعد تأخير
+    setTimeout(() => {
+        if (mainContainer.value) {
+            mainContainer.value.style.zIndex = '10000';
+        }
+    }, 1000);
+});
 </script>
 
 <style scoped>
@@ -423,6 +368,12 @@ onMounted(() => {
     gap: 64px;
     background: #100E0E;
     position: relative;
+    
+    z-index: 10000 !important;
+    position: relative !important;
+    background: #100E0E;
+    isolation: isolate;
+
 }
 
 .header {

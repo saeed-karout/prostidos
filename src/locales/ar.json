@@ -25,29 +25,29 @@
   },
   "footer": {
     "address": {
-      "title": "العنوان",
-      "text": "7711 لوريم إيبسوم دولور سيت أميت، الرياض، المملكة العربية السعودية."
+      "title": "Address",
+      "text": "Jeddah: Emaar square, King Abdullah Rd, Al Fayha'a, Jeddah 22241, Saudi Arabia."
     },
-    "get":"تواصل معنا",
-    "part":"جزء من",
+    "get":"get in touch",
+    "part":"Part of",
     "links": {
-      "services": "الخدمات",
-      "gallery": "معرض الصور",
-      "blog": "المدونة",
-      "contactUs": "اتصل بنا"
+      "services": "Services",
+      "gallery": "Gallery",
+      "blog": "Blog",
+      "contactUs": "Contact Us"
     },
     "contacts": {
-      "title": "جهات الاتصال",
-      "phone1": "009 665 816 703 16",
+      "title": "Contacts",
+      "phone": "009 665 816 703 16",
       "phone2": "009 222 222 333 22",
-    "email": "Info[at]ProStdios.com"
+      "email": "Info[at]ProStdios.com"
     },
-    "copyright": " بواسطة",
-    "company": "prostdios",
-    "privacyPolicy": "سياسة الخصوصية",
-     "terms":"terms",
-     "cookies":"Cookies",
-    "backToTop":"الرجوع للأعلى",
+    "copyright": " By",
+    "company": "ProStdios",
+    "privacyPolicy": "Privacy",
+    "terms":"terms",
+    "cookies":"Cookies",
+    "backToTop":"back To Top",
     "countries":"Emaar square, Jeddah 22241, KSA"
   },
   "visualArchive": {
@@ -258,29 +258,29 @@
       }
     ]
   },
-  "btn-watch": "شاهد الجلسة كاملة",
+  "btn-watch": "شاهد الفلم",
   "featuredWorksTitle": "أعمالنا المميزة",
   "gallery": {
     "clickToWatch": "انقر للمشاهدة"
   },
   "featuredWorks": {
     "ESTSS": {
-      "title": "ESTSS",
+      "title": "شركة تقنية السلامة البيئية ",
       "subtitle": "أفلام الشركات",
       "description": "نصوّر لك فيلم تعريفي احترافي يبرز قصة شركتك وقيمها وإنجازاتها. نستخدم معدات تصوير عالية الجودة وإضاءة دقيقة عشان نقدّم هوية شركتك بشكل واضح ومؤثر."
     },
     "Zarabi": {
-      "title": "زارابي",
+      "title": "زرابي",
       "subtitle": "أفلام إعلانية",
       "description": "أفلام إعلانية احترافية ترفع ظهور علامتك وتزيد التفاعل. نركز على تصوير سينمائي ورسالة واضحة تساعدك تحوّل المشاهدين إلى عملاء."
     },
     "FinalEdition": {
-      "title": "الإصدار النهائي",
+      "title": " Final Edition",
       "subtitle": "أفلام السيارات",
       "description": "أفلام سيارات ومعارض بجودة عالية... لقطات متحركة، درون، وتفاصيل دقيقة تبرز جمال السيارة. مثالية للمعارض والعلامات الفاخرة وإطلاق الموديلات الجديدة."
     },
     "BeachyRentals": {
-      "title": "بيتشي للإيجار",
+      "title": " بيتشي رينتالز",
       "subtitle": "أفلام العقارات",
       "description": "نصوّر عقاراتك بشكل سينمائي يوضح المساحات ويبرز تفاصيلها. مثالي للوكلاء والمطورين والملاك اللي يبغون عرض عقارهم بطريقة فخمة وواضحة."
     },
@@ -290,7 +290,7 @@
       "description": "ننتج ونصوّر لك بودكاست احترافي، خصوصًا البودكاست الفردي الأسبوعي. نجيك لمكانك مع كامل المعدات ونضمن تصوير وصوت وإضاءة ومونتاج بجودة عالية."
     },
     "EventCoverage": {
-      "title": "تغطية الفعاليات",
+      "title": " آرت جاليري",
       "subtitle": "أفلام الفعاليات",
       "description": "نغطّي فعاليتك بفيلم احترافي يوثق اللحظات المهمة والأجواء بشكل سينمائي. مناسب للمؤتمرات، الإطلاقات، المعارض، والفعاليات الشركاتية."
     }

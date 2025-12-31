@@ -1,43 +1,72 @@
 <!-- eslint-disable no-unused-vars -->
 <template>
   <div 
-    class="gallery-item"
-    ref="galleryItem"
-    :key="`${workKey}-${locale}`"
-    :data-index="index"
-    :class="{ 
+    class="gallery-item cinematic-transition gsap-enhanced"
+    :class="{
+      'cinematic-desktop': isDesktopExperience,
+      'cinematic-tablet': isTabletExperience,
+      'cinematic-mobile': isMobileExperience,
+      'cinematic-optimized': true,
+      'cinematic-depth': true,
+      'cinematic-focus': isFullscreen,
       'is-first-item': isFirstItem,
       'is-fullscreen': isFullscreen,
       'is-visible': isVisible,
       'is-transitioning': isTransitioning,
       'behind-content': shouldBeBehindContent
     }"
+    ref="galleryItem"
+    :key="`${workKey}-${locale}`"
+    :data-index="index"
     :style="{
       'z-index': getZIndex()
     }"
   >
     
-    <!-- حاوية التلفاز (للفيديو الأول فقط) -->
+    <!-- تأثيرات الإضاءة السينمائية -->
     <div 
-      v-if="isFirstItem"
-      class="tv-container" 
-      ref="tvContainer"
-      :class="{ 
-        'fullscreen': isFullscreen,
-        'expanding': isExpanding,
-        'keep-fullscreen': keepFirstVideoFullscreen,
-        'behind': shouldBeBehind,
-        'appearing': isAppearing
-      }"
-      :data-first-video="isFirstItem"
-      :data-fullscreen="isFullscreen"
-    >
+      class="cinematic-lighting" 
+      :class="{ 'active': isFullscreen || isExpanding }"
+    ></div>
+    
+    <!-- طبقة الـ Overlay السينمائية -->
+    <div 
+      class="cinematic-overlay" 
+      :class="{ 'active': isFullscreen || isExpanding }"
+    ></div>
+    
+    <!-- طبقة الانتقال السينمائية -->
+    <transition name="scene">
+      <div 
+        v-if="showSceneTransition"
+        class="scene-transition"
+      ></div>
+    </transition>
+    
+    <!-- حاوية التلفاز (للفيديو الأول فقط) -->
+ <!-- حاوية التلفاز للجميع -->
+<div 
+  class="tv-container cinematic-video"
+  ref="tvContainer"
+  :class="{ 
+    'fullscreen': isFullscreen,
+    'expanding': isExpanding,
+    'keep-fullscreen': keepFirstVideoFullscreen,
+    'behind': shouldBeBehind,
+    'appearing': isAppearing,
+    'first-item': isFirstItem,
+    'other-item': !isFirstItem
+  }"
+  :data-first-video="isFirstItem"
+  :data-fullscreen="isFullscreen"
+  :data-item-index="index"
+>
       <!-- إطار التلفاز -->
       <div class="tv-frame" ref="tvFrame">
         <div class="tv-screen" ref="tvScreen">
           <!-- الفيديو داخل شاشة التلفاز -->
           <video
-            class="tv-video"
+            class="tv-video cinematic-video"
             ref="videoEl"
             :poster="videoPoster"
             preload="auto"
@@ -78,39 +107,16 @@
       </div>
     </div>
     
-    <!-- حاوية الفيديو العادية (للفيديوهات الباقية) -->
-    <div 
-      v-else
-      class="video-container"
-      ref="videoContainer"
-      :class="{ 'fullscreen': isFullscreen }"
-    >
-      <video
-        class="fullscreen-video"
-        ref="videoEl"
-        :poster="videoPoster"
-        preload="auto"
-        muted
-        playsinline
-        webkit-playsinline
-        @loadeddata="onVideoLoaded"
-        @canplay="onVideoLoaded"
-        @error="onVideoError"
-      >
-        <source :src="videoSrc" type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
-      
-      <!-- تأثيرات الفيديو -->
-      <div class="video-overlay"></div>
-      <div class="video-glow"></div>
-    </div>
+   
     
-    <!-- طبقة المحتوى -->
+    <!-- طبقة المحتوى مع تحسينات سينمائية -->
     <div 
-      class="content" 
+      class="content cinematic-typography" 
       ref="contentEl"
-      :class="{ 'visible': isFullscreen && isContentVisible && !shouldBeBehindContent }"
+      :class="{ 
+        'visible': isFullscreen && isContentVisible && !shouldBeBehindContent,
+        'cinematic-enter': showContentAnimation
+      }"
       style="pointer-events: auto;"
     >
       <div class="top">
@@ -118,7 +124,7 @@
         <div class="title-wrapper">
           <div class="title">
             <span class="title-text">{{ title }}</span>
-            <span class="title-shadow">{{ title }}</span>
+            <span class="hidden md:flex title-shadow">{{ title }}</span>
             <span class="title-glow">{{ title }}</span>
           </div>
           <div class="title-underline"></div>
@@ -173,6 +179,10 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed, watch, nextTick } from 'vue';
 import { useI18n } from 'vue-i18n';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const { t, locale } = useI18n();
 
@@ -229,7 +239,7 @@ const tvScreen = ref(null);
 const videoEl = ref(null);
 const contentEl = ref(null);
 
-// الحالة
+// الحالة الحالية
 const isVideoLoaded = ref(false);
 const isVisible = ref(false);
 const isExpanding = ref(false);
@@ -248,6 +258,14 @@ const keepFirstVideoFullscreen = ref(false);
 const shouldBeBehindContent = ref(false);
 const shouldBeBehind = ref(false);
 const isAppearing = ref(false);
+
+// === حالة جديدة للتجربة السينمائية ===
+const isDesktopExperience = ref(true);
+const isTabletExperience = ref(false);
+const isMobileExperience = ref(false);
+const showSceneTransition = ref(false);
+const showContentAnimation = ref(false);
+const cinematicAnimations = ref(null);
 
 // === جديد: تتبع ما إذا كان المستخدم وصل قرب نهاية الصفحة ===
 const isNearEnd = ref(false);
@@ -269,6 +287,180 @@ const getZIndex = () => {
   if (isFullscreen.value && !shouldBeBehind.value) return 9999;
   if (isVisible.value) return 1000 + props.index;
   return 100 + props.index;
+};
+
+// === دوال جديدة للتجربة السينمائية ===
+const checkDeviceType = () => {
+  const width = window.innerWidth;
+  
+  if (width >= 1025) {
+    isDesktopExperience.value = true;
+    isTabletExperience.value = false;
+    isMobileExperience.value = false;
+  } else if (width >= 768 && width <= 1024) {
+    isDesktopExperience.value = false;
+    isTabletExperience.value = true;
+    isMobileExperience.value = false;
+  } else {
+    isDesktopExperience.value = false;
+    isTabletExperience.value = false;
+    isMobileExperience.value = true;
+  }
+};
+
+const setupCinematicAnimations = () => {
+  if (!galleryItem.value || !props.isFirstItem) return;
+  
+  // تنظيف أي أنيميشن سابقة
+  ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+  
+  if (isDesktopExperience.value) {
+    setupDesktopCinematic();
+  } else if (isTabletExperience.value) {
+    setupTabletCinematic();
+  } else {
+    setupMobileCinematic();
+  }
+};
+
+const setupDesktopCinematic = () => {
+  if (!tvContainer.value || !contentEl.value) return;
+  
+  cinematicAnimations.value = gsap.timeline({
+    scrollTrigger: {
+      trigger: galleryItem.value,
+      start: "top bottom",
+      end: "bottom top",
+      scrub: true,
+      markers: false,
+      onEnter: () => {
+        showContentAnimation.value = true;
+        setTimeout(() => { showContentAnimation.value = false; }, 1200);
+      },
+      onLeaveBack: () => {
+        showContentAnimation.value = false;
+      }
+    }
+  });
+  
+  // أنيميشن دخول التلفاز
+  cinematicAnimations.value.fromTo(tvContainer.value,
+    {
+      scale: 0.85,
+      filter: 'brightness(0.6) blur(2px)',
+      y: 100
+    },
+    {
+      scale: 1,
+      filter: 'brightness(1) blur(0px)',
+      y: 0,
+      duration: 1,
+      ease: 'power3.out'
+    },
+    0
+  );
+  
+  // أنيميشن المحتوى
+  if (contentEl.value) {
+    cinematicAnimations.value.fromTo(contentEl.value,
+      {
+        opacity: 0,
+        y: 80,
+        scale: 0.95
+      },
+      {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        duration: 0.8,
+        ease: 'power3.out'
+      },
+      0.2
+    );
+  }
+  
+  // أنيميشن النصوص متدرجة
+  if (contentEl.value) {
+    const textElements = contentEl.value.querySelectorAll('.title, .subtitle, .description, .btn-wrapper');
+    gsap.fromTo(textElements,
+      {
+        opacity: 0,
+        y: 30
+      },
+      {
+        opacity: 1,
+        y: 0,
+        stagger: 0.15,
+        duration: 0.6,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: galleryItem.value,
+          start: "top 80%",
+          end: "top 50%",
+          scrub: 0.5
+        }
+      }
+    );
+  }
+};
+
+const setupTabletCinematic = () => {
+  if (!galleryItem.value) return;
+  
+  // إضافة Snap للتابلت
+  galleryItem.value.style.scrollSnapAlign = 'start';
+  
+  // أنيميشن دخول بسيطة
+  gsap.fromTo(galleryItem.value,
+    {
+      opacity: 0,
+      scale: 0.96,
+      y: 30
+    },
+    {
+      opacity: 1,
+      scale: 1,
+      y: 0,
+      duration: 0.9,
+      ease: "power3.out",
+      scrollTrigger: {
+        trigger: galleryItem.value,
+        start: "top 80%",
+        end: "top 30%",
+        toggleActions: "play none none reverse"
+      }
+    }
+  );
+};
+
+const setupMobileCinematic = () => {
+  if (!contentEl.value) return;
+  
+  // أنيميشن المحتوى فقط على الموبايل
+  gsap.fromTo(contentEl.value,
+    {
+      opacity: 0,
+      y: 40
+    },
+    {
+      opacity: 1,
+      y: 0,
+      duration: 0.6,
+      ease: "power2.out",
+      scrollTrigger: {
+        trigger: galleryItem.value,
+        start: "top 85%",
+        toggleActions: "play none none reverse"
+      }
+    }
+  );
+};
+
+const playSceneTransition = () => {
+  showSceneTransition.value = true;
+  setTimeout(() => {
+    showSceneTransition.value = false;
+  }, 800);
 };
 
 // دوال التفاعل مع الزر
@@ -458,6 +650,9 @@ const forceFirstVideoToFullscreen = () => {
         videoEl.value.play().catch(() => {});
       }
     }
+    
+    // تشغيل تأثير الانتقال السينمائي
+    playSceneTransition();
   });
 };
 
@@ -698,6 +893,7 @@ const startVideoExit = () => {
     }, 300);
   }
 };
+
 const applyBehindContentStyles = () => {
   if (!tvContainer.value) return;
   tvContainer.value.style.position = 'fixed';
@@ -792,7 +988,7 @@ const applyExpandingStyles = (progress) => {
   if (!tvContainer.value) return;
   tvContainer.value.style.position = 'fixed';
   tvContainer.value.style.top = '50%';
-  tvContainer.value.style.left = '50%';
+  tvContainer.value.style.left = '0%';
   tvContainer.value.style.width = `${40 + (progress * 40)}%`;
   tvContainer.value.style.transform = `translate(-50%, ${translateY}%) scale(${scale})`;
   tvContainer.value.style.opacity = `${0.5 + (progress * 0.5)}`;
@@ -821,7 +1017,7 @@ const applyNormalStyles = (progress) => {
   if (!tvContainer.value) return;
   tvContainer.value.style.position = 'fixed';
   tvContainer.value.style.top = '50%';
-  tvContainer.value.style.left = '50%';
+  tvContainer.value.style.left = '0%';
   tvContainer.value.style.width = '40%';
   tvContainer.value.style.transform = `translate(-50%, ${translateY}%) scale(${scale})`;
   tvContainer.value.style.opacity = `${progress * 0.7}`;
@@ -887,6 +1083,8 @@ const enterFirstVideoFullscreen = () => {
         setTimeout(() => {
           isContentVisible.value = true;
           isTransitioning.value = false;
+          // تشغيل تأثير الانتقال السينمائي
+          playSceneTransition();
         }, 300);
       }, 50);
     }
@@ -982,6 +1180,8 @@ const enterFullscreenWithTransition = () => {
     setTimeout(() => {
       isContentVisible.value = true;
       isTransitioning.value = false;
+      // تشغيل تأثير الانتقال السينمائي
+      playSceneTransition();
     }, 200);
   }, 150);
 };
@@ -1010,13 +1210,15 @@ const handleScroll = () => {
   }
   rafId = requestAnimationFrame(() => {
     updateItemPosition();
-    checkIfNearPageEnd(); // ← السطر الجديد المهم
+    checkIfNearPageEnd();
   });
 };
 
 const handleResize = () => {
   updateItemPosition();
   checkIfNearPageEnd();
+  checkDeviceType();
+  setupCinematicAnimations();
   
   if (props.isFirstItem) {
     const isMobile = window.innerWidth <= 768;
@@ -1034,6 +1236,9 @@ const handleResize = () => {
 };
 
 onMounted(() => {
+  // التحقق من نوع الجهاز
+  checkDeviceType();
+  
   if (videoEl.value) {
     videoEl.value.muted = true;
     isMuted.value = true;
@@ -1090,10 +1295,12 @@ onMounted(() => {
       }
     }
     
+    // تهيئة الأنيميشن السينمائية بعد تحميل العناصر
     setTimeout(() => {
       updateItemPosition();
       checkIfNearPageEnd();
-    }, 100);
+      setupCinematicAnimations();
+    }, 500);
   });
 });
 
@@ -1105,6 +1312,13 @@ onUnmounted(() => {
     videoEl.value.src = '';
     videoEl.value.load();
   }
+  
+  // تنظيف أنيميشن GSAP
+  if (cinematicAnimations.value) {
+    cinematicAnimations.value.kill();
+  }
+  
+  ScrollTrigger.getAll().forEach(trigger => trigger.kill());
 });
 
 watch(locale, () => {
@@ -1112,8 +1326,197 @@ watch(locale, () => {
 });
 </script>
 
-
 <style scoped>
+
+  /* ============================================= */
+/*          تنسيقات للفيديوهات الأخرى           */
+/* ============================================= */
+
+/* حاوية التلفاز للفيديوهات الأخرى */
+.tv-container.other-item {
+  width: 80% !important;
+  max-width: 1200px !important;
+  aspect-ratio: 16/9 !important;
+  transform: translate(-50%, -50%) !important;
+  top: 50% !important;
+  opacity: 0 !important;
+  transition: all 0.8s cubic-bezier(0.215, 0.61, 0.355, 1) !important;
+}
+
+/* ظهور الفيديوهات الأخرى عند التمرير */
+.tv-container.other-item.is-visible {
+  opacity: 0.9 !important;
+  transform: translate(-50%, -50%) scale(0.9) !important;
+}
+
+.tv-container.other-item.expanding {
+  opacity: 1 !important;
+  transform: translate(-50%, -50%) scale(1) !important;
+  z-index: 2000 !important;
+}
+
+.tv-container.other-item.fullscreen {
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: none !important;
+  aspect-ratio: unset !important;
+  transform: none !important;
+  top: 0 !important;
+  left: 0 !important;
+  z-index: 9998 !important;
+}
+
+/* إطار التلفاز للفيديوهات الأخرى */
+.tv-container.other-item .tv-frame {
+  background: linear-gradient(145deg, 
+    rgba(20, 20, 20, 0.9) 0%,
+    rgba(35, 35, 35, 0.85) 50%,
+    rgba(20, 20, 20, 0.9) 100%
+  ) !important;
+  box-shadow: 
+    0 20px 50px rgba(0, 0, 0, 0.8),
+    0 0 0 1px rgba(233, 72, 14, 0.3),
+    inset 0 0 30px rgba(0, 0, 0, 0.6),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
+}
+
+/* التأكد من ظهور جميع الفيديوهات بشكل صحيح */
+.tv-video {
+  opacity: 0;
+  animation: fadeInVideo 0.8s ease forwards;
+}
+
+@keyframes fadeInVideo {
+  to {
+    opacity: 1;
+  }
+}
+
+/* إخفاء التأثيرات للفيديوهات الأخرى في الوضع العادي */
+.tv-container.other-item:not(.fullscreen) .tv-screen-overlay,
+.tv-container.other-item:not(.fullscreen) .tv-reflection,
+.tv-container.other-item:not(.fullscreen) .tv-scanlines {
+  opacity: 0.3 !important;
+}
+
+/* إخفاء الـ Bezel للفيديوهات الأخرى في الوضع العادي */
+.tv-container.other-item:not(.fullscreen) .tv-bezel,
+.tv-container.other-item:not(.fullscreen) .tv-stand {
+  opacity: 0.5 !important;
+}
+
+/* تأثيرات خاصة للفيديو الأول فقط */
+.tv-container.first-item .tv-frame {
+  animation: firstItemGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes firstItemGlow {
+  0% {
+    box-shadow: 
+      0 25px 70px rgba(0, 0, 0, 0.9),
+      0 0 0 2px rgba(233, 72, 14, 0.4),
+      inset 0 0 40px rgba(0, 0, 0, 0.7),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+  }
+  100% {
+    box-shadow: 
+      0 25px 70px rgba(0, 0, 0, 0.9),
+      0 0 0 2px rgba(233, 72, 14, 0.6),
+      inset 0 0 40px rgba(0, 0, 0, 0.7),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+  }
+}
+
+/* ============================================= */
+/*       تحسينات العرض على الشاشات المختلفة     */
+/* ============================================= */
+
+/* شاشات كبيرة */
+@media (min-width: 1200px) {
+  .tv-container.other-item {
+    width: 70% !important;
+  }
+}
+
+/* تابلت */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .tv-container.other-item {
+    width: 85% !important;
+  }
+  
+  .tv-container.other-item.is-visible {
+    transform: translate(-50%, -50%) scale(0.85) !important;
+  }
+  
+  .tv-container.other-item.expanding {
+    transform: translate(-50%, -50%) scale(0.95) !important;
+  }
+}
+
+/* موبايل */
+@media (max-width: 767px) {
+  .tv-container.other-item {
+    width: 95% !important;
+  }
+  
+  .tv-container.other-item.is-visible {
+    transform: translate(-50%, -50%) scale(0.8) !important;
+  }
+  
+  .tv-container.other-item.expanding {
+    transform: translate(-50%, -50%) scale(0.9) !important;
+  }
+  
+  .tv-container.other-item.fullscreen {
+    border-radius: 0 !important;
+  }
+}
+
+/* ============================================= */
+/*       تحسينات الانتقال بين الفيديوهات        */
+/* ============================================= */
+
+.gallery-item {
+  transition: z-index 0.3s ease !important;
+}
+
+.gallery-item.is-visible {
+  z-index: 1500 !important;
+}
+
+.gallery-item.expanding {
+  z-index: 2000 !important;
+}
+
+.gallery-item.fullscreen {
+  z-index: 9999 !important;
+}
+
+/* تأثير الانتقال عند الخروج من Fullscreen */
+.tv-container.other-item:not(.fullscreen) {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* تأثيرات الظهور المتتالية للفيديوهات */
+.gallery-item:nth-child(2) .tv-container.other-item {
+  transition-delay: 0.1s !important;
+}
+
+.gallery-item:nth-child(3) .tv-container.other-item {
+  transition-delay: 0.2s !important;
+}
+
+.gallery-item:nth-child(4) .tv-container.other-item {
+  transition-delay: 0.3s !important;
+}
+
+.gallery-item:nth-child(5) .tv-container.other-item {
+  transition-delay: 0.4s !important;
+}
+
+.gallery-item:nth-child(6) .tv-container.other-item {
+  transition-delay: 0.5s !important;
+}
   /* ============================================= */
   /*              Base Styles                      */
   /* ============================================= */
@@ -1142,11 +1545,169 @@ watch(locale, () => {
     pointer-events: none;
   }
   
-  /* حاوية التلفاز */
+  /* ============================================= */
+  /*              Cinematic Styles                 */
+  /* ============================================= */
+  .cinematic-transition {
+    transition: all 0.8s cubic-bezier(0.215, 0.61, 0.355, 1) !important;
+  }
+  
+  .gsap-enhanced .tv-container {
+    will-change: transform, opacity, filter !important;
+    transform-style: preserve-3d !important;
+    backface-visibility: hidden !important;
+  }
+  
+  .cinematic-video {
+    backface-visibility: hidden !important;
+    transform: translateZ(0) !important;
+    image-rendering: pixelated !important;
+  }
+  
+  .cinematic-enter {
+    animation: cinematicEnter 1.2s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
+  }
+  
+  @keyframes cinematicEnter {
+    0% {
+      opacity: 0;
+      transform: translateY(60px) scale(0.95);
+      filter: blur(10px);
+    }
+    60% {
+      opacity: 0.8;
+      transform: translateY(0) scale(1);
+      filter: blur(2px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: blur(0);
+    }
+  }
+  
+  .cinematic-optimized * {
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+    image-rendering: -webkit-optimize-contrast !important;
+    image-rendering: crisp-edges !important;
+  }
+  
+  .cinematic-depth {
+    perspective: 1000px !important;
+  }
+  
+  .cinematic-focus {
+    animation: focusBreath 6s ease-in-out infinite;
+  }
+  
+  @keyframes focusBreath {
+    0%, 100% { filter: brightness(1) contrast(1); }
+    50% { filter: brightness(1.05) contrast(1.1); }
+  }
+  
+  .cinematic-lighting {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(
+      ellipse at 50% 0%,
+      rgba(233, 72, 14, 0.05) 0%,
+      transparent 70%
+    );
+    pointer-events: none;
+    z-index: 99999;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  
+  .cinematic-lighting.active {
+    opacity: 1;
+  }
+  
+  .cinematic-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(0, 0, 0, 0.2) 30%,
+      rgba(0, 0, 0, 0.4) 70%,
+      rgba(0, 0, 0, 0.6) 100%
+    );
+    pointer-events: none;
+    z-index: 99998;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  
+  .cinematic-overlay.active {
+    opacity: 1;
+  }
+  
+  .scene-transition {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #000;
+    z-index: 999999;
+    opacity: 0;
+    pointer-events: none;
+    animation: sceneTransition 0.8s cubic-bezier(0.215, 0.61, 0.355, 1);
+  }
+  
+  @keyframes sceneTransition {
+    0% { opacity: 0; }
+    50% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+  
+  .cinematic-typography {
+    text-shadow: 
+      0 2px 4px rgba(0, 0, 0, 0.8),
+      0 4px 12px rgba(0, 0, 0, 0.6),
+      0 8px 24px rgba(0, 0, 0, 0.4) !important;
+    font-smooth: always !important;
+    -webkit-font-smoothing: antialiased !important;
+  }
+  
+  /* تأثير Bloom سينمائي للتلفاز */
+  .cinematic-desktop .tv-video.playing::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(
+      ellipse at center,
+      rgba(233, 72, 14, 0.15) 0%,
+      transparent 70%
+    );
+    pointer-events: none;
+    z-index: 5;
+    animation: bloomPulse 4s ease-in-out infinite;
+  }
+  
+  @keyframes bloomPulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.6; }
+  }
+  
+  /* ============================================= */
+  /*              TV Container                     */
+  /* ============================================= */
   .tv-container {
     position: fixed;
     top: 50%;
-    left: 50%;
+    left: 0;
     width: 40%;
     max-width: 800px;
     min-width: 300px;
@@ -1178,31 +1739,31 @@ watch(locale, () => {
   
   /* تأثيرات الظهور للفيديو الأول */
   .tv-container.appearing {
-  animation: tvAppear 1.2s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
-}
-
-@keyframes tvAppear {
-  0% {
-    opacity: 0;
-    transform: translate(-50%, 50%) scale(0.3) rotateX(10deg);
-    filter: blur(10px);
+    animation: tvAppear 1.2s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
   }
-  40% {
-    opacity: 0.6;
-    transform: translate(-50%, 0%) scale(0.6) rotateX(5deg);
-    filter: blur(5px);
+  
+  @keyframes tvAppear {
+    0% {
+      opacity: 0;
+      transform: translate(-50%, 50%) scale(0.3) rotateX(10deg);
+      filter: blur(10px);
+    }
+    40% {
+      opacity: 0.6;
+      transform: translate(-50%, 0%) scale(0.6) rotateX(5deg);
+      filter: blur(5px);
+    }
+    70% {
+      opacity: 0.8;
+      transform: translate(-50%, -10%) scale(0.8) rotateX(2deg);
+      filter: blur(2px);
+    }
+    100% {
+      opacity: 1;
+      transform: translate(-50%, 0%) scale(1) rotateX(0deg);
+      filter: blur(0);
+    }
   }
-  70% {
-    opacity: 0.8;
-    transform: translate(-50%, -10%) scale(0.8) rotateX(2deg);
-    filter: blur(2px);
-  }
-  100% {
-    opacity: 1;
-    transform: translate(-50%, 0%) scale(1) rotateX(0deg);
-    filter: blur(0);
-  }
-}
   
   /* وضع fullscreen مع مركزية مثالية */
   .tv-container.fullscreen,
@@ -1296,42 +1857,42 @@ watch(locale, () => {
   
   /* شاشة التلفاز */
   .tv-screen {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  background: #000;
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.tv-screen::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: transparent;
-  pointer-events: none;
-  z-index: 10;
-}
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  
+  .tv-screen::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    pointer-events: none;
+    z-index: 10;
+  }
   
   /* تأثيرات شاشة التلفاز عند الظهور */
   .tv-screen.appearing::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(45deg,
-    transparent 30%,
-    rgba(233, 72, 14, 0.15) 50%,
-    transparent 70%);
-  z-index: 5;
-  animation: screenGlow 2s ease-in-out;
-  pointer-events: none;
-}
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg,
+      transparent 30%,
+      rgba(233, 72, 14, 0.15) 50%,
+      transparent 70%);
+    z-index: 5;
+    animation: screenGlow 2s ease-in-out;
+    pointer-events: none;
+  }
   
   @keyframes screenGlow {
     0% {
@@ -1369,27 +1930,28 @@ watch(locale, () => {
   
   /* الفيديو */
   .tv-video {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  opacity: 0;
-  transition: opacity 0.6s ease;
-  background-color: #000;
-}
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    background-color: #000;
+  }
   
   .tv-video.loaded {
     opacity: 1 !important;
   }
+  
   .tv-container .tv-video.loaded,
-.tv-container.expanding .tv-video.loaded,
-.tv-container.fullscreen .tv-video.loaded {
-  opacity: 1 !important;
-  visibility: visible !important;
-}
+  .tv-container.expanding .tv-video.loaded,
+  .tv-container.fullscreen .tv-video.loaded {
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
   
   /* تأثيرات الفيديو عند التشغيل */
   .tv-video.playing {
@@ -1435,8 +1997,8 @@ watch(locale, () => {
   
   .fullscreen-video {
     position: absolute;
-    top: 50%;
-    left: 50%;
+    top: 0%;
+    left: 0%;
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -1732,11 +2294,12 @@ watch(locale, () => {
   
   .title-shadow {
     position: absolute;
-    top: 4px;
+    top: 0px;
     left: 4px;
     color: rgba(0, 0, 0, 0.3);
     z-index: 1;
-    filter: blur(4px);
+    filter: blur(5px);
+    opacity: .7;
   }
   
   .title-glow {
@@ -1778,8 +2341,8 @@ watch(locale, () => {
   .subtitle {
     color: #FFF;
     font-family: 'Inter', sans-serif;
-    font-size: clamp(18px, 2.5vw, 28px);
-    font-weight: 500;
+    font-size: clamp(20px, 2.5vw, 30px);
+    font-weight: 600;
     line-height: 1.4;
     letter-spacing: 8px;
     text-transform: uppercase;
@@ -2087,7 +2650,6 @@ watch(locale, () => {
   }
   
   @media (max-width: 480px) {
-  
     .gallery-item.is-first-item {
       height: 100vh;
       min-height: 100vh;
@@ -2165,7 +2727,11 @@ watch(locale, () => {
     .tv-container,
     .video-container,
     .content,
-    .transition-overlay {
+    .transition-overlay,
+    .cinematic-transition,
+    .scene-transition,
+    .cinematic-lighting,
+    .cinematic-overlay {
       transition: none !important;
       animation: none !important;
     }
@@ -2177,54 +2743,69 @@ watch(locale, () => {
     -moz-osx-font-smoothing: grayscale;
   }
 
-
-
   /* إصلاح كامل لمشكلة الشاشة السوداء في fullscreen */
-.tv-container.fullscreen .tv-video,
-.tv-container.keep-fullscreen .tv-video {
-  opacity: 1 !important;
-  visibility: visible !important;
-  display: block !important;
-}
+  .tv-container.fullscreen .tv-video,
+  .tv-container.keep-fullscreen .tv-video {
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: block !important;
+  }
 
-/* إزالة أي خلفية سوداء من الشاشة في fullscreen */
-.tv-container.fullscreen .tv-screen,
-.tv-container.keep-fullscreen .tv-screen {
-  background: transparent !important;
-}
+  /* إزالة أي خلفية سوداء من الشاشة في fullscreen */
+  .tv-container.fullscreen .tv-screen,
+  .tv-container.keep-fullscreen .tv-screen {
+    background: transparent !important;
+  }
 
-/* تأكيد ظهور الفيديو في كل الحالات */
-.tv-video {
-  opacity: 1 !important;
-  background-color: transparent !important;
-}
+  /* تأكيد ظهور الفيديو في كل الحالات */
+  .tv-video {
+    opacity: 1 !important;
+    background-color: transparent !important;
+  }
 
-.tv-video.loaded {
-  opacity: 1 !important;
-  visibility: visible !important;
-}
+  .tv-video.loaded {
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
 
-/* إصلاح خاص للفيديو الأول في fullscreen */
-.tv-container[data-first-video="true"].fullscreen .tv-video {
-  opacity: 1 !important;
-  visibility: visible !important;
-  z-index: 9999 !important;
-}
+  /* إصلاح خاص للفيديو الأول في fullscreen */
+  .tv-container[data-first-video="true"].fullscreen .tv-video {
+    opacity: 1 !important;
+    visibility: visible !important;
+    z-index: 9999 !important;
+  }
 
-/* إخفاء التأثيرات الزائدة في fullscreen */
-.tv-container.fullscreen .tv-screen-overlay,
-.tv-container.fullscreen .tv-reflection,
-.tv-container.fullscreen .tv-scanlines,
-.tv-container.keep-fullscreen .tv-screen-overlay,
-.tv-container.keep-fullscreen .tv-reflection,
-.tv-container.keep-fullscreen .tv-scanlines {
-  display: none !important;
-}
+  /* إخفاء التأثيرات الزائدة في fullscreen */
+  .tv-container.fullscreen .tv-screen-overlay,
+  .tv-container.fullscreen .tv-reflection,
+  .tv-container.fullscreen .tv-scanlines,
+  .tv-container.keep-fullscreen .tv-screen-overlay,
+  .tv-container.keep-fullscreen .tv-reflection,
+  .tv-container.keep-fullscreen .tv-scanlines {
+    display: none !important;
+  }
 
-/* التأكد من أن الشاشة فارغة في fullscreen */
-.tv-container.fullscreen .tv-screen::after {
-  display: none !important;
-}
-
-
+  /* التأكد من أن الشاشة فارغة في fullscreen */
+  .tv-container.fullscreen .tv-screen::after {
+    display: none !important;
+  }
+  
+  /* تحسينات خاصة للتجربة السينمائية */
+  .cinematic-tablet .tv-container {
+    transition: all 0.4s ease !important;
+  }
+  
+  .cinematic-tablet .content {
+    transform: translate(-50%, -50%) scale(0.98) !important;
+  }
+  
+  .cinematic-mobile .tv-container {
+    transition: none !important;
+    animation: none !important;
+  }
+  
+  .cinematic-mobile .content {
+    transform: translate(-50%, -50%) scale(1) !important;
+    transition: opacity 0.3s ease !important;
+  }
 </style>

@@ -22,7 +22,7 @@
 import { onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { RouterView } from 'vue-router';
-
+import '@/styles/cinematic.css'
 import FooterComp from './components/master/LatestFooter.vue';
 import SplashScreen from './components/StartedCom.vue';
 import WhatsAppFloat from './components/WhatsAppFloat.vue'; // المسار الصحيح

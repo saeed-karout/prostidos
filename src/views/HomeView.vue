@@ -21,6 +21,7 @@ const isScrollingEnabled = ref(true);
 const lastScrollTime = ref(0);
 
 // بيانات الأعمال
+// بيانات الأعمال
 const futureWorks = computed(() => [
   {
     videoSrc: ESTSSVideo,
@@ -29,7 +30,8 @@ const futureWorks = computed(() => [
     workKey: 'ESTSS',
     buttonText: t('btn-watch', 'Watch Full Session'),
     buttonLink: "https://youtu.be/CAQelKfyiZA?si=HJd3WNhi9XMqxRQ0",
-    showDescription: true
+    showDescription: true,
+    isFirstItem: true // ← إضافة هذا للسطر الأول فقط
   },
   {
     videoSrc: zarabiVideo,
@@ -38,7 +40,8 @@ const futureWorks = computed(() => [
     workKey: 'Zarabi',
     buttonText: t('btn-watch', 'Watch Full Session'),
     buttonLink: "https://youtu.be/sMEvjaTWyGY?si=AdFL4j2Wu8mBh7vA",
-    showDescription: true
+    showDescription: true,
+    isFirstItem: false // ← إضافة هذا للباقي
   },
   {
     videoSrc: FinalEditionVideo,
@@ -47,7 +50,8 @@ const futureWorks = computed(() => [
     workKey: 'FinalEdition',
     buttonText: t('btn-watch', 'Watch Full Session'),
     buttonLink: "https://youtu.be/lNG7WZmmIAM?si=hUpgegkfxf0BwUvf",
-    showDescription: true
+    showDescription: true,
+    isFirstItem: false
   },
   {
     videoSrc: beachyVideo,
@@ -56,7 +60,8 @@ const futureWorks = computed(() => [
     workKey: 'BeachyRentals',
     buttonText: t('btn-watch', 'Watch Full Session'),
     buttonLink: "https://drive.google.com/file/d/1mwaNSyN_62Co961e2bwIihLRcrqtsn3g/view",
-    showDescription: true
+    showDescription: true,
+    isFirstItem: false
   },
   {
     videoSrc: EventCoverage,
@@ -65,7 +70,8 @@ const futureWorks = computed(() => [
     workKey: 'PodcastProduction',
     buttonText: t('btn-watch', 'Watch Full Session'),
     buttonLink: "https://youtu.be/Y8P7k-B86VI?si=YHL3q-1xLV3xFaOP",
-    showDescription: true
+    showDescription: true,
+    isFirstItem: false
   },
   {
     videoSrc: eventFilms,
@@ -74,7 +80,8 @@ const futureWorks = computed(() => [
     workKey: 'EventCoverage',
     buttonText: t('btn-watch', 'Watch Full Session'),
     buttonLink: "https://www.youtube.com/watch?v=zYWGjqvC7uc",
-    showDescription: true
+    showDescription: true,
+    isFirstItem: false
   }
 ]);
 
@@ -260,7 +267,35 @@ onMounted(() => {
     // إخفاء الفيديوهات في البداية
     setTimeout(checkAndHideVideos, 100);
   });
+
+  setTimeout(() => {
+    const videoContainers = document.querySelectorAll('.video-container');
+    videoContainers.forEach(container => {
+      if (container) {
+        // إجبار الحاوية على أخذ الشاشة كاملة
+        container.style.position = 'fixed';
+        container.style.top = '0';
+        container.style.left = '0';
+        container.style.width = '100vw';
+        container.style.height = '100vh';
+        container.style.zIndex = '1000';
+        container.style.opacity = '1';
+        
+        // إجبار الفيديو على أخذ الشاشة كاملة
+        const video = container.querySelector('video');
+        if (video) {
+          video.style.objectFit = 'cover';
+          video.style.width = '100%';
+          video.style.height = '100%';
+          video.style.position = 'absolute';
+          video.style.top = '0';
+          video.style.left = '0';
+        }
+      }
+    });
+  }, 1000);
 });
+
 
 onUnmounted(() => {
   window.removeEventListener('wheel', handleWheel);
@@ -286,25 +321,27 @@ onUnmounted(() => {
 
       <!-- Gallery Items -->
       <div class="gallery-container" ref="galleryContainer">
-        <GalleryItem v-for="(work, index) in futureWorks" :key="`${work.workKey}-${locale}`" :video-src="work.videoSrc"
-          :title="work.title" :subtitle="work.subtitle" :work-key="work.workKey" :button-text="work.buttonText"
-          :button-link="work.buttonLink" :show-description="work.showDescription" :index="index"
-          :is-first-item="index === 0" />
+        <GalleryItem 
+          v-for="(work, index) in futureWorks" 
+          :key="`${work.workKey}-${locale}`" 
+          :video-src="work.videoSrc"
+          :title="work.title" 
+          :subtitle="work.subtitle" 
+          :work-key="work.workKey" 
+          :button-text="work.buttonText"
+          :button-link="work.buttonLink" 
+          :show-description="work.showDescription" 
+          :index="index"
+          :is-first-item="index === 0" 
+        />
       </div>
     </section>
 
     <TimeLineComponent />
 
-
-    <div id="contact" class="p-[20px] md:p-[50px] ">
-
-      <!-- <LatestSection /> -->
-  
-  
-  
-      <ContactForm  />
+    <div id="contact" class="p-[20px] md:p-[50px]">
+      <ContactForm />
     </div>
-
   </div>
 </template>
 

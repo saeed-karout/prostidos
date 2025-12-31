@@ -16,6 +16,7 @@
         allowfullscreen
         loading="lazy"
         referrerpolicy="strict-origin-when-cross-origin"
+        playsinline
         :data-safari="isSafari ? 'true' : 'false'"
       ></iframe>
       
@@ -135,17 +136,17 @@
   });
 
   const contentAlignmentClass = computed(() => {
-  return locale.value === 'ar' 
-    ? 'right-[70px] left-auto text-right' 
-    : 'left-[70px] right-auto text-left';
-});
+    return locale.value === 'ar' 
+      ? 'right-[70px] left-auto text-right' 
+      : 'left-[70px] right-auto text-left';
+  });
   
   const youtubeSrc = computed(() => {
     const params = new URLSearchParams({
       autoplay: '1',
       mute: '1',
       controls: '0',
-      playsinline: '1',
+      playsinline: '1',           // مهم جدًا لـiOS
       rel: '0',
       iv_load_policy: '3',
       disablekb: '1',
@@ -240,19 +241,27 @@
           branding: 0,
           wmode: 'transparent',
           vq: 'hd720',
-          quality: 'hd720'
+          quality: 'hd720',
+          playsinline: 1
         },
         events: {
           onReady: (event) => {
             event.target.setPlaybackQuality('hd720');
             event.target.setPlaybackRate(1);
             hideYouTubeUI(event.target);
-  
+
+            // تحسين خاص لـSafari / iOS
             if (isSafari.value) {
               setTimeout(() => {
                 event.target.mute();
                 event.target.playVideo();
-              }, 500);
+                // محاولة إضافية بعد ثانية إذا لم يبدأ
+                setTimeout(() => {
+                  if (player && player.getPlayerState() !== 1) {
+                    player.playVideo();
+                  }
+                }, 1000);
+              }, 800);
             } else {
               event.target.mute();
               event.target.playVideo();
@@ -268,12 +277,14 @@
               event.target.playVideo();
             }
           },
-          onError: () => {
+          onError: (event) => {
+            console.error('YouTube Player Error:', event.data);
             showFallback.value = true;
           }
         }
       });
     } catch (error) {
+      console.error('YouTube Player Init Error:', error);
       showFallback.value = true;
     }
   }
@@ -322,7 +333,7 @@
     }, 1000);
   }
   
-  // الأنيميشنز
+  // الأنيميشنز (بدون تغيير)
   const setupAnimations = () => {
     if (text2El.value) {
       text2El.value.style.opacity = '1';
@@ -391,12 +402,12 @@
     }
   };
   
-  // مراقبة تغيير اللغة لإعادة تشغيل الأنيميشنز والجسيمات
+  // مراقبة تغيير اللغة
   watch(locale, () => {
     nextTick(() => {
-      typeWriter();                    // إعادة كتابة النص
-      setupAnimations();               // إعادة الأنيميشنز
-      createFloatingParticles();       // إعادة الجسيمات (مع الاتجاه الصحيح)
+      typeWriter();
+      setupAnimations();
+      createFloatingParticles();
     });
   });
   
@@ -463,6 +474,8 @@
     document.head.appendChild(style);
   }
   </script>
+
+
 
 <style scoped>
   /* ============================================= */
