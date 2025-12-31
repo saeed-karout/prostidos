@@ -1,6 +1,5 @@
-<!-- eslint-disable no-unused-vars -->
 <template>
-  <div 
+  <div
     class="gallery-item cinematic-transition gsap-enhanced"
     :class="{
       'cinematic-desktop': isDesktopExperience,
@@ -18,81 +17,55 @@
     ref="galleryItem"
     :key="`${workKey}-${locale}`"
     :data-index="index"
-    :style="{
-      'z-index': getZIndex()
-    }"
+    :style="{ 'z-index': getZIndex() }"
   >
-    
-    <!-- تأثيرات الإضاءة السينمائية -->
-    <div 
-      class="cinematic-lighting" 
-      :class="{ 'active': isFullscreen || isExpanding }"
-    ></div>
-    
-    <!-- طبقة الـ Overlay السينمائية -->
-    <div 
-      class="cinematic-overlay" 
-      :class="{ 'active': isFullscreen || isExpanding }"
-    ></div>
-    
-    <!-- طبقة الانتقال السينمائية -->
+    <div class="cinematic-lighting" :class="{ 'active': isFullscreen || isExpanding }"></div>
+    <div class="cinematic-overlay" :class="{ 'active': isFullscreen || isExpanding }"></div>
     <transition name="scene">
-      <div 
-        v-if="showSceneTransition"
-        class="scene-transition"
-      ></div>
+      <div v-if="showSceneTransition" class="scene-transition"></div>
     </transition>
-    
-    <!-- حاوية التلفاز (للفيديو الأول فقط) -->
- <!-- حاوية التلفاز للجميع -->
-<div 
-  class="tv-container cinematic-video"
-  ref="tvContainer"
-  :class="{ 
-    'fullscreen': isFullscreen,
-    'expanding': isExpanding,
-    'keep-fullscreen': keepFirstVideoFullscreen,
-    'behind': shouldBeBehind,
-    'appearing': isAppearing,
-    'first-item': isFirstItem,
-    'other-item': !isFirstItem
-  }"
-  :data-first-video="isFirstItem"
-  :data-fullscreen="isFullscreen"
-  :data-item-index="index"
->
-      <!-- إطار التلفاز -->
+
+    <div
+      class="tv-container cinematic-video"
+      ref="tvContainer"
+      :class="{
+        'fullscreen': isFullscreen,
+        'expanding': isExpanding,
+        'keep-fullscreen': keepFirstVideoFullscreen,
+        'behind': shouldBeBehind,
+        'appearing': isAppearing,
+        'first-item': isFirstItem,
+        'other-item': !isFirstItem
+      }"
+      :data-first-video="isFirstItem"
+      :data-fullscreen="isFullscreen"
+      :data-item-index="index"
+    >
       <div class="tv-frame" ref="tvFrame">
         <div class="tv-screen" ref="tvScreen">
-          <!-- الفيديو داخل شاشة التلفاز -->
           <video
             class="tv-video cinematic-video"
             ref="videoEl"
             :poster="videoPoster"
-            preload="auto"
+            preload="metadata"
             muted
             playsinline
             webkit-playsinline
-            x5-playsinline
-            x5-video-player-type="h5"
             @loadeddata="onVideoLoaded"
             @canplay="onVideoLoaded"
             @error="onVideoError"
             @playing="onVideoPlaying"
-            @ended="onVideoEnded" 
-            @pause="onVideoPause" 
+            @ended="onVideoEnded"
+            @pause="onVideoPause"
           >
             <source :src="videoSrc" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
-          
-          <!-- تأثيرات شاشة التلفاز -->
           <div class="tv-screen-overlay"></div>
           <div class="tv-reflection"></div>
           <div class="tv-scanlines"></div>
         </div>
-        
-        <!-- تفاصيل إطار التلفاز -->
+
         <div class="tv-bezel" v-if="!isFullscreen">
           <div class="tv-brand">{{ title }}</div>
           <div class="tv-controls">
@@ -101,26 +74,18 @@
             <div class="tv-control tv-channel" @click="restartVideo"></div>
           </div>
         </div>
-        
-        <!-- قاعدة التلفاز -->
+
         <div class="tv-stand" v-if="!isFullscreen"></div>
       </div>
     </div>
-    
-   
-    
-    <!-- طبقة المحتوى مع تحسينات سينمائية -->
-    <div 
-      class="content cinematic-typography" 
+
+    <div
+      class="content cinematic-typography"
       ref="contentEl"
-      :class="{ 
-        'visible': isFullscreen && isContentVisible && !shouldBeBehindContent,
-        'cinematic-enter': showContentAnimation
-      }"
+      :class="{ 'visible': isFullscreen && isContentVisible && !shouldBeBehindContent }"
       style="pointer-events: auto;"
     >
       <div class="top">
-        <!-- العنوان -->
         <div class="title-wrapper">
           <div class="title">
             <span class="title-text">{{ title }}</span>
@@ -129,8 +94,6 @@
           </div>
           <div class="title-underline"></div>
         </div>
-
-        <!-- العنوان الفرعي -->
         <div class="subtitle-wrapper">
           <div class="subtitle">
             <span class="subtitle-text">{{ subtitle }}</span>
@@ -138,27 +101,14 @@
           </div>
           <div class="subtitle-line"></div>
         </div>
-
-        <!-- الوصف -->
-        <div 
-          v-if="showDescription && description" 
-          class="description-wrapper"
-        >
+        <div v-if="showDescription && description" class="description-wrapper">
           <div class="description">
             <span class="description-text">{{ description }}</span>
           </div>
           <div class="description-line"></div>
         </div>
       </div>
-
-      <!-- الزر -->
-      <a 
-        :href="buttonLink" 
-        target="_blank" 
-        class="btn-wrapper"
-        @mouseenter="handleButtonHover"
-        @mouseleave="handleButtonLeave"
-      >
+      <a :href="buttonLink" target="_blank" class="btn-wrapper" @mouseenter="handleButtonHover" @mouseleave="handleButtonLeave">
         <div class="btn">
           <span class="btn-text">{{ finalButtonText }}</span>
           <div class="btn-glow"></div>
@@ -168,11 +118,7 @@
       </a>
     </div>
 
-    <!-- طبقة الانتقال -->
-    <div 
-      class="transition-overlay" 
-      :class="{ 'active': isTransitioning }"
-    ></div>
+    <div class="transition-overlay" :class="{ 'active': isTransitioning }"></div>
   </div>
 </template>
 
@@ -181,65 +127,30 @@ import { ref, onMounted, onUnmounted, computed, watch, nextTick } from 'vue';
 import { useI18n } from 'vue-i18n';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
 gsap.registerPlugin(ScrollTrigger);
 
 const { t, locale } = useI18n();
 
-// تعريف الـ props
 const props = defineProps({
-  videoSrc: {
-    type: String,
-    required: true
-  },
-  videoPoster: {
-    type: String,
-    default: ''
-  },
-  title: {
-    type: String,
-    required: true
-  },
-  subtitle: {
-    type: String,
-    required: true
-  },
-  workKey: {
-    type: String,
-    default: ''
-  },
-  buttonText: {
-    type: String,
-    default: 'btn-watch'
-  },
-  buttonLink: {
-    type: String,
-    default: '#'
-  },
-  showDescription: {
-    type: Boolean,
-    default: false
-  },
-  index: {
-    type: Number,
-    default: 0
-  },
-  isFirstItem: {
-    type: Boolean,
-    default: false
-  }
+  videoSrc: { type: String, required: true },
+  videoPoster: { type: String, default: '' },
+  title: { type: String, required: true },
+  subtitle: { type: String, required: true },
+  workKey: { type: String, default: '' },
+  buttonText: { type: String, default: 'btn-watch' },
+  buttonLink: { type: String, default: '#' },
+  showDescription: { type: Boolean, default: false },
+  index: { type: Number, default: 0 },
+  isFirstItem: { type: Boolean, default: false }
 });
 
-// Refs
 const galleryItem = ref(null);
 const tvContainer = ref(null);
-const videoContainer = ref(null);
 const tvFrame = ref(null);
 const tvScreen = ref(null);
 const videoEl = ref(null);
 const contentEl = ref(null);
 
-// الحالة الحالية
 const isVideoLoaded = ref(false);
 const isVisible = ref(false);
 const isExpanding = ref(false);
@@ -249,7 +160,6 @@ const isTransitioning = ref(false);
 const isPlaying = ref(true);
 const isMuted = ref(true);
 const scrollProgress = ref(0);
-const isFirstVideoCompleted = ref(false);
 const isButtonHovered = ref(false);
 const videoLoadAttempted = ref(false);
 const isVideoPlaying = ref(false);
@@ -259,1071 +169,260 @@ const shouldBeBehindContent = ref(false);
 const shouldBeBehind = ref(false);
 const isAppearing = ref(false);
 
-// === حالة جديدة للتجربة السينمائية ===
 const isDesktopExperience = ref(true);
 const isTabletExperience = ref(false);
 const isMobileExperience = ref(false);
 const showSceneTransition = ref(false);
 const showContentAnimation = ref(false);
-const cinematicAnimations = ref(null);
-
-// === جديد: تتبع ما إذا كان المستخدم وصل قرب نهاية الصفحة ===
 const isNearEnd = ref(false);
 
-// Computed Properties
-const finalButtonText = computed(() => {
-  return props.buttonText === 'btn-watch' ? t('btn-watch', 'Watch Full Session') : props.buttonText;
-});
-
-const description = computed(() => {
-  if (props.workKey) {
-    return t(`featuredWorks.${props.workKey}.description`, '');
-  }
-  return '';
-});
+const finalButtonText = computed(() => props.buttonText === 'btn-watch' ? t('btn-watch', 'Watch Full Session') : props.buttonText);
+const description = computed(() => props.workKey ? t(`featuredWorks.${props.workKey}.description`, '') : '');
 
 const getZIndex = () => {
   if (shouldBeBehindContent.value) return 10;
-  if (isFullscreen.value && !shouldBeBehind.value) return 9999;
+  if (isFullscreen.value) return 9999;
   if (isVisible.value) return 1000 + props.index;
   return 100 + props.index;
 };
 
-// === دوال جديدة للتجربة السينمائية ===
 const checkDeviceType = () => {
   const width = window.innerWidth;
-  
-  if (width >= 1025) {
-    isDesktopExperience.value = true;
-    isTabletExperience.value = false;
-    isMobileExperience.value = false;
-  } else if (width >= 768 && width <= 1024) {
-    isDesktopExperience.value = false;
-    isTabletExperience.value = true;
-    isMobileExperience.value = false;
-  } else {
-    isDesktopExperience.value = false;
-    isTabletExperience.value = false;
-    isMobileExperience.value = true;
-  }
-};
-
-const setupCinematicAnimations = () => {
-  if (!galleryItem.value || !props.isFirstItem) return;
-  
-  // تنظيف أي أنيميشن سابقة
-  ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-  
-  if (isDesktopExperience.value) {
-    setupDesktopCinematic();
-  } else if (isTabletExperience.value) {
-    setupTabletCinematic();
-  } else {
-    setupMobileCinematic();
-  }
-};
-
-const setupDesktopCinematic = () => {
-  if (!tvContainer.value || !contentEl.value) return;
-  
-  cinematicAnimations.value = gsap.timeline({
-    scrollTrigger: {
-      trigger: galleryItem.value,
-      start: "top bottom",
-      end: "bottom top",
-      scrub: true,
-      markers: false,
-      onEnter: () => {
-        showContentAnimation.value = true;
-        setTimeout(() => { showContentAnimation.value = false; }, 1200);
-      },
-      onLeaveBack: () => {
-        showContentAnimation.value = false;
-      }
-    }
-  });
-  
-  // أنيميشن دخول التلفاز
-  cinematicAnimations.value.fromTo(tvContainer.value,
-    {
-      scale: 0.85,
-      filter: 'brightness(0.6) blur(2px)',
-      y: 100
-    },
-    {
-      scale: 1,
-      filter: 'brightness(1) blur(0px)',
-      y: 0,
-      duration: 1,
-      ease: 'power3.out'
-    },
-    0
-  );
-  
-  // أنيميشن المحتوى
-  if (contentEl.value) {
-    cinematicAnimations.value.fromTo(contentEl.value,
-      {
-        opacity: 0,
-        y: 80,
-        scale: 0.95
-      },
-      {
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        duration: 0.8,
-        ease: 'power3.out'
-      },
-      0.2
-    );
-  }
-  
-  // أنيميشن النصوص متدرجة
-  if (contentEl.value) {
-    const textElements = contentEl.value.querySelectorAll('.title, .subtitle, .description, .btn-wrapper');
-    gsap.fromTo(textElements,
-      {
-        opacity: 0,
-        y: 30
-      },
-      {
-        opacity: 1,
-        y: 0,
-        stagger: 0.15,
-        duration: 0.6,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: galleryItem.value,
-          start: "top 80%",
-          end: "top 50%",
-          scrub: 0.5
-        }
-      }
-    );
-  }
-};
-
-const setupTabletCinematic = () => {
-  if (!galleryItem.value) return;
-  
-  // إضافة Snap للتابلت
-  galleryItem.value.style.scrollSnapAlign = 'start';
-  
-  // أنيميشن دخول بسيطة
-  gsap.fromTo(galleryItem.value,
-    {
-      opacity: 0,
-      scale: 0.96,
-      y: 30
-    },
-    {
-      opacity: 1,
-      scale: 1,
-      y: 0,
-      duration: 0.9,
-      ease: "power3.out",
-      scrollTrigger: {
-        trigger: galleryItem.value,
-        start: "top 80%",
-        end: "top 30%",
-        toggleActions: "play none none reverse"
-      }
-    }
-  );
-};
-
-const setupMobileCinematic = () => {
-  if (!contentEl.value) return;
-  
-  // أنيميشن المحتوى فقط على الموبايل
-  gsap.fromTo(contentEl.value,
-    {
-      opacity: 0,
-      y: 40
-    },
-    {
-      opacity: 1,
-      y: 0,
-      duration: 0.6,
-      ease: "power2.out",
-      scrollTrigger: {
-        trigger: galleryItem.value,
-        start: "top 85%",
-        toggleActions: "play none none reverse"
-      }
-    }
-  );
+  isDesktopExperience.value = width >= 1025;
+  isTabletExperience.value = width >= 768 && width <= 1024;
+  isMobileExperience.value = width < 768;
 };
 
 const playSceneTransition = () => {
   showSceneTransition.value = true;
-  setTimeout(() => {
-    showSceneTransition.value = false;
-  }, 800);
-};
-
-// دوال التفاعل مع الزر
-const handleButtonHover = () => {
-  isButtonHovered.value = true;
-};
-
-const handleButtonLeave = () => {
-  isButtonHovered.value = false;
-};
-
-// دالة معالجة أخطاء الفيديو
-const onVideoError = (e) => {
-  console.error('Video error:', e);
-  if (videoEl.value && props.isFirstItem) {
-    setTimeout(() => {
-      videoEl.value.load();
-      setTimeout(safePlayVideo, 1000);
-    }, 2000);
-  }
-};
-
-const onVideoPlaying = () => {
-  isVideoPlaying.value = true;
+  setTimeout(() => showSceneTransition.value = false, 800);
 };
 
 const onVideoLoaded = () => {
   isVideoLoaded.value = true;
   if (videoEl.value) {
-    videoEl.value.classList.add('loaded');
     videoEl.value.style.opacity = '1';
-    videoEl.value.style.visibility = 'visible';
-    
-    if (props.isFirstItem) {
-      if (tvScreen.value) {
-        setTimeout(() => {
-          if (tvScreen.value) tvScreen.value.classList.add('appearing');
-        }, 100);
-      }
-      
-      if ((isVisible.value || isFullscreen.value)) {
-        setTimeout(() => {
-          if (videoEl.value) {
-            videoEl.value.classList.add('playing');
-            safePlayVideo();
-          }
-        }, 300);
-      }
+    if ((isVisible.value || isFullscreen.value) && !isVideoPlaying.value) {
+      safePlayVideo();
     }
   }
 };
 
-const onVideoEnded = () => {
-  if (props.isFirstItem) {
-    restartVideo();
+const onVideoError = () => {
+  if (videoEl.value && props.isFirstItem) {
+    setTimeout(() => videoEl.value.load(), 2000);
   }
 };
 
-const onVideoPause = () => {
-  isVideoPlaying.value = false;
-};
+const onVideoPlaying = () => isVideoPlaying.value = true;
+const onVideoEnded = () => props.isFirstItem && restartVideo();
+const onVideoPause = () => isVideoPlaying.value = false;
 
-const safePlayVideo = async () => {
+const safePlayVideo = () => {
   if (!videoEl.value || videoLoadAttempted.value) return;
-  
   videoLoadAttempted.value = true;
-  
-  try {
-    videoEl.value.classList.add('playing');
-    
-    if (videoEl.value.readyState >= 3) {
-      const playPromise = videoEl.value.play();
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => {
-            isVideoPlaying.value = true;
-            setTimeout(() => {
-              videoEl.value.classList.remove('playing');
-            }, 1500);
-          })
-          .catch((error) => {
-            console.log('Auto-play prevented:', error);
-            setupUserInteractionPlay();
-          });
-      }
-    } else {
-      const waitForReady = () => {
-        if (videoEl.value.readyState >= 3) {
-          safePlayVideo();
-        } else {
-          setTimeout(waitForReady, 100);
-        }
-      };
-      waitForReady();
-    }
-  } catch (error) {
-    console.error('Error playing video:', error);
-    setupUserInteractionPlay();
-  }
+  videoEl.value.currentTime = 0;
+  videoEl.value.play().catch(() => setupUserInteractionPlay());
 };
 
 const setupUserInteractionPlay = () => {
-  const playOnInteraction = () => {
-    userInteracted.value = true;
-    if (videoEl.value && !isVideoPlaying.value) {
-      videoEl.value.play()
-        .then(() => { isVideoPlaying.value = true; })
-        .catch(e => console.log('Still cannot play:', e));
-    }
-  };
-  
-  document.addEventListener('click', playOnInteraction, { once: true });
-  document.addEventListener('touchstart', playOnInteraction, { once: true });
-  document.addEventListener('keydown', playOnInteraction, { once: true });
+  const handler = () => videoEl.value?.play().catch(() => {});
+  document.addEventListener('click', handler, { once: true });
+  document.addEventListener('touchstart', handler, { once: true });
 };
 
-const togglePlay = () => {
-  if (!videoEl.value) return;
-  userInteracted.value = true;
-  
-  if (videoEl.value.paused) {
-    videoEl.value.play().then(() => {
-      isPlaying.value = true;
-      isVideoPlaying.value = true;
+const togglePlay = () => videoEl.value?.paused ? videoEl.value.play() : videoEl.value.pause();
+const toggleSound = () => { if (videoEl.value) videoEl.value.muted = !videoEl.value.muted; };
+const restartVideo = () => { if (videoEl.value) { videoEl.value.currentTime = 0; videoEl.value.play(); } };
+
+const applyFullscreenStyles = () => {
+  if (!tvContainer.value) return;
+
+  // الحل الأمثل للموبايل: inset: 0 بدل width/height
+  Object.assign(tvContainer.value.style, {
+    position: 'fixed',
+    inset: '0',                // أهم سطر: يعني top:0; left:0; right:0; bottom:0;
+    width: '100vw',
+    height: '100vh',
+    maxWidth: 'none',
+    maxHeight: 'none',
+    margin: '0',
+    padding: '0',
+    transform: 'none',
+    opacity: '1',
+    zIndex: '9999',
+    background: '#000',
+    pointerEvents: 'auto',
+    overflow: 'hidden'
+  });
+
+  if (tvFrame.value) {
+    Object.assign(tvFrame.value.style, {
+      borderRadius: '0',
+      padding: '0',
+      background: 'transparent',
+      boxShadow: 'none',
+      width: '100%',
+      height: '100%'
     });
-  } else {
-    videoEl.value.pause();
-    isPlaying.value = false;
-    isVideoPlaying.value = false;
   }
-};
 
-const toggleSound = () => {
-  if (!videoEl.value) return;
-  userInteracted.value = true;
-  videoEl.value.muted = !videoEl.value.muted;
-  isMuted.value = videoEl.value.muted;
-};
+  if (tvScreen.value) {
+    Object.assign(tvScreen.value.style, {
+      borderRadius: '0',
+      width: '100%',
+      height: '100%',
+      background: 'transparent'
+    });
+  }
 
-const restartVideo = () => {
-  if (!videoEl.value) return;
-  userInteracted.value = true;
-  videoEl.value.currentTime = 0;
-  videoEl.value.play().then(() => {
-    isPlaying.value = true;
-    isVideoPlaying.value = true;
+  if (videoEl.value) {
+    Object.assign(videoEl.value.style, {
+      position: 'absolute',
+      top: '0',
+      left: '0',
+      width: '100%',
+      height: '100%',
+      objectFit: 'cover',
+      objectPosition: 'center',
+      opacity: '1',
+      visibility: 'visible'
+    });
+  }
+
+  // إخفاء العناصر غير المرغوبة
+  const bezel = tvFrame.value?.querySelector('.tv-bezel');
+  if (bezel) bezel.style.display = 'none';
+
+  const stand = tvFrame.value?.querySelector('.tv-stand');
+  if (stand) stand.style.display = 'none';
+
+  tvScreen.value?.querySelectorAll('.tv-screen-overlay, .tv-reflection, .tv-scanlines').forEach(el => {
+    if (el) el.style.display = 'none';
   });
-};
-
-// === جديد: فحص ما إذا كان المستخدم قريبًا من نهاية الصفحة ===
-const checkIfNearPageEnd = () => {
-  const scrollTop = window.scrollY || document.documentElement.scrollTop;
-  const windowHeight = window.innerHeight;
-  const documentHeight = document.documentElement.scrollHeight;
-
-  // إذا بقي أقل من 1.5 شاشة حتى النهاية → نعتبره وصل للنهاية
-  const remaining = documentHeight - (scrollTop + windowHeight);
-  const threshold = windowHeight * 1.5;
-
-  if (remaining <= threshold && !isNearEnd.value) {
-    isNearEnd.value = true;
-    forceFirstVideoToFullscreen();
-  }
-};
-
-// === جديد: إجبار الفيديو الأول على fullscreen عند الوصول لنهاية الصفحة ===
-const forceFirstVideoToFullscreen = () => {
-  if (!props.isFirstItem || isFullscreen.value || window.innerWidth <= 768) return;
-
-  console.log('🟢 Forcing first video to fullscreen – user near page end');
-
-  isFullscreen.value = true;
-  isContentVisible.value = true;
-  keepFirstVideoFullscreen.value = true;
-
-  nextTick(() => {
-    if (tvContainer.value) {
-      applyFullscreenStyles();
-      tvContainer.value.classList.add('fullscreen', 'keep-fullscreen');
-    }
-
-    if (videoEl.value) {
-      videoEl.value.style.opacity = '1';
-      videoEl.value.style.visibility = 'visible';
-      videoEl.value.style.objectFit = 'cover';
-      if (videoEl.value.paused) {
-        videoEl.value.play().catch(() => {});
-      }
-    }
-    
-    // تشغيل تأثير الانتقال السينمائي
-    playSceneTransition();
-  });
-};
-
-const updateItemPosition = () => {
-  if (!galleryItem.value) return;
-  
-  const rect = galleryItem.value.getBoundingClientRect();
-  const windowHeight = window.innerHeight;
-  const elementTop = rect.top;
-  const elementBottom = rect.bottom;
-  const elementHeight = rect.height;
-  
-  let progress = 0;
-  
-  if (elementTop < windowHeight && elementBottom > 0) {
-    const visibleHeight = Math.min(elementBottom, windowHeight) - Math.max(elementTop, 0);
-    progress = visibleHeight / windowHeight;
-  }
-  
-  scrollProgress.value = progress;
-  
-  if (props.isFirstItem) {
-    updateFirstItem(progress, elementTop, elementBottom, elementHeight, windowHeight);
-  } else {
-    updateOtherItems(progress, elementTop, elementBottom, elementHeight, windowHeight);
-  }
-};
-
-const updateFirstItem = (progress, elementTop, elementBottom, elementHeight, windowHeight) => {
-  const elementCenter = elementTop + elementHeight / 2;
-  const viewportCenter = windowHeight / 2;
-  const distanceFromCenter = Math.abs(elementCenter - viewportCenter);
-  
-  let progressNormalized = progress;
-  
-  if (elementTop < windowHeight && elementBottom > 0) {
-    const visibleHeight = Math.min(elementBottom, windowHeight) - Math.max(elementTop, 0);
-    progressNormalized = visibleHeight / windowHeight;
-  }
-  
-  scrollProgress.value = progressNormalized;
-  
-  // === إزالة شروط الموبايل من المنطق ===
-  const visibilityThreshold = 0.10;
-  const isVisibleEnough = progressNormalized >= visibilityThreshold;
-  
-  const isAtMiddle = distanceFromCenter < windowHeight * 0.3;
-  const isAtTop = elementTop < windowHeight * 0.2 && elementTop > -windowHeight * 0.2;
-  
-  // === التعديل: إزالة !isMobile ===
-  if (isVisibleEnough && !isVisible.value && props.isFirstItem) {
-    startVideoAppearance();
-  }
-  
-  if (isAtMiddle && isVisible.value && !isExpanding.value && !isFullscreen.value && props.isFirstItem) {
-    expandVideo();
-  }
-  
-  if (isAtTop && isExpanding.value && !isFullscreen.value && props.isFirstItem) {
-    startVideoExit();
-  }
-  
-  if ((isVisible.value || isExpanding.value || isFullscreen.value) && props.isFirstItem && videoEl.value) {
-    ensureVideoVisibility();
-  }
-  const shouldBeVisible = progressNormalized > 0.05;
-  const shouldBeExpanding = distanceFromCenter < windowHeight * 0.4 && progressNormalized > 0.2;
-  const shouldBeFullscreen = distanceFromCenter < windowHeight * 0.2 && progressNormalized > 0.4;
-  
-  if (shouldBeVisible !== isVisible.value) {
-    isVisible.value = shouldBeVisible;
-  }
-  
-  if (shouldBeExpanding !== isExpanding.value) {
-    isExpanding.value = shouldBeExpanding;
-  }
-  
-  const scrollThreshold = 0.2;
-  const isScrolledPast = elementTop < -windowHeight * 1.5;
-  
-  if (isScrolledPast) {
-    shouldBeBehindContent.value = true;
-    shouldBeBehind.value = true;
-    isContentVisible.value = false;
-    keepFirstVideoFullscreen.value = false;
-    
-    if (tvContainer.value) {
-      tvContainer.value.style.opacity = '0.15';
-      tvContainer.value.style.pointerEvents = 'none';
-    }
-  } else {
-    shouldBeBehindContent.value = false;
-    shouldBeBehind.value = false;
-    
-    if (elementTop < windowHeight * scrollThreshold && elementBottom > windowHeight * (1 - scrollThreshold)) {
-      if (shouldBeFullscreen && !isFullscreen.value) {
-        enterFirstVideoFullscreen();
-      }
-      
-      if (shouldBeExpanding && !isExpanding.value && !isFullscreen.value) {
-        isExpanding.value = true;
-      }
-    } else {
-      if (isExpanding.value && !isFullscreen.value) {
-        isExpanding.value = false;
-      }
-    }
-    
-    if (isFullscreen.value && !shouldBeFullscreen && elementTop < -windowHeight * 0.2) {
-      keepFirstVideoFullscreen.value = true;
-      isContentVisible.value = false;
-      
-      if (tvContainer.value) {
-        tvContainer.value.style.opacity = '0.8';
-      }
-    }
-    
-    if (keepFirstVideoFullscreen.value && elementTop > -windowHeight * 0.05) {
-      keepFirstVideoFullscreen.value = false;
-      if (shouldBeFullscreen || elementTop > -windowHeight * 0.01) {
-        isContentVisible.value = true;
-      }
-      if (tvContainer.value) {
-        tvContainer.value.style.opacity = '1';
-      }
-    }
-    
-    if (isFullscreen.value && elementTop > windowHeight * 0.1) {
-      exitFullscreen();
-    }
-  }
-  
-  if (tvContainer.value && tvFrame.value && tvScreen.value) {
-    if (isScrolledPast) {
-      applyBehindContentStyles();
-    } else if (isFullscreen.value || keepFirstVideoFullscreen.value) {
-      applyFullscreenStyles();
-    } else if (shouldBeExpanding || isExpanding.value) {
-      applyExpandingStyles(progressNormalized);
-    } else {
-      applyNormalStyles(progressNormalized);
-    }
-  }
-  
-  if (videoEl.value && props.isFirstItem) {
-    if (isScrolledPast) {
-      if (!videoEl.value.paused) {
-        videoEl.value.pause();
-        videoEl.value.style.opacity = '0.5';
-      }
-    } else if ((shouldBeFullscreen || keepFirstVideoFullscreen.value) && !isVideoPlaying.value) {
-      if (isVideoLoaded.value || userInteracted.value) {
-        safePlayVideo();
-        ensureVideoVisibility();
-      }
-    } else if (shouldBeFullscreen || keepFirstVideoFullscreen.value) {
-      if (videoEl.value.paused && !videoEl.value.ended) {
-        videoEl.value.play().catch(() => {});
-      }
-      videoEl.value.style.opacity = '1';
-    } else if (!shouldBeFullscreen && !shouldBeExpanding) {
-      if (!videoEl.value.paused) {
-        videoEl.value.pause();
-      }
-    }
-  }
 };
 
 const startVideoAppearance = () => {
-  if (!props.isFirstItem || isAppearing.value) return; // إزالة شرط الموبايل
-  
+  if (isAppearing.value) return;
   isAppearing.value = true;
   isVisible.value = true;
-  
+
   if (tvContainer.value) {
-    tvContainer.value.style.opacity = '0';
-    tvContainer.value.style.transform = 'translate(-50%, 70%) scale(0.4)';
-    tvContainer.value.style.pointerEvents = 'none';
-    tvContainer.value.style.transition = 'all 1s cubic-bezier(0.215, 0.61, 0.355, 1)';
-    
+    Object.assign(tvContainer.value.style, {
+      opacity: '0',
+      left: '50%',
+      transform: 'translateX(-50%) translateY(100%) scale(0.3)',
+      pointerEvents: 'none'
+    });
+
     setTimeout(() => {
-      tvContainer.value.style.opacity = '0.8';
-      tvContainer.value.style.transform = 'translate(-50%, 30%) scale(0.6)';
-      tvContainer.value.style.pointerEvents = 'auto';
-      
-      if (tvScreen.value) {
-        tvScreen.value.classList.add('appearing');
-      }
-      
-      if (videoEl.value) {
-        if (!isVideoLoaded.value) videoEl.value.load();
-        
-        setTimeout(() => {
+      Object.assign(tvContainer.value.style, {
+        opacity: '0.9',
+        transform: 'translateX(-50%) translateY(-50%) scale(0.7)'
+      });
+      tvScreen.value?.classList.add('appearing');
+
+      setTimeout(() => {
+        if (videoEl.value) {
           videoEl.value.style.opacity = '1';
-          videoEl.value.style.visibility = 'visible';
-          videoEl.value.classList.add('playing');
           safePlayVideo();
-        }, 300);
-      }
+        }
+        Object.assign(tvContainer.value.style, {
+          opacity: '1',
+          transform: 'translateX(-50%) translateY(-50%) scale(1)'
+        });
+      }, 600);
     }, 100);
   }
 };
 
-const expandVideo = () => {
-  if (!props.isFirstItem || isExpanding.value || isFullscreen.value) return; // إزالة شرط الموبايل
-  
-  isExpanding.value = true;
-  
-  if (tvContainer.value) {
-    tvContainer.value.style.transition = 'all 0.8s cubic-bezier(0.215, 0.61, 0.355, 1)';
-    tvContainer.value.style.opacity = '1';
-    tvContainer.value.style.transform = 'translate(-50%, 5%) scale(0.8)';
-    
-    if (videoEl.value) {
-      videoEl.value.style.opacity = '1';
-      videoEl.value.style.transition = 'opacity 0.3s ease';
-      
-      if (videoEl.value.paused) {
-        setTimeout(() => {
-          videoEl.value.classList.add('playing');
-          safePlayVideo();
-        }, 400);
-      }
+const updateItemPosition = () => {
+  if (!galleryItem.value) return;
+  const rect = galleryItem.value.getBoundingClientRect();
+  const windowHeight = window.innerHeight;
+  const progress = Math.max(0, Math.min(1, (windowHeight - rect.top) / (windowHeight + rect.height)));
+
+  scrollProgress.value = progress;
+
+  // منطق مشترك لكل العناصر
+  const inView = progress > 0.1;
+  const centered = Math.abs(rect.top + rect.height / 2 - windowHeight / 2) < windowHeight * 0.3;
+
+  if (inView && !isVisible.value) {
+    isVisible.value = true;
+    if (!props.isFirstItem) {
+      tvContainer.value.style.opacity = '1';
+      tvContainer.value.style.transform = 'translateX(-50%) translateY(-50%) scale(0.9)';
+    } else {
+      startVideoAppearance();
     }
   }
-};
 
-const startVideoExit = () => {
-  if (!props.isFirstItem || !isExpanding.value || isFullscreen.value) return; // إزالة شرط الموبايل
-  
-  if (tvContainer.value) {
-    tvContainer.value.style.transition = 'all 0.6s cubic-bezier(0.215, 0.61, 0.355, 1)';
-    tvContainer.value.style.opacity = '1';
-    tvContainer.value.style.transform = 'translate(-50%, -5%) scale(0.95)';
-    
-    setTimeout(() => {
-      enterFirstVideoFullscreen();
-    }, 300);
+  if (centered && !isExpanding.value && !isFullscreen.value) {
+    isExpanding.value = true;
+    tvContainer.value.style.transform = 'translateX(-50%) translateY(-50%) scale(1)';
   }
-};
 
-const applyBehindContentStyles = () => {
-  if (!tvContainer.value) return;
-  tvContainer.value.style.position = 'fixed';
-  tvContainer.value.style.top = '0';
-  tvContainer.value.style.left = '0';
-  tvContainer.value.style.width = '100vw';
-  tvContainer.value.style.height = '100vh';
-  tvContainer.value.style.transform = 'none';
-  tvContainer.value.style.opacity = '0.15';
-  tvContainer.value.style.zIndex = '10';
-  tvContainer.value.style.transition = 'all 0.5s ease';
-  tvContainer.value.style.pointerEvents = 'none';
-  tvContainer.value.style.filter = 'blur(2px)';
-  
-  if (tvFrame.value) {
-    tvFrame.value.style.borderRadius = '0';
-    tvFrame.value.style.padding = '0';
-    tvFrame.value.style.background = 'transparent';
-    tvFrame.value.style.boxShadow = 'none';
-    tvFrame.value.style.transform = 'none';
-  }
-  
-  if (tvScreen.value) {
-    tvScreen.value.style.borderRadius = '0';
-    tvScreen.value.style.width = '100%';
-    tvScreen.value.style.height = '100%';
-  }
-  
-  const tvBezel = tvFrame.value?.querySelector('.tv-bezel');
-  const tvStand = tvFrame.value?.querySelector('.tv-stand');
-  if (tvBezel) tvBezel.style.display = 'none';
-  if (tvStand) tvStand.style.display = 'none';
-};
-
-const applyFullscreenStyles = () => {
-  if (!tvContainer.value) return;
-  
-  tvContainer.value.style.position = 'fixed';
-  tvContainer.value.style.top = '0';
-  tvContainer.value.style.left = '0';
-  tvContainer.value.style.width = '100vw';
-  tvContainer.value.style.height = '100vh';
-  tvContainer.value.style.transform = 'none';
-  tvContainer.value.style.opacity = '1';
-  tvContainer.value.style.zIndex = '9998';
-  tvContainer.value.style.transition = 'all 0.5s ease';
-  tvContainer.value.style.pointerEvents = 'auto';
-  tvContainer.value.style.filter = 'none';
-  tvContainer.value.style.background = 'transparent';
-  
-  if (tvFrame.value) {
-    tvFrame.value.style.borderRadius = '0';
-    tvFrame.value.style.padding = '0';
-    tvFrame.value.style.background = 'transparent';
-    tvFrame.value.style.boxShadow = 'none';
-    tvFrame.value.style.transform = 'none';
-    tvFrame.value.style.border = 'none';
-  }
-  
-  if (tvScreen.value) {
-    tvScreen.value.style.borderRadius = '0';
-    tvScreen.value.style.width = '100%';
-    tvScreen.value.style.height = '100%';
-    tvScreen.value.style.background = 'transparent';
-    tvScreen.value.style.border = 'none';
-  }
-  
-  if (videoEl.value) {
-    videoEl.value.style.opacity = '1';
-    videoEl.value.style.visibility = 'visible';
-    videoEl.value.style.objectFit = 'cover';
-    videoEl.value.style.width = '100%';
-    videoEl.value.style.height = '100%';
-    videoEl.value.style.position = 'absolute';
-    videoEl.value.style.top = '0';
-    videoEl.value.style.left = '0';
-    videoEl.value.style.zIndex = '9999';
-  }
-  
-  const tvBezel = tvFrame.value?.querySelector('.tv-bezel');
-  const tvStand = tvFrame.value?.querySelector('.tv-stand');
-  const overlays = tvScreen.value?.querySelectorAll('.tv-screen-overlay, .tv-reflection, .tv-scanlines');
-  if (tvBezel) tvBezel.style.display = 'none';
-  if (tvStand) tvStand.style.display = 'none';
-  if (overlays) overlays.forEach(el => el.style.display = 'none');
-};
-
-const applyExpandingStyles = (progress) => {
-  const scale = 0.5 + (progress * 0.5);
-  const translateY = -20 + (progress * 40);
-  
-  if (!tvContainer.value) return;
-  tvContainer.value.style.position = 'fixed';
-  tvContainer.value.style.top = '50%';
-  tvContainer.value.style.left = '0%';
-  tvContainer.value.style.width = `${40 + (progress * 40)}%`;
-  tvContainer.value.style.transform = `translate(-50%, ${translateY}%) scale(${scale})`;
-  tvContainer.value.style.opacity = `${0.5 + (progress * 0.5)}`;
-  tvContainer.value.style.transition = 'all 0.3s ease';
-  tvContainer.value.style.zIndex = '2000';
-  tvContainer.value.style.filter = 'none';
-  
-  const borderRadius = 20 * (1 - progress * 0.8);
-  if (tvFrame.value) {
-    tvFrame.value.style.borderRadius = `${borderRadius}px`;
-    tvFrame.value.style.padding = '15px';
-    tvFrame.value.style.background = 'linear-gradient(145deg, rgba(25, 25, 25, 0.95) 0%, rgba(45, 45, 45, 0.9) 50%, rgba(25, 25, 25, 0.95) 100%)';
-    tvFrame.value.style.boxShadow = '0 25px 70px rgba(0, 0, 0, 0.9), 0 0 0 2px rgba(233, 72, 14, 0.4), inset 0 0 40px rgba(0, 0, 0, 0.7), inset 0 0 0 1px rgba(255, 255, 255, 0.15)';
-  }
-  
-  const tvBezel = tvFrame.value?.querySelector('.tv-bezel');
-  const tvStand = tvFrame.value?.querySelector('.tv-stand');
-  if (tvBezel) tvBezel.style.display = 'flex';
-  if (tvStand) tvStand.style.display = 'block';
-};
-
-const applyNormalStyles = (progress) => {
-  const scale = 0.3 + (progress * 0.2);
-  const translateY = 50 - (progress * 50);
-  
-  if (!tvContainer.value) return;
-  tvContainer.value.style.position = 'fixed';
-  tvContainer.value.style.top = '50%';
-  tvContainer.value.style.left = '0%';
-  tvContainer.value.style.width = '40%';
-  tvContainer.value.style.transform = `translate(-50%, ${translateY}%) scale(${scale})`;
-  tvContainer.value.style.opacity = `${progress * 0.7}`;
-  tvContainer.value.style.transition = 'all 0.3s ease';
-  tvContainer.value.style.zIndex = '1000';
-  tvContainer.value.style.filter = 'none';
-  
-  if (tvFrame.value) {
-    tvFrame.value.style.borderRadius = '20px';
-    tvFrame.value.style.padding = '15px';
-    tvFrame.value.style.background = 'linear-gradient(145deg, rgba(25, 25, 25, 0.95) 0%, rgba(45, 45, 45, 0.9) 50%, rgba(25, 25, 25, 0.95) 100%)';
-    tvFrame.value.style.boxShadow = '0 25px 70px rgba(0, 0, 0, 0.9), 0 0 0 2px rgba(233, 72, 14, 0.4), inset 0 0 40px rgba(0, 0, 0, 0.7), inset 0 0 0 1px rgba(255, 255, 255, 0.15)';
-  }
-  
-  const tvBezel = tvFrame.value?.querySelector('.tv-bezel');
-  const tvStand = tvFrame.value?.querySelector('.tv-stand');
-  if (tvBezel) tvBezel.style.display = 'flex';
-  if (tvStand) tvStand.style.display = 'block';
-};
-
-const enterFirstVideoFullscreen = () => {
-  if (isTransitioning.value || !props.isFirstItem) return;
-  
-  console.log('🟢 Entering fullscreen (mobile allowed)');
-  requestFullscreenOnMobile();
-  isTransitioning.value = true;
-  isExpanding.value = false;
-  
-  if (tvScreen.value) {
-    tvScreen.value.classList.remove('appearing');
-  }
-  
-  if (videoEl.value) {
-    videoEl.value.style.opacity = '1';
-    videoEl.value.style.visibility = 'visible';
-    videoEl.value.style.zIndex = '9999';
-  }
-  
-  setTimeout(() => {
+  if (centered && isExpanding.value && !isFullscreen.value) {
     isFullscreen.value = true;
-    isFirstVideoCompleted.value = true;
-    
-    if (tvContainer.value && videoEl.value) {
-      tvContainer.value.style.transition = 'none';
-      applyFullscreenStyles();
-      
-      videoEl.value.style.opacity = '1';
-      videoEl.value.style.visibility = 'visible';
-      videoEl.value.style.objectFit = 'cover';
-      videoEl.value.style.zIndex = '9999';
-      
-      setTimeout(() => {
-        tvContainer.value.style.transition = 'all 0.5s cubic-bezier(0.215, 0.61, 0.355, 1)';
-        
-        if (videoEl.value.paused) {
-          videoEl.value.play().catch(() => {
-            setTimeout(() => { 
-              if (videoEl.value) videoEl.value.play().catch(() => {}); 
-            }, 300);
-          });
-        }
-        
-        setTimeout(() => {
-          isContentVisible.value = true;
-          isTransitioning.value = false;
-          // تشغيل تأثير الانتقال السينمائي
-          playSceneTransition();
-        }, 300);
-      }, 50);
-    }
-  }, 100);
-};
+    isContentVisible.value = true;
+    applyFullscreenStyles();
+    playSceneTransition();
+    if (videoEl.value && videoEl.value.paused) videoEl.value.play().catch(() => {});
+  }
 
-// دالة لطلب fullscreen على الموبايل
-const requestFullscreenOnMobile = () => {
-  const isMobile = window.innerWidth <= 768;
-  
-  if (isMobile && videoEl.value && !document.fullscreenElement) {
-    // محاولة الدخول إلى fullscreen mode
-    if (videoEl.value.requestFullscreen) {
-      videoEl.value.requestFullscreen().catch(e => {
-        console.log('Fullscreen request failed:', e);
-      });
-    } else if (videoEl.value.webkitRequestFullscreen) {
-      videoEl.value.webkitRequestFullscreen();
-    } else if (videoEl.value.mozRequestFullScreen) {
-      videoEl.value.mozRequestFullScreen();
-    } else if (videoEl.value.msRequestFullscreen) {
-      videoEl.value.msRequestFullscreen();
-    }
-  }
-};
-
-const ensureVideoVisibility = () => {
-  if (!videoEl.value || !props.isFirstItem) return;
-  
-  videoEl.value.style.opacity = '1';
-  videoEl.value.style.transition = 'opacity 0.5s ease';
-  
-  if (videoEl.value.readyState < 3) {
-    videoEl.value.load();
-    setTimeout(() => { videoEl.value.style.opacity = '1'; }, 500);
-  }
-  
-  if (videoEl.value.paused && !videoEl.value.ended) {
-    videoEl.value.play().catch(() => {
-      setTimeout(() => { if (videoEl.value) videoEl.value.play().catch(() => {}); }, 300);
-    });
-  }
-};
-
-const updateOtherItems = (progress, elementTop, elementBottom, elementHeight, windowHeight) => {
-  const shouldBeFullscreen = progress > 0.2;
-  const shouldBeVisible = progress > 0.05;
-  const shouldTransition = progress > 0.15 && progress < 0.25;
-  
-  const isScrolledPast = elementTop < -windowHeight * 0.5;
-  
-  if (shouldBeVisible !== isVisible.value) {
-    isVisible.value = shouldBeVisible;
-  }
-  
-  if (shouldBeFullscreen !== isFullscreen.value && !isScrolledPast) {
-    if (shouldBeFullscreen && !isFullscreen.value) {
-      enterFullscreenWithTransition();
-    } else if (!shouldBeFullscreen && isFullscreen.value) {
-      exitFullscreen();
-    }
-  }
-  
-  if (shouldTransition !== isTransitioning.value) {
-    isTransitioning.value = shouldTransition;
-  }
-  
-  if (videoContainer.value) {
-    const opacity = shouldBeFullscreen ? 1 : Math.min(progress * 2, 1);
-    videoContainer.value.style.opacity = opacity.toString();
-    
-    if (isScrolledPast) {
-      videoContainer.value.style.opacity = '0';
-    }
-  }
-};
-
-const enterFullscreenWithTransition = () => {
-  isTransitioning.value = true;
-  
-  setTimeout(() => {
-    isFullscreen.value = true;
-    
-    if (videoContainer.value && videoEl.value) {
-      videoContainer.value.classList.add('fullscreen');
-      videoEl.value.style.objectFit = 'cover';
-      
-      if (videoEl.value.paused && isVideoLoaded.value) {
-        videoEl.value.play().catch(() => {});
-      }
-    }
-    
-    setTimeout(() => {
-      isContentVisible.value = true;
-      isTransitioning.value = false;
-      // تشغيل تأثير الانتقال السينمائي
-      playSceneTransition();
-    }, 200);
-  }, 150);
-};
-
-const exitFullscreen = () => {
-  if (!props.isFirstItem) {
-    isFullscreen.value = false;
+  if (rect.top < -windowHeight * 0.8) {
+    shouldBeBehindContent.value = true;
     isContentVisible.value = false;
-    isTransitioning.value = false;
-    
-    if (videoContainer.value) {
-      videoContainer.value.classList.remove('fullscreen');
-    }
-    
-    if (videoEl.value) {
-      videoEl.value.pause();
-      videoEl.value.style.opacity = '0.5';
-    }
+  } else {
+    shouldBeBehindContent.value = false;
   }
 };
 
 let rafId = null;
 const handleScroll = () => {
-  if (rafId) {
-    cancelAnimationFrame(rafId);
-  }
-  rafId = requestAnimationFrame(() => {
-    updateItemPosition();
-    checkIfNearPageEnd();
-  });
+  if (rafId) cancelAnimationFrame(rafId);
+  rafId = requestAnimationFrame(updateItemPosition);
 };
 
 const handleResize = () => {
-  updateItemPosition();
-  checkIfNearPageEnd();
   checkDeviceType();
-  setupCinematicAnimations();
-  
-  if (props.isFirstItem) {
-    const isMobile = window.innerWidth <= 768;
-    if (isMobile && isFullscreen.value) {
-      isFullscreen.value = false;
-      isContentVisible.value = false;
-      nextTick(() => {
-        if (tvContainer.value) {
-          tvContainer.value.style.opacity = '0';
-          tvContainer.value.style.transform = 'translate(-50%, 50%) scale(0.3)';
-        }
-      });
-    }
-  }
+  updateItemPosition();
 };
 
 onMounted(() => {
-  // التحقق من نوع الجهاز
   checkDeviceType();
-  
-  if (videoEl.value) {
-    videoEl.value.muted = true;
-    isMuted.value = true;
-    
-    videoEl.value.addEventListener('loadeddata', () => {
-      if (videoEl.value) {
-        videoEl.value.style.opacity = '1';
-        videoEl.value.style.visibility = 'visible';
-      }
-    });
-    
-    videoEl.value.addEventListener('canplay', () => {
-      if (videoEl.value) {
-        videoEl.value.style.opacity = '1';
-        videoEl.value.style.visibility = 'visible';
-      }
-    });
-  }
-  
+  if (videoEl.value) videoEl.value.muted = true;
+
   window.addEventListener('scroll', handleScroll, { passive: true });
   window.addEventListener('resize', handleResize);
   window.addEventListener('touchmove', handleScroll, { passive: true });
-  
-  setupUserInteractionPlay();
-  
+
   nextTick(() => {
-    // === تبسيط: نفس الإعدادات لجميع الأجهزة ===
-    if (props.isFirstItem) {
-      isVisible.value = false;
-      isAppearing.value = false;
-      isExpanding.value = false;
-      isFullscreen.value = false;
-      isContentVisible.value = false;
-      
-      if (tvContainer.value) {
-        tvContainer.value.style.opacity = '0';
-        tvContainer.value.style.transform = 'translate(-50%, 80%) scale(0.3)';
-        tvContainer.value.style.transition = 'none';
-        tvContainer.value.style.pointerEvents = 'none';
-        
-        setTimeout(() => {
-          if (tvContainer.value) {
-            tvContainer.value.style.transition = 'all 1.5s cubic-bezier(0.215, 0.61, 0.355, 1)';
-          }
-        }, 100);
-      }
-      
-      if (videoEl.value) {
-        setTimeout(() => { videoEl.value.load(); }, 300);
-      }
-    } else {
-      if (videoContainer.value) {
-        videoContainer.value.style.opacity = '0';
-      }
+    if (props.isFirstItem && tvContainer.value) {
+      Object.assign(tvContainer.value.style, {
+        position: 'fixed',
+        top: '50%',
+        left: '50%',
+        opacity: '0',
+        transform: 'translateX(-50%) translateY(100%) scale(0.3)',
+        transition: 'none',
+        pointerEvents: 'none'
+      });
+      setTimeout(() => tvContainer.value.style.transition = 'all 1.8s cubic-bezier(0.215, 0.61, 0.355, 1)', 100);
     }
-    
-    // تهيئة الأنيميشن السينمائية بعد تحميل العناصر
-    setTimeout(() => {
-      updateItemPosition();
-      checkIfNearPageEnd();
-      setupCinematicAnimations();
-    }, 500);
+
+    setTimeout(updateItemPosition, 500);
   });
 });
 
 onUnmounted(() => {
   if (rafId) cancelAnimationFrame(rafId);
-  
-  if (videoEl.value) {
-    videoEl.value.pause();
-    videoEl.value.src = '';
-    videoEl.value.load();
-  }
-  
-  // تنظيف أنيميشن GSAP
-  if (cinematicAnimations.value) {
-    cinematicAnimations.value.kill();
-  }
-  
-  ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+  if (videoEl.value) videoEl.value.pause();
 });
 
-watch(locale, () => {
-  setTimeout(updateItemPosition, 100);
-});
+watch(locale, () => updateItemPosition());
+
 </script>
 
 <style scoped>
@@ -1443,6 +542,26 @@ watch(locale, () => {
   .tv-container.other-item {
     width: 85% !important;
   }
+
+  .tv-container.fullscreen,
+.tv-container.keep-fullscreen {
+  position: fixed !important;
+  inset: 0 !important;           /* الأهم: يغطي كامل الشاشة بما فيها الـ safe area */
+  width: 100vw !important;
+  height: 100vh !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  transform: none !important;
+  z-index: 9999 !important;
+  background: #000 !important;
+  overflow: hidden !important;
+}
+.tv-container.fullscreen .tv-video {
+  position: absolute !important;
+  inset: 0 !important;
+  object-fit: cover !important;
+  object-position: center !important;
+}
   
   .tv-container.other-item.is-visible {
     transform: translate(-50%, -50%) scale(0.85) !important;
@@ -1455,6 +574,10 @@ watch(locale, () => {
 
 /* موبايل */
 @media (max-width: 767px) {
+  .tv-container {
+    width: 90% !important;
+    min-width: 280px !important;
+  }
   .tv-container.other-item {
     width: 95% !important;
   }
@@ -1463,9 +586,7 @@ watch(locale, () => {
     transform: translate(-50%, -50%) scale(0.8) !important;
   }
   
-  .tv-container.other-item.expanding {
-    transform: translate(-50%, -50%) scale(0.9) !important;
-  }
+  
   
   .tv-container.other-item.fullscreen {
     border-radius: 0 !important;
@@ -1705,30 +826,28 @@ watch(locale, () => {
   /*              TV Container                     */
   /* ============================================= */
   .tv-container {
-    position: fixed;
-    top: 50%;
-    left: 0;
-    width: 40%;
-    max-width: 800px;
-    min-width: 300px;
-    aspect-ratio: 16/9;
-    transform: translate(-50%, 50%) scale(0.3);
-    transform-origin: center center;
-    z-index: 1000;
-    opacity: 0;
-    pointer-events: auto;
-    will-change: transform, opacity, width, height;
-    transition: all 0.4s cubic-bezier(0.215, 0.61, 0.355, 1);
-    transform-style: preserve-3d;
-    backface-visibility: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translateX(-50%) translateY(-50%) !important;
+  width: 40%;
+  max-width: 800px;
+  min-width: 300px;
+  aspect-ratio: 16/9;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: auto;
+  transition: all 0.8s cubic-bezier(0.215, 0.61, 0.355, 1);
+}
   
-  .tv-container.expanding {
-    z-index: 2000;
-  }
+.tv-container.is-visible {
+  opacity: 1 !important;
+}
+
+.tv-container.expanding {
+  transform: translateX(-50%) translateY(-50%) scale(1) !important;
+  z-index: 2000 !important;
+}
   
   .tv-container.behind {
     opacity: 0.15 !important;
