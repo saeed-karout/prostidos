@@ -113,7 +113,7 @@ const works = computed(() => [
 /* جميع الأقسام فوق التلفازات العادية */
 .section-layer {
   position: relative;
-  z-index: 100;
+  z-index: 30;
 }
 
 /* قسم الأعمال */
