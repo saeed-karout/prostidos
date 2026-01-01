@@ -30,7 +30,7 @@
     <div class="absolute flex flex-col gap-[40px] z-20 content-wrapper"
          :class="contentAlignmentClass"
          ref="contentContainer">
-      <div class="content w-full flex flex-col gap-[25px]">
+      <div class="w-full flex flex-col gap-[25px]">
         <!-- Text2 with typing animation -->
         <div class="text2 animated-text" ref="text2El">
           <div v-for="(sentence, index) in splitSentences" :key="index" class="sentence-line">
@@ -352,14 +352,13 @@ onUnmounted(() => {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* تحسين CSS الخاص بالفيديو ليعمل بشكل صحيح على جميع المتصفحات */
 .youtube-iframe {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 100vw;
-  height: 100vh;
-  min-width: 177.78vh;
-  min-height: 56.25vw;
+  width: 100%;
+  height: 100%;
   transform: translate(-50%, -50%);
   pointer-events: none;
   filter: brightness(1.1) contrast(1.1) saturate(1.1) blur(0.3px);
@@ -373,6 +372,49 @@ onUnmounted(() => {
   -moz-osx-font-smoothing: grayscale;
   -webkit-mask-image: linear-gradient(to bottom, black 97%, transparent 100%);
   mask-image: linear-gradient(to bottom, black 97%, transparent 100%);
+}
+
+/* حل خاص لسفاري لضبط حجم الفيديو */
+@supports not (-webkit-overflow-scrolling: touch) {
+  .youtube-iframe {
+    width: 100vw;
+    height: 100vh;
+    min-width: 177.78vh;
+    min-height: 56.25vw;
+  }
+}
+
+/* حل لسفاري يعالج مشكلة المحاذاة */
+@supports (-webkit-touch-callout: none) {
+  .youtube-iframe {
+    width: 100vw !important;
+    height: 100vh !important;
+    min-width: 100vw !important;
+    min-height: 100vh !important;
+    object-fit: cover !important;
+    -webkit-object-fit: cover !important;
+  }
+  
+  .youtube-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
+}
+
+/* حل بديل لجميع المتصفحات */
+.youtube-iframe-fallback {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
 }
 
 /* Overlay لإخفاء شعار YouTube */
@@ -857,18 +899,6 @@ onUnmounted(() => {
 /* ============================================= */
 /* Responsive */
 /* ============================================= */
-@media (max-width: 1660px){
-  .content-wrapper {
-    top: 30%;
-    padding: 0 5%;
-    
-  }
-
-  .content{
-    gap: 50px;
-  }
-}
-
 @media (max-width: 991px) {
   .content-wrapper {
     top: 40%;
@@ -982,5 +1012,51 @@ onUnmounted(() => {
 /* ضمان التشغيل على جميع الأجهزة */
 .youtube-container {
   -webkit-overflow-scrolling: touch;
+}
+
+/* حل نهائي لمشكلة المحاذاة في سفاري */
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  /* Safari فقط */
+  .youtube-iframe {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    transform: none !important;
+  }
+  
+  .youtube-container {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+  }
+  
+  /* إصلاح لمحتوى الصفحة */
+  .content-wrapper {
+    position: relative;
+    top: auto;
+    margin-top: 28vh;
+   
+  }
+}
+
+/* بديل: استخدام object-fit إذا دعمه المتصفح */
+@supports (object-fit: cover) {
+  .youtube-iframe {
+    object-fit: cover;
+    -o-object-fit: cover;
+    object-position: center;
+    -o-object-position: center;
+  }
+}
+
+/* بديل آخر: استخدام aspect-ratio */
+@supports (aspect-ratio: 16/9) {
+  .youtube-container {
+    aspect-ratio: 16/9;
+  }
 }
 </style>
