@@ -8,7 +8,7 @@
                         <img class="w-[123.5px] h-[32px]" src="/logos/logo.svg" alt="Your Company Logo">
                     </router-link>
                 </div>
-
+                
                 <!-- Right Side: Empty Space for Balance -->
                 <div class="flex items-center justify-end">
                     <!-- This space is intentionally left blank for balance -->
@@ -501,7 +501,7 @@ onBeforeUnmount(() => {
 // Computed classes for nav
 const navClasses = computed(() => {
     return [
-        'fixed top-0 left-0 w-full z-50 transition-all duration-300',
+        'fixed top-0 left-0 w-full z-[99999999999999999] transition-all duration-300',
         {
             ' backdrop-blur-md ': hasScrolled.value && !isMobileMenuOpen.value && !isHomeMenuOpen.value,
             'bg-transparent': !hasScrolled.value || isMobileMenuOpen.value || isHomeMenuOpen.value,
