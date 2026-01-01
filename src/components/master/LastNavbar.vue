@@ -5,7 +5,7 @@
                 <!-- Left Side: Logo (مخفي في الشاشات العادية) -->
                 <div class=" flex-row items-center hidden lg:flex" >
                     <router-link to="/" class="flex items-center">
-                        <img class="w-[123.5px] h-[32px]" src="/logos/logo.svg" alt="Your Company Logo">
+                        <img class="w-[150.5px] h-[42px]" src="/logos/logo.svg" alt="Your Company Logo">
                     </router-link>
                 </div>
                 
