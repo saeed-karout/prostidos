@@ -1055,8 +1055,11 @@ onUnmounted(() => {
 
 /* بديل آخر: استخدام aspect-ratio */
 @supports (aspect-ratio: 16/9) {
-  .youtube-container {
-    aspect-ratio: 16/9;
+  .youtube-iframe {
+    object-fit: cover;
+    -o-object-fit: cover;
+    object-position: center;
+    -o-object-position: center;
   }
 }
 </style>
