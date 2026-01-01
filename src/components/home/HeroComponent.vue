@@ -1474,8 +1474,8 @@ function addExtraYouTubeHidingCSS() {
 @media (max-width: 575px) {
   .content-wrapper {
     top: 32%;
-    left: 20px;
-    right: 20px;
+    left: 0px;
+    right: 0px;
   }
 
   .text2 {
