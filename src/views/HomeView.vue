@@ -5,8 +5,11 @@
 
     <!-- Featured Works Section -->
     <section class="featured-works section-layer" id="works">
-      <div class="section-title">
-        <h2>{{ sectionTitle }}</h2>
+      <!-- عنوان القسم – مرفوع فوق كل شيء -->
+      <div class="section-title-wrapper">
+        <div class="section-title">
+          <h2>{{ sectionTitle }}</h2>
+        </div>
       </div>
 
       <div class="gallery">
@@ -35,7 +38,7 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted } from 'vue';
+import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import GalleryItem from '@/components/home/GalleryItem.vue';
@@ -43,7 +46,6 @@ import HeroComponent from '@/components/home/HeroComponent.vue';
 import TimeLineComponent from '@/components/home/TimeLineComponent.vue';
 import ContactForm from '@/components/home/ContactForm.vue';
 
-// استيراد الفيديوهات
 import ESTSSVideo from '@/assets/new-video/production-reel.mp4';
 import zarabiVideo from '@/assets/new-video/zarabi.mp4';
 import FinalEditionVideo from '@/assets/new-video/FinalEdition.mp4';
@@ -99,9 +101,6 @@ const works = computed(() => [
     buttonLink: "https://www.youtube.com/watch?v=zYWGjqvC7uc"
   }
 ]);
-
-// لا نحتاج useCinematicScroll هنا لأن كل GalleryItem يتحكم بنفسه
-// المنطق موجود داخل GalleryItem.vue (كما في النسخة السابقة المحسّنة)
 </script>
 
 <style scoped>
@@ -111,18 +110,30 @@ const works = computed(() => [
   min-height: 100vh;
 }
 
-/* جميع الأقسام فوق التلفازات */
+/* جميع الأقسام فوق التلفازات العادية */
 .section-layer {
   position: relative;
-  z-index: 100; /* أعلى من التلفازات (z-index 9999 فقط في fullscreen) */
+  z-index: 100;
 }
 
 /* قسم الأعمال */
 .featured-works {
   position: relative;
   z-index: 10;
-  padding-top: 60px;
-  padding-bottom: 100px;
+  /* padding-top: 60px; */
+  padding-bottom: 60px;
+}
+
+/* حاوية العنوان – مرفوعة فوق كل شيء */
+.section-title-wrapper {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  background: #000;
+  z-index: 99999; /* أعلى من أي تلفاز حتى في fullscreen */
+  padding: 30px 20px 30px;
+  pointer-events: none;
+  margin-bottom: -100px; /* لتجنب فراغ كبير تحت العنوان */
 }
 
 .gallery {
@@ -131,11 +142,10 @@ const works = computed(() => [
   scroll-snap-type: y mandatory;
 }
 
-/* عنوان القسم */
+/* العنوان نفسه */
 .section-title {
   text-align: center;
-  padding: 80px 20px 60px;
-  pointer-events: none;
+  width: 100%;
 }
 
 .section-title h2 {
@@ -147,20 +157,33 @@ const works = computed(() => [
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  pointer-events: none;
 }
 
 /* تحسينات للموبايل */
 @media (max-width: 768px) {
-  .section-title {
+  .section-title-wrapper {
     padding: 60px 20px 40px;
+    margin-bottom: -80px;
   }
-  
+
   .featured-works {
     padding-bottom: 60px;
   }
+
+  .section-title h2 {
+    font-size: clamp(48px, 7vw, 80px);
+  }
 }
 
-/* إخفاء أي تلفاز يخرج عن القسم (حماية إضافية) */
+@media (max-width: 480px) {
+  .section-title-wrapper {
+    padding: 50px 20px 30px;
+    margin-bottom: -60px;
+  }
+}
+
+/* حماية إضافية: إخفاء التلفازات خارج القسم */
 .gallery ~ * .tv-container,
 .home-page > *:not(.featured-works) .tv-container {
   opacity: 0 !important;

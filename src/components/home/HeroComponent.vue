@@ -171,9 +171,20 @@ const contentAlignmentClass = computed(() => {
     : 'left-[70px] right-auto text-left';
 });
 
+// دالة محسنة لتحديد إذا كان يمكن التشغيل التلقائي
+const canAutoplay = computed(() => {
+  // على iOS، نعتمد على تفاعل المستخدم
+  if (isIOS.value) {
+    return hasUserInteracted.value;
+  }
+  
+  // على Chrome/Edge/Firefox، نسمح بالتشغيل التلقائي
+  return true;
+});
+
 const youtubeSrc = computed(() => {
   const params = new URLSearchParams({
-    autoplay: hasUserInteracted.value ? '1' : '0',
+    autoplay: canAutoplay.value ? '1' : '0', // التشغيل التلقائي بناءً على المتصفح
     mute: '1',
     controls: '0',
     playsinline: '1',
@@ -197,16 +208,6 @@ const youtubeSrc = computed(() => {
     wmode: 'transparent',
     playlist: VIDEO_ID, // هذا مهم لمنع الاقتراحات
   });
-  
-  // إعدادات خاصة لـ iOS/Safari
-  if (isIOS.value || isSafari.value) {
-    params.set('playsinline', '1');
-    params.set('autoplay', hasUserInteracted.value ? '1' : '0');
-    params.set('controls', '0');
-    params.set('rel', '0');
-    params.set('modestbranding', '1');
-    params.set('showinfo', '0');
-  }
   
   return `https://www.youtube-nocookie.com/embed/${VIDEO_ID}?${params.toString()}`;
 });
@@ -239,11 +240,6 @@ function handleIOSPlayClick() {
   showIOSPlayOverlay.value = false;
   isVideoPlaying.value = true;
   
-  if (player) {
-    player.mute();
-    player.playVideo();
-  }
-  
   // إعادة تحميل الـiframe مع autoplay=1
   if (youtubeIframe.value) {
     youtubeIframe.value.src = youtubeSrc.value;
@@ -272,16 +268,30 @@ function closeYouTubeModal() {
 let player = null;
 let checkInterval = null;
 
-function initYouTubePlayer() {
-  // إذا كان iOS، نعرض overlay للضغط
-  if (isIOS.value && !hasUserInteracted.value) {
+// استراتيجية التشغيل التلقائي الذكية
+function initSmartAutoplay() {
+  // استراتيجيات مختلفة لكل متصفح
+  if (isIOS.value) {
+    // iOS يحتاج تفاعل المستخدم أولاً
     showIOSPlayOverlay.value = true;
-    return;
+    return false;
+  } else if (isSafari.value) {
+    // Safari على macOS يمكن أن يعمل مع autoplay
+    initYouTubePlayerWithAutoplay();
+    return true;
+  } else {
+    // Chrome, Firefox, Edge - التشغيل التلقائي مسموح
+    initYouTubePlayerWithAutoplay();
+    return true;
   }
+}
 
+function initYouTubePlayerWithAutoplay() {
   if (!window.YT) {
     const tag = document.createElement('script');
     tag.src = 'https://www.youtube.com/iframe_api';
+    tag.async = true;
+    tag.defer = true;
     const firstScriptTag = document.getElementsByTagName('script')[0];
     firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
     window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
@@ -294,7 +304,8 @@ function onYouTubeIframeAPIReady() {
   try {
     player = new YT.Player('youtube-iframe', {
       playerVars: {
-        autoplay: hasUserInteracted.value || !isIOS.value ? 1 : 0,
+        autoplay: 1, // التشغيل التلقائي مفعّل
+        mute: 1,
         autohide: 1,
         modestbranding: 1,
         rel: 0,
@@ -320,13 +331,14 @@ function onYouTubeIframeAPIReady() {
           // إعداد مراقبة النهاية المحسنة
           setupEnhancedLoop();
 
-          if (isIOS.value && !hasUserInteracted.value) {
-            showIOSPlayOverlay.value = true;
-          } else {
-            event.target.mute();
-            event.target.playVideo().then(() => {
+          // محاولة التشغيل التلقائي
+          setTimeout(() => {
+            try {
+              event.target.mute();
+              event.target.playVideo();
               isVideoPlaying.value = true;
               showIOSPlayOverlay.value = false;
+              console.log('Autoplay successful');
               
               // بدء مراقبة الوقت المحسنة
               startEnhancedTimeMonitoring();
@@ -337,11 +349,14 @@ function onYouTubeIframeAPIReady() {
                   startSafariLoopProtection();
                 }, 2000);
               }
-            }).catch((error) => {
-              console.log('Auto-play prevented, showing overlay');
-              showIOSPlayOverlay.value = true;
-            });
-          }
+            } catch (error) {
+              console.log('Autoplay blocked, showing overlay');
+              // إذا فشل التشغيل التلقائي، نعرض overlay للمستخدم
+              if (isIOS.value || isSafari.value) {
+                showIOSPlayOverlay.value = true;
+              }
+            }
+          }, 1000);
         },
         onStateChange: (event) => {
           if (event.data === YT.PlayerState.PLAYING) {
@@ -354,6 +369,14 @@ function onYouTubeIframeAPIReady() {
             handleVideoEnd();
           } else if (event.data === YT.PlayerState.PAUSED) {
             isVideoPlaying.value = false;
+            // إذا توقف الفيديو على iOS بدون سبب، أعد التشغيل
+            if (isIOS.value && hasUserInteracted.value) {
+              setTimeout(() => {
+                if (player && player.playVideo) {
+                  player.playVideo();
+                }
+              }, 100);
+            }
           } else if (event.data === YT.PlayerState.CUED) {
             console.log('Video cued');
           } else if (event.data === YT.PlayerState.BUFFERING) {
@@ -635,6 +658,36 @@ const createFloatingParticles = () => {
   }
 };
 
+// مراقبة تفاعل المستخدم للبدء بتشغيل الفيديو
+function setupUserInteractionListeners() {
+  const startVideoOnInteraction = () => {
+    if (!hasUserInteracted.value) {
+      hasUserInteracted.value = true;
+      showIOSPlayOverlay.value = false;
+      
+      if (player && !isVideoPlaying.value) {
+        try {
+          player.mute();
+          player.playVideo();
+          isVideoPlaying.value = true;
+        } catch (error) {
+          console.log('Manual play error:', error);
+        }
+      }
+      
+      // إزالة بعض المستمعات بعد التفاعل الأول
+      document.removeEventListener('click', startVideoOnInteraction);
+      document.removeEventListener('touchstart', startVideoOnInteraction);
+    }
+  };
+
+  // إضافة مستمعات لتفعيل الفيديو على iOS
+  if (isIOS.value) {
+    document.addEventListener('click', startVideoOnInteraction);
+    document.addEventListener('touchstart', startVideoOnInteraction);
+  }
+}
+
 // مراقبة تغيير اللغة
 watch(locale, () => {
   nextTick(() => {
@@ -644,42 +697,17 @@ watch(locale, () => {
   });
 });
 
-// مراقبة تفاعل المستخدم للبدء بتشغيل الفيديو
-function setupUserInteractionListeners() {
-  const startVideoOnInteraction = () => {
-    if (!hasUserInteracted.value) {
-      hasUserInteracted.value = true;
-      showIOSPlayOverlay.value = false;
-      
-      if (player && !isVideoPlaying.value) {
-        player.mute();
-        player.playVideo();
-      }
-      
-      // إزالة المستمعات بعد التفاعل الأول
-      document.removeEventListener('click', startVideoOnInteraction);
-      document.removeEventListener('touchstart', startVideoOnInteraction);
-      document.removeEventListener('scroll', startVideoOnInteraction);
-    }
-  };
-
-  // إضافة مستمعات لتفعيل الفيديو
-  document.addEventListener('click', startVideoOnInteraction);
-  document.addEventListener('touchstart', startVideoOnInteraction);
-  document.addEventListener('scroll', startVideoOnInteraction);
-}
-
 let observer;
 onMounted(() => {
   typeWriter();
   
-  // إعداد مستمعات التفاعل
+  // إعداد مستمعات التفاعل (خاصة لـ iOS)
   setupUserInteractionListeners();
   
   // تأخير تحميل يوتيوب لتحسين الأداء
   setTimeout(() => {
-    initYouTubePlayer();
-  }, 500);
+    initSmartAutoplay();
+  }, 1000);
   
   nextTick(() => {
     setupAnimations();
@@ -1446,8 +1474,8 @@ function addExtraYouTubeHidingCSS() {
 @media (max-width: 575px) {
   .content-wrapper {
     top: 32%;
-    left: 0px;
-    right: 0px;
+    left: 20px;
+    right: 20px;
   }
 
   .text2 {
