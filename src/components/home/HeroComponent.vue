@@ -7,7 +7,22 @@
       <div class="youtube-overlay youtube-overlay-bottom"></div>
       <div class="youtube-extra-overlay"></div>
 
+      <!-- فيديو بديل لسفاري -->
+      <video 
+        v-if="isSafari && showFallbackVideo"
+        ref="safariVideo"
+        class="safari-video"
+        :src="videoFallbackSrc"
+        autoplay
+        muted
+        loop
+        playsinline
+        webkit-playsinline
+        preload="auto"
+      ></video>
+
       <iframe 
+        v-else
         id="youtube-iframe"
         class="youtube-iframe"
         :src="youtubeSrc"
@@ -30,7 +45,7 @@
     <div class="absolute flex flex-col gap-[40px] z-20 content-wrapper"
          :class="contentAlignmentClass"
          ref="contentContainer">
-      <div class="w-full flex flex-col gap-[25px]">
+      <div class="content w-full flex flex-col gap-[25px]">
         <!-- Text2 with typing animation -->
         <div class="text2 animated-text" ref="text2El">
           <div v-for="(sentence, index) in splitSentences" :key="index" class="sentence-line">
@@ -92,6 +107,7 @@ const { t, locale } = useI18n();
 // Refs
 const heroSection = ref(null);
 const youtubeIframe = ref(null);
+const safariVideo = ref(null);
 const gradientOverlay = ref(null);
 const contentContainer = ref(null);
 const text2El = ref(null);
@@ -122,11 +138,25 @@ const START_TIME = 29;
 
 // State
 const isYouTubeModalOpen = ref(false);
+const showFallbackVideo = ref(false);
+
+// كشف سفاري بدقة
+const isSafari = computed(() => {
+  const ua = navigator.userAgent.toLowerCase();
+  const isSafariBrowser = ua.includes('safari') && !ua.includes('chrome') && !ua.includes('crios');
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  const isMacSafari = ua.includes('mac') && ua.includes('safari') && !ua.includes('chrome');
+  
+  return isSafariBrowser || isIOS || isMacSafari;
+});
 
 // Content alignment
 const contentAlignmentClass = computed(() => {
   return locale.value === 'ar' ? 'right-[70px] left-auto text-right' : 'left-[70px] right-auto text-left';
 });
+
+// فيديو بديل لسفاري
+const videoFallbackSrc = ref('');
 
 // YouTube URL مع loop حقيقي بدون اقتراحات
 const youtubeSrc = computed(() => {
@@ -194,6 +224,15 @@ const ensureVideoPlay = () => {
     } catch (error) {
       console.log('YouTube API error:', error);
     }
+  }
+};
+
+// تشغيل الفيديو البديل في سفاري
+const playSafariVideo = () => {
+  if (safariVideo.value) {
+    safariVideo.value.play().catch(error => {
+      console.log('Safari video play error:', error);
+    });
   }
 };
 
@@ -292,7 +331,25 @@ watch(locale, () => {
 });
 
 let observer;
-onMounted(() => {
+onMounted(async () => {
+  // إذا كان سفاري، نستخدم فيديو بديل
+  if (isSafari.value) {
+    showFallbackVideo.value = true;
+    
+    // نستخدم رابط فيديو مباشر من YouTube
+    videoFallbackSrc.value = `https://youtube.googleapis.com/v/${VIDEO_ID}?start=${START_TIME}&autoplay=1&mute=1&controls=0&loop=1&playlist=${VIDEO_ID}&playsinline=1`;
+    
+    // بديل آخر: فيديو مضغوط
+    setTimeout(() => {
+      if (safariVideo.value) {
+        safariVideo.value.load();
+        safariVideo.value.play().catch(e => {
+          console.log('Failed to play safari video:', e);
+        });
+      }
+    }, 500);
+  }
+
   // تشغيل الفيديو تلقائياً لجميع الأجهزة
   typeWriter();
 
@@ -300,7 +357,7 @@ onMounted(() => {
     setupAnimations();
   });
 
-  // إضافة مستمع لحدث تحميل iframe
+  // إضافة مستمع لحدث تحميل iframe (لغير سفاري)
   if (youtubeIframe.value) {
     youtubeIframe.value.addEventListener('load', () => {
       setTimeout(ensureVideoPlay, 500);
@@ -308,7 +365,13 @@ onMounted(() => {
   }
 
   // محاولة تشغيل بعد 1 ثانية
-  setTimeout(ensureVideoPlay, 1000);
+  setTimeout(() => {
+    if (!isSafari.value) {
+      ensureVideoPlay();
+    } else if (safariVideo.value) {
+      playSafariVideo();
+    }
+  }, 1000);
 
   observer = new IntersectionObserver(
     (entries) => {
@@ -352,13 +415,14 @@ onUnmounted(() => {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* تحسين CSS الخاص بالفيديو ليعمل بشكل صحيح على جميع المتصفحات */
-.youtube-iframe {
+.youtube-iframe, .safari-video {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
+  min-width: 177.78vh;
+  min-height: 56.25vw;
   transform: translate(-50%, -50%);
   pointer-events: none;
   filter: brightness(1.1) contrast(1.1) saturate(1.1) blur(0.3px);
@@ -374,47 +438,49 @@ onUnmounted(() => {
   mask-image: linear-gradient(to bottom, black 97%, transparent 100%);
 }
 
-/* حل خاص لسفاري لضبط حجم الفيديو */
-@supports not (-webkit-overflow-scrolling: touch) {
-  .youtube-iframe {
+/* حل خاص لسفاري - إصلاح المحاذاة */
+@supports (-webkit-touch-callout: none) {
+  .youtube-iframe, .safari-video {
     width: 100vw;
     height: 100vh;
-    min-width: 177.78vh;
-    min-height: 56.25vw;
-  }
-}
-
-/* حل لسفاري يعالج مشكلة المحاذاة */
-@supports (-webkit-touch-callout: none) {
-  .youtube-iframe {
-    width: 100vw !important;
-    height: 100vh !important;
-    min-width: 100vw !important;
-    min-height: 100vh !important;
-    object-fit: cover !important;
-    -webkit-object-fit: cover !important;
+    min-width: 177.78vh !important;
+    min-height: 56.25vw !important;
+    transform: translate(-50%, -50%) !important;
+    -webkit-transform: translate(-50%, -50%) !important;
   }
   
   .youtube-container {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
     overflow: hidden;
   }
 }
 
-/* حل بديل لجميع المتصفحات */
-.youtube-iframe-fallback {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  min-width: 100%;
-  min-height: 100%;
-  width: auto;
-  height: auto;
+/* حل إضافي لسفاري macOS */
+@media not all and (min-resolution:.001dpcm) { 
+  @supports (-webkit-appearance:none) {
+    .youtube-iframe, .safari-video {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100vw;
+      height: 100vh;
+      min-width: 177.78vh;
+      min-height: 56.25vw;
+      transform: translate(-50%, -50%);
+    }
+  }
+}
+
+/* حل نهائي لمشكلة transform في سفاري */
+@supports (transform: translate3d(0,0,0)) {
+  .youtube-iframe, .safari-video {
+    transform: translate3d(-50%, -50%, 0);
+    -webkit-transform: translate3d(-50%, -50%, 0);
+  }
 }
 
 /* Overlay لإخفاء شعار YouTube */
@@ -486,7 +552,7 @@ onUnmounted(() => {
 
 /* تحسينات خاصة لـiOS */
 @supports (-webkit-touch-callout: none) {
-  .youtube-iframe {
+  .youtube-iframe, .safari-video {
     -webkit-overflow-scrolling: touch;
     -webkit-mask-image: linear-gradient(to bottom, 
       black 88%, 
@@ -531,6 +597,7 @@ onUnmounted(() => {
 
 /* تثبيت موضع الفيديو */
 .youtube-iframe,
+.safari-video,
 .youtube-container,
 .youtube-overlay-top,
 .youtube-overlay-bottom {
@@ -899,6 +966,17 @@ onUnmounted(() => {
 /* ============================================= */
 /* Responsive */
 /* ============================================= */
+@media (max-width: 1660px){
+  .content-wrapper {
+    top: 30%;
+    padding: 0 5%;
+  }
+
+  .content{
+    gap: 50px;
+  }
+}
+
 @media (max-width: 991px) {
   .content-wrapper {
     top: 40%;
@@ -999,7 +1077,7 @@ onUnmounted(() => {
 
 /* تحسينات إضافية لسفاري */
 @supports (-webkit-touch-callout: none) {
-  .youtube-iframe {
+  .youtube-iframe, .safari-video {
     -webkit-transform: translateZ(0);
     transform: translateZ(0);
     -webkit-backface-visibility: hidden;
@@ -1014,52 +1092,11 @@ onUnmounted(() => {
   -webkit-overflow-scrolling: touch;
 }
 
-/* حل نهائي لمشكلة المحاذاة في سفاري */
+/* إصلاح عرض الفيديو في سفاري */
 @media screen and (-webkit-min-device-pixel-ratio:0) {
-  /* Safari فقط */
-  .youtube-iframe {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    transform: none !important;
-  }
-  
-  .youtube-container {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-  }
-  
-  /* إصلاح لمحتوى الصفحة */
-  .content-wrapper {
-    position: relative;
-    top: auto;
-    margin-top: 28vh;
-   
-  }
-}
-
-/* بديل: استخدام object-fit إذا دعمه المتصفح */
-@supports (object-fit: cover) {
-  .youtube-iframe {
-    object-fit: cover;
-    -o-object-fit: cover;
-    object-position: center;
-    -o-object-position: center;
-  }
-}
-
-/* بديل آخر: استخدام aspect-ratio */
-@supports (aspect-ratio: 16/9) {
-  .youtube-iframe {
-    object-fit: cover;
-    -o-object-fit: cover;
-    object-position: center;
-    -o-object-position: center;
+  .youtube-iframe, .safari-video {
+    -webkit-transform: translate(-50%, -50%) scale(1.01);
+    transform: translate(-50%, -50%) scale(1.01);
   }
 }
 </style>
