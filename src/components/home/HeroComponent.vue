@@ -21,21 +21,6 @@
         webkit-playsinline
         ref="youtubeIframe"
       ></iframe>
-
-      <!-- Overlay لتفعيل التشغيل على iOS فقط -->
-      <div 
-        v-if="showIOSPlayOverlay" 
-        class="ios-play-overlay" 
-        @click="handleIOSPlayClick"
-      >
-        <div class="ios-play-button">
-          <svg width="60" height="60" viewBox="0 0 60 60">
-            <circle cx="30" cy="30" r="28" fill="#E9480E" fill-opacity="0.9"/>
-            <path d="M25 20L40 30L25 40Z" fill="white"/>
-          </svg>
-          <span class="ios-play-text">{{ $t('hero.tapToPlay') || 'Tap to play video' }}</span>
-        </div>
-      </div>
     </div>
 
     <!-- Gradient Overlay -->
@@ -45,7 +30,7 @@
     <div class="absolute flex flex-col gap-[40px] z-20 content-wrapper"
          :class="contentAlignmentClass"
          ref="contentContainer">
-      <div class="w-full flex flex-col gap-[25px]">
+      <div class="content w-full flex flex-col gap-[25px]">
         <!-- Text2 with typing animation -->
         <div class="text2 animated-text" ref="text2El">
           <div v-for="(sentence, index) in splitSentences" :key="index" class="sentence-line">
@@ -74,7 +59,7 @@
           <button class="btn-watch-hero" @click="openYouTubeModal" ref="watchBtn">
             <span class="btn-watch-text">{{ $t('hero.watch') }}</span>
             <div class="play-icon-wrapper">
-              <font-awesome-icon icon="fa-brands fa-google-play " class="play-icon"/>
+              <font-awesome-icon icon="fa-brands fa-google-play" class="play-icon"/>
             </div>
             <div class="btn-hover-glow"></div>
           </button>
@@ -136,21 +121,7 @@ const VIDEO_ID = 'XXbVgVoZ-oY';
 const START_TIME = 29;
 
 // State
-const showIOSPlayOverlay = ref(false);
 const isYouTubeModalOpen = ref(false);
-const hasUserInteracted = ref(false);
-
-// Device detection
-const isIOS = computed(() => {
-  return /iPad|iPhone|iPod/.test(navigator.platform) || 
-         (navigator.userAgent.includes("Mac") && "ontouchend" in document);
-});
-
-// Safari detection (macOS Safari فقط، بدون iOS)
-const isMacOSSafari = computed(() => {
-  const ua = navigator.userAgent;
-  return /^((?!chrome|android).)*safari/i.test(ua) && !isIOS.value;
-});
 
 // Content alignment
 const contentAlignmentClass = computed(() => {
@@ -160,12 +131,12 @@ const contentAlignmentClass = computed(() => {
 // YouTube URL مع loop حقيقي بدون اقتراحات
 const youtubeSrc = computed(() => {
   const params = new URLSearchParams({
-    autoplay: (isMacOSSafari.value || !isIOS.value) ? '1' : '0', // تلقائي على Safari macOS وغيره، يدوي على iOS فقط
+    autoplay: '1',
     mute: '1',
     controls: '0',
     playsinline: '1',
     loop: '1',
-    playlist: VIDEO_ID,           // ضروري للـ loop بدون اقتراحات
+    playlist: VIDEO_ID,
     rel: '0',
     iv_load_policy: '3',
     disablekb: '1',
@@ -176,6 +147,10 @@ const youtubeSrc = computed(() => {
     start: START_TIME.toString(),
     origin: window.location.origin,
     widget_referrer: window.location.href,
+    enablejsapi: '1',
+    widgetid: '1',
+    autohide: '1',
+    showsearch: '0'
   });
 
   return `https://www.youtube-nocookie.com/embed/${VIDEO_ID}?${params.toString()}`;
@@ -203,15 +178,24 @@ async function typeWriter() {
   isTyping.value = false;
 }
 
-// iOS فقط: تفعيل بعد النقر
-function handleIOSPlayClick() {
-  hasUserInteracted.value = true;
-  showIOSPlayOverlay.value = false;
-
-  if (youtubeIframe.value) {
-    youtubeIframe.value.src = youtubeSrc.value;
+// إضافة دالة لضمان تشغيل الفيديو عبر YouTube API
+const ensureVideoPlay = () => {
+  if (youtubeIframe.value && youtubeIframe.value.contentWindow) {
+    try {
+      // إرسال أمر التشغيل عبر postMessage
+      youtubeIframe.value.contentWindow.postMessage(
+        JSON.stringify({
+          event: 'command',
+          func: 'playVideo',
+          args: ''
+        }),
+        '*'
+      );
+    } catch (error) {
+      console.log('YouTube API error:', error);
+    }
   }
-}
+};
 
 // Scroll & Modal
 function scrollToSection(sectionId) {
@@ -309,16 +293,22 @@ watch(locale, () => {
 
 let observer;
 onMounted(() => {
-  // على iOS فقط نعرض الـ overlay
-  if (isIOS.value) {
-    showIOSPlayOverlay.value = true;
-  }
-
+  // تشغيل الفيديو تلقائياً لجميع الأجهزة
   typeWriter();
 
   nextTick(() => {
     setupAnimations();
   });
+
+  // إضافة مستمع لحدث تحميل iframe
+  if (youtubeIframe.value) {
+    youtubeIframe.value.addEventListener('load', () => {
+      setTimeout(ensureVideoPlay, 500);
+    });
+  }
+
+  // محاولة تشغيل بعد 1 ثانية
+  setTimeout(ensureVideoPlay, 1000);
 
   observer = new IntersectionObserver(
     (entries) => {
@@ -452,59 +442,6 @@ onUnmounted(() => {
   );
 }
 
-/* Fallback styling */
-.youtube-fallback {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-  background: linear-gradient(135deg, #100E0E 0%, #1a1a1a 100%);
-  opacity: 0;
-  transition: opacity 0.5s ease;
-}
-
-/* Overlay لـiOS لتفعيل التشغيل */
-.ios-play-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.7);
-  z-index: 5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.ios-play-overlay:hover {
-  background: rgba(0, 0, 0, 0.8);
-}
-
-.ios-play-button {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-  text-align: center;
-  padding: 40px;
-  background: rgba(16, 14, 14, 0.9);
-  border-radius: 20px;
-  border: 2px solid rgba(233, 72, 14, 0.5);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-}
-
-.ios-play-text {
-  color: white;
-  font-family: "Bebas Neue", sans-serif;
-  font-size: 24px;
-  letter-spacing: 1px;
-}
-
 /* تحسينات خاصة لـiOS */
 @supports (-webkit-touch-callout: none) {
   .youtube-iframe {
@@ -530,11 +467,6 @@ onUnmounted(() => {
       transparent 100%);
   }
   
-  .ios-play-overlay {
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-  }
-  
   .youtube-container::after {
     background: linear-gradient(to bottom,
       transparent 0%,
@@ -552,22 +484,6 @@ onUnmounted(() => {
   .youtube-overlay-top {
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
-  }
-}
-
-/* إخفاء شعار YouTube */
-.youtube-iframe iframe {
-  .ytp-chrome-top,
-  .ytp-show-cards-title,
-  .ytp-watermark,
-  .ytp-title-text,
-  .ytp-title-channel,
-  .ytp-title-expanded-heading,
-  .ytp-title-expanded-title {
-    display: none !important;
-    opacity: 0 !important;
-    visibility: hidden !important;
-    pointer-events: none !important;
   }
 }
 
@@ -941,6 +857,18 @@ onUnmounted(() => {
 /* ============================================= */
 /* Responsive */
 /* ============================================= */
+@media (max-width: 1660px){
+  .content-wrapper {
+    top: 30%;
+    padding: 0 5%;
+    
+  }
+
+  .content{
+    gap: 50px;
+  }
+}
+
 @media (max-width: 991px) {
   .content-wrapper {
     top: 40%;
@@ -996,14 +924,6 @@ onUnmounted(() => {
   .youtube-container::before {
     height: 60px;
   }
-  
-  .ios-play-button {
-    padding: 30px;
-  }
-  
-  .ios-play-text {
-    font-size: 20px;
-  }
 }
 
 @media (max-width: 575px) {
@@ -1014,7 +934,7 @@ onUnmounted(() => {
   }
 
   .text2 {
-    font-size: 40px;
+    font-size: 38px;
     line-height: 170%;
   }
 
@@ -1031,14 +951,6 @@ onUnmounted(() => {
   .youtube-container::before {
     height: 50px;
   }
-  
-  .ios-play-button {
-    padding: 20px;
-  }
-  
-  .ios-play-text {
-    font-size: 18px;
-  }
 }
 
 /* Reduced motion */
@@ -1053,5 +965,22 @@ onUnmounted(() => {
 /* تحسينات للأداء */
 .play-icon {
   will-change: transform;
+}
+
+/* تحسينات إضافية لسفاري */
+@supports (-webkit-touch-callout: none) {
+  .youtube-iframe {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-perspective: 1000;
+    perspective: 1000;
+  }
+}
+
+/* ضمان التشغيل على جميع الأجهزة */
+.youtube-container {
+  -webkit-overflow-scrolling: touch;
 }
 </style>
