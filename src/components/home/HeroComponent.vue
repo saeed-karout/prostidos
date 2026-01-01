@@ -149,6 +149,10 @@ const isYouTubeModalOpen = ref(false);
 const hasUserInteracted = ref(false);
 const isVideoPlaying = ref(false);
 
+// متغيرات جديدة للمراقبة المحسنة
+const isManualSeeking = ref(false);
+let safariLoopInterval = null;
+
 // Computed
 const isIOS = computed(() => {
   const platform = navigator.platform;
@@ -169,7 +173,7 @@ const contentAlignmentClass = computed(() => {
 
 const youtubeSrc = computed(() => {
   const params = new URLSearchParams({
-    autoplay: hasUserInteracted.value ? '1' : '0', // تغيير مهم لـiOS
+    autoplay: hasUserInteracted.value ? '1' : '0',
     mute: '1',
     controls: '0',
     playsinline: '1',
@@ -191,13 +195,17 @@ const youtubeSrc = computed(() => {
     autohide: '1',
     color: 'white',
     wmode: 'transparent',
+    playlist: VIDEO_ID, // هذا مهم لمنع الاقتراحات
   });
   
-  // URL مختلف لـiOS لتحسين الأداء
-  if (isIOS.value) {
+  // إعدادات خاصة لـ iOS/Safari
+  if (isIOS.value || isSafari.value) {
     params.set('playsinline', '1');
     params.set('autoplay', hasUserInteracted.value ? '1' : '0');
     params.set('controls', '0');
+    params.set('rel', '0');
+    params.set('modestbranding', '1');
+    params.set('showinfo', '0');
   }
   
   return `https://www.youtube-nocookie.com/embed/${VIDEO_ID}?${params.toString()}`;
@@ -300,15 +308,18 @@ function onYouTubeIframeAPIReady() {
         vq: 'hd720',
         quality: 'hd720',
         playsinline: 1,
-        controls: 0
+        controls: 0,
+        playlist: VIDEO_ID
       },
       events: {
         onReady: (event) => {
           event.target.setPlaybackQuality('hd720');
           event.target.setPlaybackRate(1);
           hideYouTubeUI(event.target);
+          
+          // إعداد مراقبة النهاية المحسنة
+          setupEnhancedLoop();
 
-          // تشغيل الفيديو بناءً على النظام
           if (isIOS.value && !hasUserInteracted.value) {
             showIOSPlayOverlay.value = true;
           } else {
@@ -316,13 +327,21 @@ function onYouTubeIframeAPIReady() {
             event.target.playVideo().then(() => {
               isVideoPlaying.value = true;
               showIOSPlayOverlay.value = false;
+              
+              // بدء مراقبة الوقت المحسنة
+              startEnhancedTimeMonitoring();
+              
+              // حل خاص لـ Safari
+              if (isSafari.value) {
+                setTimeout(() => {
+                  startSafariLoopProtection();
+                }, 2000);
+              }
             }).catch((error) => {
               console.log('Auto-play prevented, showing overlay');
               showIOSPlayOverlay.value = true;
             });
           }
-          
-          startTimeChecking();
         },
         onStateChange: (event) => {
           if (event.data === YT.PlayerState.PLAYING) {
@@ -331,10 +350,14 @@ function onYouTubeIframeAPIReady() {
             showIOSPlayOverlay.value = false;
             if (player) hideYouTubeUI(player);
           } else if (event.data === YT.PlayerState.ENDED) {
-            event.target.seekTo(START_TIME);
-            event.target.playVideo();
+            console.log('Video ended - restarting from event');
+            handleVideoEnd();
           } else if (event.data === YT.PlayerState.PAUSED) {
             isVideoPlaying.value = false;
+          } else if (event.data === YT.PlayerState.CUED) {
+            console.log('Video cued');
+          } else if (event.data === YT.PlayerState.BUFFERING) {
+            console.log('Video buffering');
           }
         },
         onError: (event) => {
@@ -348,6 +371,161 @@ function onYouTubeIframeAPIReady() {
     console.error('YouTube Player Init Error:', error);
     showFallback.value = true;
   }
+}
+
+// دالة محسنة للتعامل مع نهاية الفيديو
+function handleVideoEnd() {
+  if (!player || isManualSeeking.value) return;
+  
+  isManualSeeking.value = true;
+  console.log('Handling video end...');
+  
+  // تأخير أطول لـ Safari
+  const delay = isSafari.value ? 500 : 300;
+  
+  setTimeout(() => {
+    try {
+      player.seekTo(START_TIME, true);
+      console.log(`Seeked to ${START_TIME}s`);
+      
+      setTimeout(() => {
+        if (player && player.playVideo) {
+          player.playVideo();
+          console.log('Restarted video');
+        }
+        
+        setTimeout(() => {
+          isManualSeeking.value = false;
+        }, 800);
+      }, 200);
+    } catch (error) {
+      console.error('Error handling video end:', error);
+      isManualSeeking.value = false;
+    }
+  }, delay);
+}
+
+// إعداد مراقبة النهاية المحسنة
+function setupEnhancedLoop() {
+  if (!player) return;
+  
+  // إضافة مستمع للوضع المحسن
+  player.addEventListener('onStateChange', (event) => {
+    if (event.data === YT.PlayerState.ENDED) {
+      console.log('Enhanced loop: Video ended');
+      handleVideoEnd();
+    }
+  });
+}
+
+// مراقبة الوقت المحسنة
+function startEnhancedTimeMonitoring() {
+  if (checkInterval) clearInterval(checkInterval);
+  
+  // فحص أكثر تكرراً
+  const interval = 400; // كل 400ms
+  
+  checkInterval = setInterval(() => {
+    if (player && player.getCurrentTime && !isManualSeeking.value) {
+      try {
+        const currentTime = player.getCurrentTime();
+        
+        // هامش زمني دقيق
+        const threshold = isSafari.value ? 1.0 : 0.8;
+        
+        // تحقق إذا اقتربنا من نهاية الفيديو
+        if (currentTime >= (END_TIME - threshold)) {
+          console.log(`Time ${currentTime.toFixed(2)}s reached threshold ${END_TIME}s, seeking to ${START_TIME}s`);
+          
+          // إيقاف مؤقت لمنع التكرار
+          isManualSeeking.value = true;
+          
+          // إعادة التشغيل
+          player.seekTo(START_TIME, true);
+          
+          setTimeout(() => {
+            if (player && player.playVideo) {
+              player.playVideo();
+            }
+            
+            // إعادة التمكين بعد فترة أمان
+            setTimeout(() => {
+              isManualSeeking.value = false;
+            }, 1000);
+          }, 200);
+        }
+        
+        // تحقق إضافي لمنع تجاوز النهاية
+        if (currentTime > END_TIME + 1) {
+          console.log('WARNING: Video went beyond end time, forcing restart');
+          player.seekTo(START_TIME, true);
+          setTimeout(() => {
+            if (player && player.playVideo) {
+              player.playVideo();
+            }
+          }, 100);
+        }
+      } catch (error) {
+        console.log('Enhanced time monitoring error:', error);
+        isManualSeeking.value = false;
+      }
+    }
+  }, interval);
+}
+
+// حل خاص لـ Safari/iOS
+function startSafariLoopProtection() {
+  if (!isSafari.value || !player) return;
+  
+  if (safariLoopInterval) clearInterval(safariLoopInterval);
+  
+  let lastCheckedTime = START_TIME;
+  let stallCount = 0;
+  
+  safariLoopInterval = setInterval(() => {
+    if (!player || !player.getCurrentTime) {
+      clearInterval(safariLoopInterval);
+      return;
+    }
+    
+    try {
+      const currentTime = player.getCurrentTime();
+      
+      // فحص إذا توقف الفيديو
+      if (Math.abs(currentTime - lastCheckedTime) < 0.05 && isVideoPlaying.value) {
+        stallCount++;
+        if (stallCount > 3) {
+          console.log('Safari: Video stalled, forcing play');
+          player.playVideo();
+          stallCount = 0;
+        }
+      } else {
+        stallCount = 0;
+      }
+      
+      lastCheckedTime = currentTime;
+      
+      // فحص دقيق عند الاقتراب من النهاية
+      if (currentTime > END_TIME - 2 && currentTime < END_TIME + 2 && !isManualSeeking.value) {
+        console.log('Safari: Near end time, preparing loop');
+        isManualSeeking.value = true;
+        player.seekTo(START_TIME, true);
+        
+        setTimeout(() => {
+          if (player && player.playVideo) {
+            player.playVideo();
+          }
+          
+          setTimeout(() => {
+            isManualSeeking.value = false;
+          }, 500);
+        }, 150);
+      }
+      
+    } catch (error) {
+      console.log('Safari loop protection error:', error);
+    }
+  }, 800);
 }
 
 function hideYouTubeUI(player) {
@@ -368,7 +546,14 @@ function hideYouTubeUI(player) {
         .ytp-gradient-bottom,
         .ytp-title,
         .ytp-title-link,
-        .ytp-title-channel-logo {
+        .ytp-title-channel-logo,
+        .ytp-endscreen-content,
+        .ytp-ce-element,
+        .ytp-pause-overlay,
+        .ytp-related-on-error-overlay,
+        .ytp-suggestion-set,
+        .ytp-endscreen-previous,
+        .ytp-endscreen-next {
           display: none !important;
           opacity: 0 !important;
           visibility: hidden !important;
@@ -379,23 +564,6 @@ function hideYouTubeUI(player) {
   } catch (error) {
     console.log('YouTube UI hiding error:', error);
   }
-}
-
-function startTimeChecking() {
-  if (checkInterval) clearInterval(checkInterval);
-  checkInterval = setInterval(() => {
-    if (player && player.getCurrentTime) {
-      try {
-        const currentTime = player.getCurrentTime();
-        if (currentTime >= END_TIME) {
-          player.seekTo(START_TIME);
-          player.playVideo();
-        }
-      } catch (error) {
-        console.log('Time checking error:', error);
-      }
-    }
-  }, 1000);
 }
 
 // الأنيميشنز
@@ -415,7 +583,7 @@ const setupAnimations = () => {
   if (buttonsContainer.value) {
     buttonsContainer.value.style.opacity = '1';
     buttonsContainer.value.style.transform = 'translateY(0)';
-    descriptionContainer.value.style.filter = 'blur(0)';
+    buttonsContainer.value.style.filter = 'blur(0)';
   }
 
   if (gradientOverlay.value) {
@@ -540,14 +708,40 @@ onMounted(() => {
 
 onUnmounted(() => {
   if (observer) observer.disconnect();
-  if (checkInterval) clearInterval(checkInterval);
   
+  // تنظيف جميع المقاطع الزمنية
+  if (checkInterval) {
+    clearInterval(checkInterval);
+    checkInterval = null;
+  }
+  
+  if (safariLoopInterval) {
+    clearInterval(safariLoopInterval);
+    safariLoopInterval = null;
+  }
+  
+  // تنظيف player
   if (player) {
     try {
+      // إزالة جميع المستمعات أولاً
+      if (player.removeEventListener) {
+        player.removeEventListener('onStateChange');
+      }
+      
+      // إيقاف الفيديو
+      if (player.stopVideo) player.stopVideo();
+      if (player.clearVideo) player.clearVideo();
+      
+      // إزالة الـ iframe
+      const iframe = document.getElementById('youtube-iframe');
+      if (iframe && iframe.parentNode) {
+        iframe.parentNode.removeChild(iframe);
+      }
+      
       player.destroy();
       player = null;
     } catch (error) {
-      console.log('Player destruction error:', error);
+      console.log('Player cleanup error:', error);
     }
   }
   
@@ -568,6 +762,19 @@ function addExtraYouTubeHidingCSS() {
       background: linear-gradient(to bottom, rgba(16, 14, 14, 0.95), transparent);
       z-index: 9999;
       pointer-events: none;
+    }
+    
+    .youtube-iframe iframe {
+      .ytp-endscreen-content,
+      .ytp-ce-element,
+      .ytp-pause-overlay,
+      .ytp-related-on-error-overlay,
+      .ytp-suggestion-set {
+        display: none !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+      }
     }
   `;
   document.head.appendChild(style);
@@ -663,6 +870,25 @@ function addExtraYouTubeHidingCSS() {
   -webkit-backdrop-filter: blur(3px);
 }
 
+/* CSS لمنع اقتراحات YouTube تماماً */
+.youtube-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 4;
+  pointer-events: none;
+  background: linear-gradient(to bottom,
+    transparent 0%,
+    transparent 85%,
+    rgba(16, 14, 14, 0.98) 90%,
+    rgba(16, 14, 14, 1) 95%,
+    rgba(16, 14, 14, 1) 100%
+  );
+}
+
 /* Fallback styling */
 .youtube-fallback {
   position: absolute;
@@ -745,6 +971,17 @@ function addExtraYouTubeHidingCSS() {
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
   }
+  
+  .youtube-container::after {
+    background: linear-gradient(to bottom,
+      transparent 0%,
+      transparent 80%,
+      rgba(16, 14, 14, 0.95) 85%,
+      rgba(16, 14, 14, 0.98) 90%,
+      rgba(16, 14, 14, 1) 95%,
+      rgba(16, 14, 14, 1) 100%
+    );
+  }
 }
 
 /* تحسينات للتشغيل في Chrome و Firefox */
@@ -769,25 +1006,6 @@ function addExtraYouTubeHidingCSS() {
     visibility: hidden !important;
     pointer-events: none !important;
   }
-}
-
-/* Force hide all YouTube branding */
-#youtube-iframe::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100px;
-  background: linear-gradient(to bottom, 
-    rgba(16, 14, 14, 1) 0%,
-    rgba(16, 14, 14, 0.96) 20%,
-    rgba(16, 14, 14, 0.88) 40%,
-    rgba(16, 14, 14, 0.75) 60%,
-    rgba(16, 14, 14, 0.6) 80%,
-    transparent 100%);
-  z-index: 9999;
-  pointer-events: none;
 }
 
 /* تثبيت موضع الفيديو */
@@ -1228,8 +1446,8 @@ function addExtraYouTubeHidingCSS() {
 @media (max-width: 575px) {
   .content-wrapper {
     top: 32%;
-    left: 20px;
-    right: 20px;
+    left: 0px;
+    right: 0px;
   }
 
   .text2 {

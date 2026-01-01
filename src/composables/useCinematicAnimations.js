@@ -1,295 +1,176 @@
-import { ref, onMounted, onUnmounted } from 'vue'
-import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { onMounted, onUnmounted } from 'vue';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-gsap.registerPlugin(ScrollTrigger)
+gsap.registerPlugin(ScrollTrigger);
 
-export function useCinematicAnimations() {
-  const isDesktopExperience = ref(true)
-  const isTabletExperience = ref(false)
-  const isMobileExperience = ref(false)
-  
-  // التحقق من نوع الجهاز
-  const checkDeviceType = () => {
-    const width = window.innerWidth
-    
-    if (width >= 1025) {
-      isDesktopExperience.value = true
-      isTabletExperience.value = false
-      isMobileExperience.value = false
-    } else if (width >= 768 && width <= 1024) {
-      isDesktopExperience.value = false
-      isTabletExperience.value = true
-      isMobileExperience.value = false
-    } else {
-      isDesktopExperience.value = false
-      isTabletExperience.value = false
-      isMobileExperience.value = true
-    }
-  }
-  
-  // تجربة الديسكتوب السينمائية (التلفاز + أنميشن كاملة)
-  const setupDesktopCinematic = (tvContainer, videoSections, contentContainer) => {
-    const sections = gsap.utils.toArray(videoSections)
-    
-    // تثبيت الحاوية الرئيسية
-    const pinTrigger = ScrollTrigger.create({
-      trigger: tvContainer,
-      start: "top top",
-      end: () => `+=${(sections.length - 1) * window.innerHeight}`,
-      pin: true,
-      scrub: 1.2,
-      anticipatePin: 1,
-      markers: false,
-    })
-    
-    // أنيميشن كل قسم فيديو
-    sections.forEach((section, index) => {
-      const video = section.querySelector('video')
-      const overlay = section.querySelector('.content')
-      
-      // إذا كان هذا هو التلفاز (الفيديو الأول)
-      if (index === 0) {
-        setupTVAnimations(video, overlay, pinTrigger, section)
-      } else {
-        setupVideoSectionAnimations(video, overlay, pinTrigger, section, index)
-      }
-    })
-    
-    return pinTrigger
-  }
-  
-  // أنيميشن التلفاز الخاص بالفيديو الأول
-  const setupTVAnimations = (video, content, pinTrigger, section) => {
-    if (!video) return
-    
-    // أنيميشن دخول التلفاز
-    gsap.fromTo(video.parentElement,
-      {
-        scale: 0.85,
-        filter: 'brightness(0.6) blur(2px)',
-        y: 100
-      },
-      {
-        scale: 1,
-        filter: 'brightness(1) blur(0px)',
-        y: 0,
-        duration: 1,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: section,
-          containerAnimation: pinTrigger,
-          start: "left left",
-          end: "right left",
-          scrub: 1,
-        }
-      }
-    )
-    
-    // أنيميشن المحتوى
-    if (content) {
-      gsap.fromTo(content,
-        {
-          opacity: 0,
-          y: 80,
-          scale: 0.95
-        },
-        {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          duration: 0.8,
-          ease: 'power3.out',
-          scrollTrigger: {
+export function useCinematicScroll() {
+  onMounted(() => {
+    ScrollTrigger.matchMedia({
+      // Desktop: تجربة سينمائية كاملة (Pin + Scrub)
+      "(min-width: 1280px)": () => {
+        gsap.utils.toArray('.gallery-item').forEach((section, index) => {
+          const video = section.querySelector('video');
+          const overlay = section.querySelector('.content-overlay');
+
+          // Pin القسم
+          ScrollTrigger.create({
             trigger: section,
-            containerAnimation: pinTrigger,
-            start: "left 60%",
-            end: "left 30%",
-            scrub: 0.8,
-          }
-        }
-      )
-    }
-    
-    // أنيميشن التحكم بالفيديو
-    ScrollTrigger.create({
-      trigger: section,
-      containerAnimation: pinTrigger,
-      start: "left left",
-      end: "right left",
-      onEnter: () => {
-        if (video.paused && video.readyState >= 3) {
-          video.play().catch(() => {})
-        }
-      },
-      onLeaveBack: () => {
-        video.pause()
-        video.currentTime = 0
-      }
-    })
-  }
-  
-  // أنيميشن أقسام الفيديو العادية
-  const setupVideoSectionAnimations = (video, content, pinTrigger, section, index) => {
-    if (!video) return
-    
-    // أنيميشن دخول الفيديو
-    gsap.fromTo(video,
-      {
-        scale: 0.9,
-        opacity: 0,
-        filter: 'brightness(0.5)'
-      },
-      {
-        scale: 1,
-        opacity: 1,
-        filter: 'brightness(1)',
-        duration: 1,
-        ease: 'power2.out',
-        scrollTrigger: {
-          trigger: section,
-          containerAnimation: pinTrigger,
-          start: "left left",
-          end: "right left",
-          scrub: 1,
-        }
-      }
-    )
-    
-    // أنيميشن المحتوى مع تأخير حسب الترتيب
-    if (content) {
-      gsap.fromTo(content.children,
-        {
-          opacity: 0,
-          y: 50
-        },
-        {
-          opacity: 1,
-          y: 0,
-          stagger: 0.15,
-          duration: 0.7,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: section,
-            containerAnimation: pinTrigger,
-            start: "left 50%",
-            end: "left 30%",
-            scrub: 0.7,
-          }
-        }
-      )
-    }
-  }
-  
-  // تجربة التابلت المخففة (بدون تثبيت)
-  const setupTabletExperience = (tvContainer, videoSections) => {
-    const sections = gsap.utils.toArray(videoSections)
-    
-    sections.forEach((section, index) => {
-      const video = section.querySelector('video')
-      const content = section.querySelector('.content')
-      
-      // إضافة Snap للتابلت
-      section.style.scrollSnapAlign = 'start'
-      
-      // أنيميشن الدخول
-      gsap.fromTo([video, content],
-        {
-          opacity: 0,
-          scale: 0.96,
-          y: 30
-        },
-        {
-          opacity: 1,
-          scale: 1,
-          y: 0,
-          duration: 0.9,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: section,
-            start: "top 80%",
-            end: "top 30%",
-            toggleActions: "play none none reverse"
-          }
-        }
-      )
-    })
-    
-    // إضافة Snap للحاوية
-    const container = document.querySelector('.gallery-container')
-    if (container) {
-      container.style.scrollSnapType = 'y mandatory'
-    }
-  }
-  
-  // تجربة الموبايل البسيطة
-  const setupMobileExperience = (videoSections) => {
-    const sections = gsap.utils.toArray(videoSections)
-    
-    sections.forEach((section) => {
-      const content = section.querySelector('.content')
-      
-      if (content) {
-        gsap.fromTo(content,
-          {
+            start: "top top",
+            end: "bottom top",
+            pin: true,
+            pinSpacing: false,
+            anticipatePin: 1,
+          });
+
+          // أنيميشن الفيديو (Scale + Brightness + Opacity)
+          gsap.fromTo(section.querySelector('.tv-container'), {
+            scale: 0.88,
+            opacity: 0.7,
+            filter: "brightness(0.7)",
+            y: 80
+          }, {
+            scale: 1,
+            opacity: 1,
+            filter: "brightness(1)",
+            y: 0,
+            ease: "none",
+            scrollTrigger: {
+              trigger: section,
+              start: "top bottom",
+              end: "top top",
+              scrub: 1,
+            }
+          });
+
+          // Fade-in للـ overlay (المحتوى)
+          gsap.fromTo(overlay, {
             opacity: 0,
-            y: 40
-          },
-          {
+            y: 50
+          }, {
             opacity: 1,
             y: 0,
-            duration: 0.6,
+            duration: 1,
             ease: "power2.out",
             scrollTrigger: {
               trigger: section,
-              start: "top 85%",
+              start: "top 100%",
               toggleActions: "play none none reverse"
             }
+          });
+
+          // تشغيل/إيقاف الفيديو
+          if (video) {
+            ScrollTrigger.create({
+              trigger: section,
+              start: "top 50%",
+              onEnter: () => video.play().catch(() => {}),
+              onLeave: () => video.pause(),
+              onEnterBack: () => video.play().catch(() => {}),
+              onLeaveBack: () => video.pause(),
+            });
           }
-        )
+        });
+      },
+
+      // Tablet: بدون Pin، انتقالات خفيفة
+      "(min-width: 768px) and (max-width: 1279px)": () => {
+        gsap.utils.toArray('.gallery-item').forEach((section) => {
+          const container = section.querySelector('.tv-container');
+          const overlay = section.querySelector('.content-overlay');
+          const video = section.querySelector('video');
+
+          gsap.fromTo(container, {
+            opacity: 0,
+            scale: 0.96,
+            y: 40
+          }, {
+            opacity: 1,
+            scale: 1,
+            y: 0,
+            duration: 0.9,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: section,
+              start: "top 80%",
+              toggleActions: "play none none reverse"
+            }
+          });
+
+          gsap.fromTo(overlay, {
+            opacity: 0,
+            y: 30
+          }, {
+            opacity: 1,
+            y: 0,
+            duration: 0.7,
+            delay: 0.3,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: section,
+              start: "top 80%",
+              toggleActions: "play none none reverse"
+            }
+          });
+
+          if (video) {
+            ScrollTrigger.create({
+              trigger: section,
+              start: "top center",
+              end: "bottom center",
+              onEnter: () => video.play().catch(() => {}),
+              onLeave: () => video.pause(),
+              onEnterBack: () => video.play().catch(() => {}),
+              onLeaveBack: () => video.pause(),
+            });
+          }
+        });
+      },
+
+      // Mobile: أداء أولوية، لا autoplay
+      "(max-width: 767px)": () => {
+        gsap.utils.toArray('.gallery-item').forEach((section) => {
+          const container = section.querySelector('.tv-container');
+          const overlay = section.querySelector('.content-overlay');
+
+          gsap.fromTo(container, {
+            opacity: 0,
+            y: 50
+          }, {
+            opacity: 1,
+            y: 0,
+            duration: 0.6,
+            scrollTrigger: {
+              trigger: section,
+              start: "top 90%"
+            }
+          });
+
+          gsap.fromTo(overlay, {
+            opacity: 0,
+            y: 20
+          }, {
+            opacity: 1,
+            y: 0,
+            duration: 0.5,
+            delay: 0.2,
+            scrollTrigger: {
+              trigger: section,
+              start: "top 90%"
+            }
+          });
+
+          // لا autoplay على الموبايل، poster فقط
+          const video = section.querySelector('video');
+          if (video) video.pause();
+        });
       }
-    })
-  }
-  
-  // تهيئة الأنميشن حسب الجهاز
-  const initCinematicExperience = (tvContainerSelector, sectionsSelector) => {
-    checkDeviceType()
-    
-    const tvContainer = document.querySelector(tvContainerSelector)
-    const sections = document.querySelectorAll(sectionsSelector)
-    
-    // تنظيف أي أنيميشن سابقة
-    ScrollTrigger.getAll().forEach(trigger => trigger.kill())
-    
-    if (isDesktopExperience.value && tvContainer && sections.length > 0) {
-      return setupDesktopCinematic(tvContainer, sections, '.content')
-    } else if (isTabletExperience.value && sections.length > 0) {
-      return setupTabletExperience(tvContainer, sections)
-    } else if (isMobileExperience.value && sections.length > 0) {
-      return setupMobileExperience(sections)
-    }
-  }
-  
-  // إعادة الضبط عند تغيير الحجم
-  const handleResize = () => {
-    checkDeviceType()
-    ScrollTrigger.refresh()
-  }
-  
-  onMounted(() => {
-    window.addEventListener('resize', handleResize)
-  })
-  
+    });
+
+    ScrollTrigger.refresh();
+  });
+
   onUnmounted(() => {
-    window.removeEventListener('resize', handleResize)
-    ScrollTrigger.getAll().forEach(trigger => trigger.kill())
-  })
-  
-  return {
-    checkDeviceType,
-    initCinematicExperience,
-    isDesktopExperience,
-    isTabletExperience,
-    isMobileExperience
-  }
+    ScrollTrigger.getAll().forEach(st => st.kill());
+  });
 }
