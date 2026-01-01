@@ -83,279 +83,366 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue';
-import { useI18n } from 'vue-i18n';
-import YouTubeModal from '@/components/YouTubeModal.vue';
-
-const { t, locale } = useI18n();
-
-// Refs
-const heroSection = ref(null);
-const youtubeIframe = ref(null);
-const gradientOverlay = ref(null);
-const contentContainer = ref(null);
-const text2El = ref(null);
-const descriptionEl = ref(null);
-const subDescriptionEl = ref(null);
-const descriptionContainer = ref(null);
-const buttonsContainer = ref(null);
-const bookBtn = ref(null);
-const watchBtn = ref(null);
-const particlesContainer = ref(null);
-
-// Typing state
-const fullText = computed(() => t('hero.text2'));
-const splitSentences = computed(() => {
-  return fullText.value
-    .split(/(?<=\.)/)
-    .map(s => s.trim())
-    .filter(s => s.length > 0);
-});
-
-const currentLine = ref(0);
-const typedTexts = ref([]);
-const isTyping = ref(false);
-
-// YouTube Config
-const VIDEO_ID = 'XXbVgVoZ-oY';
-const START_TIME = 29;
-
-// State
-const isYouTubeModalOpen = ref(false);
-
-// Content alignment
-const contentAlignmentClass = computed(() => {
-  return locale.value === 'ar' ? 'right-[70px] left-auto text-right' : 'left-[70px] right-auto text-left';
-});
-
-// YouTube URL مع loop حقيقي بدون اقتراحات
-const youtubeSrc = computed(() => {
-  const params = new URLSearchParams({
-    autoplay: '1',
-    mute: '1',
-    controls: '0',
-    playsinline: '1',
-    loop: '1',
-    playlist: VIDEO_ID,
-    rel: '0',
-    iv_load_policy: '3',
-    disablekb: '1',
-    fs: '0',
-    modestbranding: '1',
-    showinfo: '0',
-    cc_load_policy: '0',
-    start: START_TIME.toString(),
-    origin: window.location.origin,
-    widget_referrer: window.location.href,
-    enablejsapi: '1',
-    widgetid: '1',
-    autohide: '1',
-    showsearch: '0'
+  import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue';
+  import { useI18n } from 'vue-i18n';
+  import YouTubeModal from '@/components/YouTubeModal.vue';
+  
+  const { t, locale } = useI18n();
+  
+  // Refs
+  const heroSection = ref(null);
+  const youtubeIframe = ref(null);
+  const gradientOverlay = ref(null);
+  const contentContainer = ref(null);
+  const text2El = ref(null);
+  const descriptionEl = ref(null);
+  const subDescriptionEl = ref(null);
+  const descriptionContainer = ref(null);
+  const buttonsContainer = ref(null);
+  const bookBtn = ref(null);
+  const watchBtn = ref(null);
+  const particlesContainer = ref(null);
+  
+  // Typing state
+  const fullText = computed(() => t('hero.text2'));
+  const splitSentences = computed(() => {
+    return fullText.value
+      .split(/(?<=\.)/)
+      .map(s => s.trim())
+      .filter(s => s.length > 0);
   });
-
-  return `https://www.youtube-nocookie.com/embed/${VIDEO_ID}?${params.toString()}`;
-});
-
-// Typing animation
-async function typeWriter() {
-  typedTexts.value = splitSentences.value.map(() => '');
-  currentLine.value = 0;
-  isTyping.value = true;
-
-  for (let i = 0; i < splitSentences.value.length; i++) {
-    currentLine.value = i;
-    const sentence = splitSentences.value[i];
-    typedTexts.value[i] = '';
-
-    for (let j = 0; j < sentence.length; j++) {
-      typedTexts.value[i] += sentence[j];
-      await nextTick();
-      await new Promise(resolve => setTimeout(resolve, 50));
-    }
-    await new Promise(resolve => setTimeout(resolve, 500));
-  }
-
-  isTyping.value = false;
-}
-
-// إضافة دالة لضمان تشغيل الفيديو عبر YouTube API
-const ensureVideoPlay = () => {
-  if (youtubeIframe.value && youtubeIframe.value.contentWindow) {
-    try {
-      // إرسال أمر التشغيل عبر postMessage
-      youtubeIframe.value.contentWindow.postMessage(
-        JSON.stringify({
-          event: 'command',
-          func: 'playVideo',
-          args: ''
-        }),
-        '*'
-      );
-    } catch (error) {
-      console.log('YouTube API error:', error);
-    }
-  }
-};
-
-// دالة لضبط ارتفاع العناصر في سفاري
-const fixSafariHeight = () => {
-  // حل مشكلة 100vh في سفاري
-  const vh = window.innerHeight * 0.01;
-  document.documentElement.style.setProperty('--vh', `${vh}px`);
   
-  // تطبيق على عناصرنا
-  if (heroSection.value) {
-    heroSection.value.style.height = `${window.innerHeight}px`;
-  }
+  const currentLine = ref(0);
+  const typedTexts = ref([]);
+  const isTyping = ref(false);
   
-  if (youtubeIframe.value && youtubeIframe.value.style) {
-    youtubeIframe.value.style.height = `${window.innerHeight}px`;
-  }
-};
-
-// Scroll & Modal
-function scrollToSection(sectionId) {
-  const element = document.getElementById(sectionId);
-  if (element) element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-function openYouTubeModal() {
-  isYouTubeModalOpen.value = true;
-  document.body.style.overflow = 'hidden';
-}
-
-function closeYouTubeModal() {
-  isYouTubeModalOpen.value = false;
-  document.body.style.overflow = 'auto';
-}
-
-// Animations
-const setupAnimations = () => {
-  if (text2El.value) {
-    text2El.value.style.opacity = '1';
-    text2El.value.style.transform = 'translateY(0)';
-    text2El.value.style.filter = 'blur(0)';
-  }
+  // YouTube Config
+  const VIDEO_ID = 'XXbVgVoZ-oY';
+  const START_TIME = 29; // بداية الفيديو
+  const END_TIME = 92;   // نهاية الفيديو
+  const DURATION = END_TIME - START_TIME; // مدة التشغيل: 63 ثانية
   
-  if (descriptionContainer.value) {
-    descriptionContainer.value.style.opacity = '1';
-    descriptionContainer.value.style.transform = 'translateY(0)';
-    descriptionContainer.value.style.filter = 'blur(0)';
-  }
+  // State
+  const isYouTubeModalOpen = ref(false);
+  const videoPlayer = ref(null); // مرجع للـ YouTube Player
   
-  if (buttonsContainer.value) {
-    buttonsContainer.value.style.opacity = '1';
-    buttonsContainer.value.style.transform = 'translateY(0)';
-    buttonsContainer.value.style.filter = 'blur(0)';
-  }
-
-  if (gradientOverlay.value) {
-    gradientOverlay.value.style.opacity = '1';
-  }
-
-  if (bookBtn.value) {
-    bookBtn.value.classList.add('btn-entered');
-    setTimeout(() => bookBtn.value.classList.add('animate-float'), 800);
-  }
-
-  if (watchBtn.value) {
-    watchBtn.value.classList.add('btn-entered');
-    setTimeout(() => watchBtn.value.classList.add('animate-float'), 900);
-  }
-
-  createFloatingParticles();
-};
-
-const createFloatingParticles = () => {
-  if (!particlesContainer.value) return;
-  particlesContainer.value.innerHTML = '';
-
-  const count = window.innerWidth < 768 ? 8 : 15;
-  for (let i = 0; i < count; i++) {
-    const p = document.createElement('div');
-    p.className = 'particle';
-
-    const size = Math.random() * 5 + 2;
-    const duration = Math.random() * 25 + 15;
-    const delay = Math.random() * 10;
-    const left = Math.random() * 100;
-    const opacity = Math.random() * 0.3 + 0.1;
-
-    p.style.cssText = `
-      position: absolute;
-      width: ${size}px;
-      height: ${size}px;
-      background: rgba(255, 255, 255, ${opacity});
-      border-radius: 50%;
-      top: -10%;
-      left: ${left}%;
-      animation: ${locale.value === 'ar' ? 'floatRTL' : 'float'} ${duration}s linear infinite;
-      animation-delay: ${delay}s;
-      pointer-events: none;
-      z-index: 5;
-    `;
-    particlesContainer.value.appendChild(p);
-  }
-};
-
-// Watch language change
-watch(locale, () => {
-  nextTick(() => {
-    typeWriter();
-    setupAnimations();
-    createFloatingParticles();
+  // Content alignment
+  const contentAlignmentClass = computed(() => {
+    return locale.value === 'ar' ? 'right-[70px] left-auto text-right' : 'left-[70px] right-auto text-left';
   });
-});
-
-let observer;
-onMounted(() => {
-  // ضبط الارتفاع فوراً
-  fixSafariHeight();
   
-  // إعادة ضبط عند تغيير حجم النافذة
-  window.addEventListener('resize', fixSafariHeight);
-  window.addEventListener('orientationchange', fixSafariHeight);
-
-  // تشغيل الفيديو تلقائياً لجميع الأجهزة
-  typeWriter();
-
-  nextTick(() => {
-    setupAnimations();
-  });
-
-  // إضافة مستمع لحدث تحميل iframe
-  if (youtubeIframe.value) {
-    youtubeIframe.value.addEventListener('load', () => {
-      setTimeout(ensureVideoPlay, 500);
+  // YouTube URL مع loop حقيقي بدون اقتراحات
+  const youtubeSrc = computed(() => {
+    const params = new URLSearchParams({
+      autoplay: '1',
+      mute: '1',
+      controls: '0',
+      playsinline: '1',
+      loop: '1',
+      playlist: VIDEO_ID,
+      rel: '0',
+      iv_load_policy: '3',
+      disablekb: '1',
+      fs: '0',
+      modestbranding: '1',
+      showinfo: '0',
+      cc_load_policy: '0',
+      start: START_TIME.toString(),
+      end: END_TIME.toString(),
+      origin: window.location.origin,
+      widget_referrer: window.location.href,
+      enablejsapi: '1',
+      widgetid: '1',
+      autohide: '1',
+      showsearch: '0'
     });
+  
+    return `https://www.youtube-nocookie.com/embed/${VIDEO_ID}?${params.toString()}`;
+  });
+  
+  // Typing animation
+  async function typeWriter() {
+    typedTexts.value = splitSentences.value.map(() => '');
+    currentLine.value = 0;
+    isTyping.value = true;
+  
+    for (let i = 0; i < splitSentences.value.length; i++) {
+      currentLine.value = i;
+      const sentence = splitSentences.value[i];
+      typedTexts.value[i] = '';
+  
+      for (let j = 0; j < sentence.length; j++) {
+        typedTexts.value[i] += sentence[j];
+        await nextTick();
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
+      await new Promise(resolve => setTimeout(resolve, 500));
+    }
+  
+    isTyping.value = false;
   }
-
-  // محاولة تشغيل بعد 1 ثانية
-  setTimeout(ensureVideoPlay, 1000);
-
-  observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('in-view');
-          createFloatingParticles();
+  
+  // إضافة دالة لضمان تشغيل الفيديو عبر YouTube API
+  const ensureVideoPlay = () => {
+    if (youtubeIframe.value && youtubeIframe.value.contentWindow) {
+      try {
+        // إرسال أمر التشغيل عبر postMessage
+        youtubeIframe.value.contentWindow.postMessage(
+          JSON.stringify({
+            event: 'command',
+            func: 'playVideo',
+            args: ''
+          }),
+          '*'
+        );
+      } catch (error) {
+        console.log('YouTube API error:', error);
+      }
+    }
+  };
+  
+  // دالة لإعادة ضبط الفيديو إلى 29 ثانية عند الوصول إلى 92 ثانية
+  const setupVideoLoop = () => {
+    let checkInterval;
+    
+    const checkVideoTime = () => {
+      if (youtubeIframe.value && youtubeIframe.value.contentWindow) {
+        try {
+          youtubeIframe.value.contentWindow.postMessage(
+            JSON.stringify({
+              event: 'listening',
+              func: 'getCurrentTime',
+              id: 'heroVideo'
+            }),
+            '*'
+          );
+        } catch (error) {
+          console.log('Video time check error:', error);
         }
+      }
+    };
+  
+    // استمع للردود من YouTube
+    const handleMessage = (event) => {
+      if (event.origin !== 'https://www.youtube-nocookie.com') return;
+      
+      if (event.data && typeof event.data === 'string') {
+        try {
+          const data = JSON.parse(event.data);
+          if (data.event === 'infoDelivery' && data.info && data.info.currentTime) {
+            const currentTime = data.info.currentTime;
+            
+            // إذا تجاوز الفيديو 92 ثانية، أعد إلى 29 ثانية
+            if (currentTime >= END_TIME) {
+              youtubeIframe.value.contentWindow.postMessage(
+                JSON.stringify({
+                  event: 'command',
+                  func: 'seekTo',
+                  args: [START_TIME, true]
+                }),
+                '*'
+              );
+            }
+          }
+        } catch (e) {
+          // تجاهل الأخطاء في تحليل JSON
+        }
+      }
+    };
+  
+    // أضف مستمع الرسائل
+    window.addEventListener('message', handleMessage);
+  
+    // ابدأ بفحص وقت الفيديو كل ثانية
+    checkInterval = setInterval(checkVideoTime, 1000);
+  
+    // إرجاع دالة التنظيف
+    return () => {
+      clearInterval(checkInterval);
+      window.removeEventListener('message', handleMessage);
+    };
+  };
+  
+  let cleanupVideoLoop = () => {};
+  
+  // بديل أبسط: إعادة تحميل الفيديو كل 63 ثانية
+  const setupSimpleVideoLoop = () => {
+    let loopInterval;
+    
+    // تشغيل الفيديو
+    ensureVideoPlay();
+    
+    // إعادة تعيين الفيديو كل 63 ثانية
+    loopInterval = setInterval(() => {
+      if (youtubeIframe.value) {
+        // إعادة تعيين الفيديو إلى 29 ثانية
+        youtubeIframe.value.contentWindow.postMessage(
+          JSON.stringify({
+            event: 'command',
+            func: 'seekTo',
+            args: [START_TIME, true]
+          }),
+          '*'
+        );
+        
+        // تشغيل الفيديو
+        youtubeIframe.value.contentWindow.postMessage(
+          JSON.stringify({
+            event: 'command',
+            func: 'playVideo',
+            args: ''
+          }),
+          '*'
+        );
+      }
+    }, DURATION * 1000); // كل 63 ثانية
+  
+    return () => {
+      clearInterval(loopInterval);
+    };
+  };
+  
+  // Scroll & Modal
+  function scrollToSection(sectionId) {
+    const element = document.getElementById(sectionId);
+    if (element) element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  
+  function openYouTubeModal() {
+    isYouTubeModalOpen.value = true;
+    document.body.style.overflow = 'hidden';
+  }
+  
+  function closeYouTubeModal() {
+    isYouTubeModalOpen.value = false;
+    document.body.style.overflow = 'auto';
+  }
+  
+  // Animations
+  const setupAnimations = () => {
+    if (text2El.value) {
+      text2El.value.style.opacity = '1';
+      text2El.value.style.transform = 'translateY(0)';
+      text2El.value.style.filter = 'blur(0)';
+    }
+    
+    if (descriptionContainer.value) {
+      descriptionContainer.value.style.opacity = '1';
+      descriptionContainer.value.style.transform = 'translateY(0)';
+      descriptionContainer.value.style.filter = 'blur(0)';
+    }
+    
+    if (buttonsContainer.value) {
+      buttonsContainer.value.style.opacity = '1';
+      buttonsContainer.value.style.transform = 'translateY(0)';
+      buttonsContainer.value.style.filter = 'blur(0)';
+    }
+  
+    if (gradientOverlay.value) {
+      gradientOverlay.value.style.opacity = '1';
+    }
+  
+    if (bookBtn.value) {
+      bookBtn.value.classList.add('btn-entered');
+      setTimeout(() => bookBtn.value.classList.add('animate-float'), 800);
+    }
+  
+    if (watchBtn.value) {
+      watchBtn.value.classList.add('btn-entered');
+      setTimeout(() => watchBtn.value.classList.add('animate-float'), 900);
+    }
+  
+    createFloatingParticles();
+  };
+  
+  const createFloatingParticles = () => {
+    if (!particlesContainer.value) return;
+    particlesContainer.value.innerHTML = '';
+  
+    const count = window.innerWidth < 768 ? 8 : 15;
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+  
+      const size = Math.random() * 5 + 2;
+      const duration = Math.random() * 25 + 15;
+      const delay = Math.random() * 10;
+      const left = Math.random() * 100;
+      const opacity = Math.random() * 0.3 + 0.1;
+  
+      p.style.cssText = `
+        position: absolute;
+        width: ${size}px;
+        height: ${size}px;
+        background: rgba(255, 255, 255, ${opacity});
+        border-radius: 50%;
+        top: -10%;
+        left: ${left}%;
+        animation: ${locale.value === 'ar' ? 'floatRTL' : 'float'} ${duration}s linear infinite;
+        animation-delay: ${delay}s;
+        pointer-events: none;
+        z-index: 5;
+      `;
+      particlesContainer.value.appendChild(p);
+    }
+  };
+  
+  // Watch language change
+  watch(locale, () => {
+    nextTick(() => {
+      typeWriter();
+      setupAnimations();
+      createFloatingParticles();
+    });
+  });
+  
+  let observer;
+  onMounted(() => {
+    // تشغيل الفيديو تلقائياً لجميع الأجهزة
+    typeWriter();
+  
+    nextTick(() => {
+      setupAnimations();
+    });
+  
+    // إضافة مستمع لحدث تحميل iframe
+    if (youtubeIframe.value) {
+      youtubeIframe.value.addEventListener('load', () => {
+        setTimeout(() => {
+          ensureVideoPlay();
+          // إعداد حلقة الفيديو بعد تحميله
+          cleanupVideoLoop = setupSimpleVideoLoop();
+        }, 1000);
       });
-    },
-    { threshold: 0.3 }
-  );
-
-  if (heroSection.value) observer.observe(heroSection.value);
-});
-
-onUnmounted(() => {
-  if (observer) observer.disconnect();
-  window.removeEventListener('resize', fixSafariHeight);
-  window.removeEventListener('orientationchange', fixSafariHeight);
-  document.body.style.overflow = 'auto';
-});
-</script>
-
+    }
+  
+    // محاولة تشغيل بعد 2 ثانية
+    setTimeout(() => {
+      ensureVideoPlay();
+      cleanupVideoLoop = setupSimpleVideoLoop();
+    }, 2000);
+  
+    observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in-view');
+            createFloatingParticles();
+          }
+        });
+      },
+      { threshold: 0.3 }
+    );
+  
+    if (heroSection.value) observer.observe(heroSection.value);
+  });
+  
+  onUnmounted(() => {
+    if (observer) observer.disconnect();
+    if (cleanupVideoLoop) cleanupVideoLoop();
+    document.body.style.overflow = 'auto';
+  });
+  </script>
 <style scoped>
 /* ============================================= */
 /* حل مشكلة 100vh في سفاري */
@@ -689,7 +776,7 @@ onUnmounted(() => {
 /* Buttons Container */
 /* ============================================= */
 .buttons {
-  padding-top: 64px;
+  padding-top: 44px;
   display: flex;
   gap: 24px;
   width: 100%;
