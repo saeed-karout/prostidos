@@ -51,19 +51,19 @@
 
         <!-- Buttons -->
         <div class="buttons pt-[64px] flex gap-[24px] w-full animated-text" ref="buttonsContainer">
-          <button @click="scrollToSection('contact')" class="btn-contact-hero" ref="bookBtn">
-            <span class="btn-contact-text">{{ $t('hero.contact') }}</span>
-            <div class="btn-hover-glow"></div>
-          </button>
+  <button @click="scrollToSection('contact')" class="btn-contact-hero" ref="bookBtn">
+    <span class="btn-contact-text">{{ $t('hero.contact') }}</span>
+    <div class="btn-hover-glow"></div>
+  </button>
 
-          <button class="btn-watch-hero" @click="openYouTubeModal" ref="watchBtn">
-            <span class="btn-watch-text">{{ $t('hero.watch') }}</span>
-            <div class="play-icon-wrapper">
-              <font-awesome-icon icon="fa-brands fa-google-play" class="play-icon"/>
-            </div>
-            <div class="btn-hover-glow"></div>
-          </button>
-        </div>
+  <button class="btn-watch-hero" @click="openYouTubeModal" ref="watchBtn">
+    <span class="btn-watch-text">{{ $t('hero.watch') }}</span>
+    <div class="play-icon-wrapper">
+      <font-awesome-icon icon="fa-brands fa-google-play" class="play-icon"/>
+    </div>
+    <div class="btn-hover-glow"></div>
+  </button>
+</div>
       </div>
     </div>
 
@@ -1094,7 +1094,7 @@
 
 @media (max-width: 575px) {
   .content-wrapper {
-    top: 32%;
+    top: 28%;
     left: 0px;
     right: 0px;
   }
@@ -1150,4 +1150,19 @@
     height: 100dvh !important;
   }
 }
+
+
+/* ============================================= */
+/* باستخدام نسبة العرض إلى الارتفاع (aspect ratio) */
+/* ============================================= */
+
+/* لأجهزة iPad Pro 12.9" وغيرها من الشاشات الكبيرة */
+@media (min-width: 2000px) and (min-height: 2700px) 
+ {
+  .buttons{
+    flex-direction: column !important;
+    gap: 40px;
+  }
+}
+
 </style>
