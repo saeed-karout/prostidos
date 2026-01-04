@@ -487,7 +487,7 @@
   width: 100vw;
   height: 100vh;
   height: calc(var(--vh, 1vh) * 100); /* لسفاري */
-  min-width: 177.78vh;
+  
   min-height: 56.25vw;
   transform: translate(-50%, -50%);
   pointer-events: none;
@@ -682,7 +682,7 @@
 .content-wrapper {
   position: absolute;
   top: 28%;
-  max-width: 950px;
+  max-width: 1065px;
   z-index: 20;
 }
 
@@ -1033,16 +1033,20 @@
   .content{
     gap: 50px;
   }
+  
 }
 
-@media (max-width: 991px) {
+@media (max-width: 1030px) {
   .content-wrapper {
-    top: 40%;
+    top: 28%;
     padding: 0 5%;
   }
 
   .text2 {
     font-size: 60px;
+  }
+  .youtube-iframe{
+    min-width: 177.78vh;
   }
 
   .buttons {
@@ -1099,6 +1103,9 @@
     right: 0px;
   }
 
+  .youtube-iframe{
+    min-width: 177.78vh;
+  }
   .text2 {
     font-size: 38px;
     line-height: 170%;
@@ -1116,6 +1123,9 @@
 
   .youtube-container::before {
     height: 50px;
+  }
+  .buttons{
+    padding-top: 0px;
   }
 }
 
@@ -1151,6 +1161,12 @@
   }
 }
 
+@media (max-width:1350px) {
+  .youtube-iframe{
+    min-width: 177.78vh;
+  }
+}
+
 
 /* ============================================= */
 /* باستخدام نسبة العرض إلى الارتفاع (aspect ratio) */
@@ -1162,6 +1178,9 @@
   .buttons{
     flex-direction: column !important;
     gap: 40px;
+  }
+  .youtube-iframe{
+    min-width: 177.78vh;
   }
 }
 

@@ -34,44 +34,47 @@
     </nav>
 
     <!-- Vertical Navigation Menu (Desktop Only) - Independent Positioning -->
-    <div class="hidden md:flex fixed right-0 top-1/2 -translate-y-1/2 z-50">
-        <div class="vertical-nav-menu" :class="{ 'expanded': isHomeMenuOpen }">
-            <!-- Navigation Items -->
-            <div class="nav-items rotate-[-90deg]">
-                <!-- Home with dropdown functionality -->
-                <div @click="toggleHomeMenu" 
-                    class="nav-item group cursor-pointer main-nav-item"
-                    :class="{ 'active': isActive('/') }">
-                    <div class="nav-dot"></div>
-                    <span class="nav-text">{{ $t('nav.home') }}</span>
-                </div>
-            </div>
-
-            <!-- Language Switcher -->
-            <div class="language-section" :class="{ 'mt-4': isHomeMenuOpen }">
-                <div class="language-item" @click="toggleLanguage">
-                    <div class="language-icon">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/>
-                        </svg>
-                    </div>
-                    <span class="language-text">
-                        {{ currentLanguage === 'en' ? 'ar' : 'en' }}
-                    </span>
-                </div>
-            </div>
-
-            <!-- Email -->
-            <div class="email-section" :class="{ 'mt-4': isHomeMenuOpen }">
-                <a :href="emailHref" class="email-item">
-                  
-                        <font-awesome-icon icon="fa-regular fa-envelope" class="w-7 h-7 text-[#F0531C]" />
-                  
-                </a>
+<div class="hidden md:flex fixed menu-desk top-1/2 -translate-y-1/2 z-50"
+     :class="{ 'right-0': !isRTL, 'left-0': isRTL }">
+    <div class="vertical-nav-menu" :class="{ 'expanded': isHomeMenuOpen }">
+        <!-- Navigation Items -->
+        <div class="nav-items rotate-[-90deg]">
+            <!-- Home with dropdown functionality -->
+            <div @click="toggleHomeMenu" 
+                class="nav-item group cursor-pointer main-nav-item"
+                :class="{ 'active': isActive('/') }">
+                <div class="nav-dot"></div>
+                <span class="nav-text">{{ $t('nav.home') }}</span>
             </div>
         </div>
+
+        <!-- Language Switcher -->
+        <div class="language-section" :class="{ 'mt-4': isHomeMenuOpen }">
+            <div class="language-item" @click="toggleLanguage">
+                <div class="language-icon">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                            d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/>
+                    </svg>
+                </div>
+                <span class="language-text">
+                    {{ currentLanguage === 'en' ? 'ar' : 'en' }}
+                </span>
+            </div>
+        </div>
+
+        <!-- Email -->
+        <!-- Email -->
+<div class="email-section" :class="{ 'mt-4': isHomeMenuOpen }">
+    <a :href="emailHref" class="email-item">
+        <font-awesome-icon 
+            icon="fa-regular fa-envelope" 
+            class="w-7 h-7 text-[#F0531C] email-icon-shake" 
+        />
+    </a>
+</div>
     </div>
+</div>
 
     <!-- Desktop Full Screen Menu (يظهر عند النقر على Home) -->
     <transition name="desktop-full-menu">
@@ -280,23 +283,26 @@
 
                         <!-- Email -->
                         <div class="mt-6">
-                            <a :href="emailHref" class="flex items-center justify-between p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-full bg-[#E9480E]/20 flex items-center justify-center">
-                                        <font-awesome-icon icon="fa-solid fa-envelope" class="h-6 w-10 text-[#E9480E]" />
-                                    </div>
-                                    <div>
-                                        <h3 class="text-white font-medium tracking-[.9px]">Email</h3>
-                                        <p class="text-sm text-white/60 tracking-[.9px] truncate max-w-[200px]">
-                                            {{ cleanEmail }}
-                                        </p>
-                                    </div>
-                                </div>
-                                <svg class="w-5 h-5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
-                                </svg>
-                            </a>
-                        </div>
+    <a :href="emailHref" class="flex items-center justify-between p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-[#E9480E]/20 flex items-center justify-center">
+                <font-awesome-icon 
+                    icon="fa-solid fa-envelope" 
+                    class="h-6 w-10 text-[#E9480E] email-icon-shake" 
+                />
+            </div>
+            <div>
+                <h3 class="text-white font-medium tracking-[.9px]">Email</h3>
+                <p class="text-sm text-white/60 tracking-[.9px] truncate max-w-[200px]">
+                    {{ cleanEmail }}
+                </p>
+            </div>
+        </div>
+        <svg class="w-5 h-5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+        </svg>
+    </a>
+</div>
                     </div>
 
                     <!-- Footer -->
@@ -333,7 +339,7 @@ import { useRoute } from 'vue-router';
 const { locale, t } = useI18n();
 const route = useRoute();
 const currentLanguage = computed(() => locale.value);
-
+const isRTL = computed(() => locale.value === 'ar');
 // State
 const isMobileMenuOpen = ref(false);
 const isHomeMenuOpen = ref(false);
@@ -385,9 +391,11 @@ onMounted(() => {
     if (savedLanguage && ['en', 'ar'].includes(savedLanguage)) {
         locale.value = savedLanguage;
         document.documentElement.lang = savedLanguage;
+        document.documentElement.dir = savedLanguage === 'ar' ? 'rtl' : 'ltr'; // أضف هذا السطر
     } else {
         locale.value = 'en';
         document.documentElement.lang = 'en';
+        document.documentElement.dir = 'ltr'; // أضف هذا السطر
         localStorage.setItem('language', 'en');
     }
 });
@@ -402,6 +410,7 @@ function toggleLanguage() {
 function changeLanguage(lang) {
     locale.value = lang;
     document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr'; // أضف هذا السطر
     localStorage.setItem('language', lang);
     
     // Close menus after language change
@@ -501,7 +510,7 @@ onBeforeUnmount(() => {
 // Computed classes for nav
 const navClasses = computed(() => {
     return [
-        'fixed top-0 left-0 w-full z-[99999999999999999] transition-all duration-300',
+        'fixed top-0 left-0 w-full z-[50] transition-all duration-300',
         {
             ' backdrop-blur-md ': hasScrolled.value && !isMobileMenuOpen.value && !isHomeMenuOpen.value,
             'bg-transparent': !hasScrolled.value || isMobileMenuOpen.value || isHomeMenuOpen.value,
@@ -544,6 +553,9 @@ const navClasses = computed(() => {
     border-right: none;
     box-shadow: -5px 0 20px rgba(0, 0, 0, 0.3);
     transition: all 0.3s ease;
+}
+[dir="rtl"] .vertical-nav-menu{
+    border-radius: 0 20px 20px 0;
 }
 
 .vertical-nav-menu.expanded {
@@ -933,6 +945,16 @@ const navClasses = computed(() => {
     left: 1.5rem;
 }
 
+[dir="rtl"] .menu-desk {
+    left: 0;
+    right: auto;
+}
+
+:dir(rtl) .menu-desk {
+    left: 0;
+    right: auto;
+}
+
 [dir="rtl"] .ml-auto {
     margin-left: 0;
     margin-right: auto;
@@ -1057,6 +1079,24 @@ a:focus-visible {
     .vertical-nav-menu,
     .desktop-menu-content {
         background: rgba(10, 10, 10, 0.95);
+    }
+}
+
+
+/* Email Icon Animation */
+.email-icon-shake {
+    animation: gentleShake 2s ease-in-out infinite;
+}
+
+@keyframes gentleShake {
+    0%, 100% {
+        transform: translateX(0) rotate(0deg);
+    }
+    10%, 30%, 50%, 70%, 90% {
+        transform: translateX(-2px) rotate(-10deg);
+    }
+    20%, 40%, 60%, 80% {
+        transform: translateX(2px) rotate(10deg);
     }
 }
 </style>

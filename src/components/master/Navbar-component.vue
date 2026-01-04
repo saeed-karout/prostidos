@@ -68,7 +68,7 @@
 
   <!-- Mobile Navigation Menu -->
   <transition name="mobile-menu">
-    <div v-if="isMobileMenuOpen" ref="mobileMenu" class="fixed inset-0 z-[9999] md:hidden">
+    <div v-if="isMobileMenuOpen" ref="mobileMenu" class="fixed inset-0 z-[50] md:hidden">
       <!-- Backdrop -->
       <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" @click="closeMobileMenu"></div>
       
