@@ -1,0 +1,5 @@
+{
+  "resource": "https://api.prostdios.com",
+  "authorization_servers": ["https://prostdios.com"],
+  "scopes_supported": ["read", "write"]
+}

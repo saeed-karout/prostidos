@@ -348,5 +348,224 @@
     "description": "Every project follows a clear path. Cinematic creativity, strategic storytelling, and precise execution — because quality is never optional.",
     "button": "See our work"
   }
-}
+},
+"pricing": {
+    "badge_text": "Our packages",
+    "title_part1": "Everything your brand needs",
+    "title_part2": ", handled.",
+    "subtitle": "From monthly social media content to one-time productions — choose what fits your goals.",
+    "tabs": {
+      "social": "Social Media",
+      "events": "Events",
+      "podcast": "Podcast",
+      "realestate": "Real Estate",
+      "commercial": "Commercial & Corporate"
+    },
+    "packages": {
+      "social": {
+        "essential": {
+          "name": "Essential",
+          "description": "Essential social media content package for consistent brand presence.",
+          "features": {
+            "reels": "filmed & edited reels/month",
+            "posts": "designed posts",
+            "captions": "Arabic + English captions",
+            "platforms": "Instagram + TikTok",
+            "filming": "filming visit/month",
+            "ads": "Ads management",
+            "report": "Monthly report"
+          }
+        },
+        "growth": {
+          "name": "Growth",
+          "description": "Accelerate your growth with advanced content and ad management.",
+          "features": {
+            "reels": "filmed & edited reels/month",
+            "posts": "designed posts + stories",
+            "captions": "Arabic + English captions",
+            "platforms": "Instagram + TikTok + Snapchat",
+            "filming": "filming visits/month",
+            "ads": "Meta + TikTok ads (up to SAR 2,000 managed)",
+            "report": "Monthly performance report"
+          }
+        },
+        "brand": {
+          "name": "Brand",
+          "description": "Complete brand dominance with premium content across all platforms.",
+          "features": {
+            "reels": "reels + branded video/month",
+            "posts": "designed posts + stories",
+            "captions": "Arabic + English captions",
+            "platforms": "Instagram + TikTok + Snapchat + LinkedIn",
+            "filming": "filming visits/month",
+            "ads": "Meta + TikTok + Google ads (up to SAR 5,000 managed)",
+            "report": "Monthly strategy call + report"
+          }
+        }
+      },
+      "events": {
+        "highlight": {
+          "name": "Event Highlight",
+          "description": "Perfect for small gatherings and intimate events.",
+          "features": {
+            "cameraman": "cameraman on-site",
+            "reel": "min edited highlight reel",
+            "clips": "short clips for stories/reels",
+            "delivery": "Delivery within working days",
+            "drone": "Drone shot",
+            "teaser": "Same-day teaser"
+          }
+        },
+        "full_coverage": {
+          "name": "Full Coverage",
+          "description": "Complete event coverage for conferences, weddings, and corporate events.",
+          "features": {
+            "cameramen": "cameramen on-site",
+            "edit": "min full edit",
+            "clips": "short clips for social media",
+            "drone": "Drone shot included",
+            "delivery": "Delivery within working days",
+            "teaser": "Same-day teaser"
+          }
+        },
+        "premium": {
+          "name": "Premium Production",
+          "description": "High-end commercial production with full crew.",
+          "features": {
+            "crew": "Full professional crew",
+            "cameras": "Multi-camera setup",
+            "drone": "Drone coverage",
+            "teaser": "Same-day teaser delivered",
+            "edit": "Full cinematic edit",
+            "cutdowns": "Social media cut-downs included"
+          }
+        }
+      },
+      "podcast": {
+        "starter": {
+          "name": "Starter",
+          "description": "Perfect for getting started with your podcast.",
+          "features": {
+            "camera": "camera setup",
+            "lighting": "Basic lighting rig",
+            "edit": "Full episode edited",
+            "clips": "short clips for social media",
+            "graphics": "Intro/outro motion graphics",
+            "thumbnail": "Thumbnail design"
+          }
+        },
+        "pro": {
+          "name": "Pro",
+          "description": "Professional podcast production with multi-camera setup.",
+          "features": {
+            "cameras": "Multi-camera setup (2–3 angles)",
+            "lighting": "Professional lighting",
+            "edit": "Full episode edited with graphics",
+            "clips": "short clips for social media",
+            "graphics": "Intro/outro motion graphics",
+            "thumbnail": "Thumbnail design"
+          }
+        },
+        "monthly": {
+          "name": "Monthly Retainer",
+          "description": "Consistent podcast production with dedicated team.",
+          "features": {
+            "episodes": "episodes filmed & edited",
+            "cameras": "Multi-camera setup",
+            "clips": "short clips for social media",
+            "graphics": "Motion graphics & thumbnails",
+            "calendar": "Content calendar management",
+            "publishing": "Publishing & scheduling"
+          }
+        }
+      },
+      "realestate": {
+        "showcase": {
+          "name": "Property Showcase",
+          "description": "Quick and professional property tours.",
+          "features": {
+            "filming": "Interior & exterior filming",
+            "video": "min edited video",
+            "delivery": "Delivery within working days",
+            "reel": "short reel for social media",
+            "drone": "Drone shot",
+            "voiceover": "Voiceover"
+          }
+        },
+        "premium": {
+          "name": "Premium Listing",
+          "description": "Cinematic property tours that sell.",
+          "features": {
+            "filming": "Interior & exterior filming",
+            "drone": "Drone shot included",
+            "edit": "min cinematic edit",
+            "reels": "short reels for social media",
+            "voiceover": "Arabic + English voiceover",
+            "delivery": "Delivery within working days"
+          }
+        },
+        "developer": {
+          "name": "Developer Package",
+          "description": "Volume production for real estate developers.",
+          "features": {
+            "days": "Dedicated filming days/month",
+            "drone": "Drone for all properties",
+            "edits": "Full edits + social reels",
+            "delivery": "Priority delivery",
+            "rate": "Discounted per-unit rate",
+            "manager": "Dedicated account manager"
+          }
+        }
+      },
+      "commercial": {
+        "brand_film": {
+          "name": "Brand Film",
+          "description": "Compelling brand storytelling that connects with your audience.",
+          "features": {
+            "preproduction": "Pre-production & storyboard",
+            "filming": "day filming at your location",
+            "edit": "Professional edit with music",
+            "film": "sec final film",
+            "cutdowns": "social media cut-downs",
+            "drone": "Drone"
+          }
+        },
+        "company_profile": {
+          "name": "Company Profile",
+          "description": "A full documentary-style profile of your company.",
+          "features": {
+            "preproduction": "Pre-production & script",
+            "filming": "Team & office filming",
+            "drone": "Drone shot",
+            "interviews": "Interviews & testimonials",
+            "edit": "min cinematic edit",
+            "versions": "Arabic + English versions"
+          }
+        },
+        "premium": {
+          "name": "Premium Production",
+          "description": "High-end commercial production with full crew.",
+          "features": {
+            "preproduction": "Full pre-production & concept",
+            "crew": "Professional crew & equipment",
+            "filming": "Multi-location filming",
+            "drone": "Drone & gimbal coverage",
+            "grading": "Color grading & sound design",
+            "deliverables": "Full deliverables suite"
+          }
+        }
+      }
+    },
+    "featured_label": "Most Popular",
+    "period_month": "/month",
+    "period_event": "/event",
+    "period_episode": "/episode",
+    "period_property": "/property",
+    "custom_price": "Custom",
+    "currency": "SAR",
+    "cta_button": "Get started",
+    "note": {
+      "text": "All packages include a 3-month minimum for social media retainers. One-time productions have no minimum commitment. Ad spend is always billed separately and paid directly to the platform. Filming is done at your location in Riyadh."
+    }
+  }
 }

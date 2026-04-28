@@ -145,10 +145,11 @@ const success = ref(false);
 const errors = reactive({});
 const hasAnimated = ref(false);
 let observer = null;
+let successTimeout = null;
+let errorTimeout = null;
 
 // Formspree endpoint
 const formspreeEndpoint = 'https://formspree.io/f/mzzjpvez';
-const successMessage = '';
 
 // Computed
 const emailErrorText = computed(() => 
@@ -158,6 +159,12 @@ const emailErrorText = computed(() =>
 const messageErrorText = computed(() => 
   errors.message === 'short' ? t('form.validation.messageShort') : t('form.validation.message')
 );
+
+const successMessageText = computed(() => {
+  return locale.value === 'ar' 
+    ? '✓ تم إرسال رسالتك بنجاح! سيتواصل معك فريقنا قريباً'
+    : '✓ Your message has been sent successfully! Our team will contact you soon';
+});
 
 // Form validation & submission
 const validateForm = () => {
@@ -175,9 +182,13 @@ const validateForm = () => {
 
 const clearError = (field) => delete errors[field];
 
+const clearTimeouts = () => {
+  if (successTimeout) clearTimeout(successTimeout);
+  if (errorTimeout) clearTimeout(errorTimeout);
+};
+
 const resetForm = () => {
   Object.assign(formData, { name: '', email: '', message: '' });
-  success.value = false;
   Object.keys(errors).forEach(key => delete errors[key]);
 };
 
@@ -185,6 +196,8 @@ const submitForm = async () => {
   if (!validateForm()) return;
 
   submitting.value = true;
+  clearTimeouts();
+  
   try {
     const res = await fetch(formspreeEndpoint, {
       method: 'POST',
@@ -199,21 +212,34 @@ const submitForm = async () => {
     });
 
     if (res.ok) {
+      // عرض رسالة النجاح
       success.value = true;
+      
+      // مسح البيانات
       resetForm();
-      setTimeout(() => success.value = false, 5000);
+      
+      // إخفاء رسالة النجاح بعد 5 ثواني
+      successTimeout = setTimeout(() => {
+        success.value = false;
+      }, 5000);
     } else {
       errors.general = true;
+      errorTimeout = setTimeout(() => {
+        delete errors.general;
+      }, 5000);
     }
   } catch (err) {
     errors.general = true;
     console.error('Network error:', err);
+    errorTimeout = setTimeout(() => {
+      delete errors.general;
+    }, 5000);
   } finally {
     submitting.value = false;
   }
 };
 
-// Animations
+// Animations (نفس الكود الموجود)
 const startAnimations = () => {
   if (hasAnimated.value) return;
   hasAnimated.value = true;
@@ -271,7 +297,7 @@ const startAnimations = () => {
   }
 };
 
-// Watch for language change to re-trigger animations if needed
+// Watch for language change
 watch(locale, () => {
   hasAnimated.value = false;
   if (sectionContainer.value && observer) {
@@ -291,7 +317,10 @@ onMounted(() => {
   if (sectionContainer.value) observer.observe(sectionContainer.value);
 });
 
-onUnmounted(() => observer?.disconnect());
+onUnmounted(() => {
+  observer?.disconnect();
+  clearTimeouts();
+});
 </script>
 
 <style scoped>
@@ -622,16 +651,7 @@ textarea {
   font-family: Inter, sans-serif;
 }
 
-.error-message-general {
-  color: #ff4d4f;
-  font-size: 14px;
-  padding: 12px;
-  background: rgba(255, 77, 79, 0.1);
-  border-radius: 8px;
-  text-align: center;
-  margin-top: 16px;
-  font-family: Inter, sans-serif;
-}
+
 
 /* ============================================= */
 /*              Submit Button                    */
@@ -724,14 +744,15 @@ textarea {
 /* ============================================= */
 /*              Success Message                  */
 /* ============================================= */
+/* تحسين رسالة النجاح */
 .success-message {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 12px;
   padding: 16px;
-  background: rgba(76, 175, 80, 0.1);
-  border: 1px solid rgba(76, 175, 80, 0.3);
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.15), rgba(76, 175, 80, 0.05));
+  border: 1px solid rgba(76, 175, 80, 0.5);
   border-radius: 8px;
   color: #4caf50;
   font-size: 16px;
@@ -739,6 +760,55 @@ textarea {
   text-align: center;
   margin-top: 16px;
   font-family: Inter, sans-serif;
+  backdrop-filter: blur(10px);
+  animation: slideInUp 0.5s ease;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.success-icon {
+  width: 24px;
+  height: 24px;
+  fill: #4caf50;
+  animation: checkmark 0.5s ease-in-out;
+}
+
+@keyframes checkmark {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* تحسين رسالة الخطأ العامة */
+.error-message-general {
+  color: #ff4d4f;
+  font-size: 14px;
+  padding: 12px;
+  background: rgba(255, 77, 79, 0.1);
+  border: 1px solid rgba(255, 77, 79, 0.3);
+  border-radius: 8px;
+  text-align: center;
+  margin-top: 16px;
+  font-family: Inter, sans-serif;
+  animation: shake 0.5s ease-in-out;
+  backdrop-filter: blur(10px);
 }
 
 .success-icon { 

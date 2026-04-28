@@ -30,6 +30,8 @@
 
     <!-- Timeline & Contact -->
     <TimeLineComponent class="section-layer" />
+
+    <PricingSection @select="handlePackageSelect" />
     
     <div id="contact" class="section-layer p-[20px] md:p-[50px]">
       <ContactForm />
@@ -52,6 +54,9 @@ import FinalEditionVideo from '@/assets/new-video/FinalEdition.mp4';
 import beachyVideo from '@/assets/new-video/beachy.mp4';
 import EventCoverage from '@/assets/new-video/EventCoverage.mp4';
 import eventFilms from '@/assets/new-video/eventFilms.mp4';
+
+
+import PricingSection from '@/components/home/PricingSection.vue';
 
 const { t, locale } = useI18n();
 
@@ -101,6 +106,11 @@ const works = computed(() => [
     buttonLink: "https://www.youtube.com/watch?v=zYWGjqvC7uc"
   }
 ]);
+
+const handlePackageSelect = ({ package: packageName, tab }) => {
+  // console.log(`Selected: ${packageName} from ${tab} tab`);
+  // Navigate to contact form or open modal
+};
 </script>
 
 <style scoped>

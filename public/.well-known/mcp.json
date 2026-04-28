@@ -1,0 +1,8 @@
+{
+  "servers": [
+    {
+      "name": "prostdios-mcp",
+      "cardUrl": "https://prostdios.com/.well-known/mcp/server-card.json"
+    }
+  ]
+}
