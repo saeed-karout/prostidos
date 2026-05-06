@@ -52,4 +52,44 @@ app.component('font-awesome-icon', FontAwesomeIcon)
 
 app.config.globalProperties.$gsap = gsap
 app.config.globalProperties.$ScrollTrigger = ScrollTrigger
+
+
+// WebMCP API for AI agents (optional, if browser supports it)
+if (typeof navigator !== 'undefined' && navigator.modelContext && navigator.modelContext.provideContext) {
+  navigator.modelContext.provideContext({
+    tools: [
+      {
+        name: 'view_portfolio',
+        description: 'View the creative portfolio of Prostdios studio',
+        inputSchema: {
+          type: 'object',
+          properties: {},
+          required: []
+        },
+        execute: () => {
+          return {
+            result: 'Portfolio available at https://prostdios.com/#works',
+            works: ['ESTSS - Company Films', 'Zarabi - Commercial Films', 'Final Edition - Cars Films', 'Beachy Rentals - Real Estate Films']
+          };
+        }
+      },
+      {
+        name: 'contact_studio',
+        description: 'Get contact information for Prostdios creative studio',
+        inputSchema: {
+          type: 'object',
+          properties: {},
+          required: []
+        },
+        execute: () => {
+          return {
+            result: 'Contact Prostdios via WhatsApp or contact form at https://prostdios.com/#contact'
+          };
+        }
+      }
+    ]
+  });
+  console.log('WebMCP tools registered successfully');
+}
+
 app.mount('#app')

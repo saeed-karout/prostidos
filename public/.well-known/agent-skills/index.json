@@ -1,5 +1,20 @@
 {
   "$schema": "https://agent-skills.io/schema.json",
   "version": "1.0.0",
-  "skills": []
+  "skills": [
+    {
+      "name": "video-production",
+      "type": "service",
+      "description": "Professional video production services including company films, commercials, and event coverage",
+      "url": "https://prostdios.com/#works",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "contact-studio",
+      "type": "action",
+      "description": "Contact Prostdios for creative services",
+      "url": "https://prostdios.com/#contact",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
 }

@@ -1,5 +1,6 @@
 {
-  "resource": "https://api.prostdios.com",
+  "resource": "https://prostdios.com",
   "authorization_servers": ["https://prostdios.com"],
-  "scopes_supported": ["read", "write"]
+  "scopes_supported": ["read", "write"],
+  "bearer_methods_supported": ["header"]
 }

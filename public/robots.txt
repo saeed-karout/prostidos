@@ -1,6 +1,7 @@
 User-agent: *
 Allow: /
 Sitemap: https://prostdios.com/sitemap.xml
+Content-Signal: ai-train=no, search=yes, ai-input=no
 
 # AI bots
 User-agent: GPTBot
