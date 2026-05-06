@@ -1,0 +1,28 @@
+/*
+  X-Content-Type-Options: nosniff
+  X-XSS-Protection: 1; mode=block
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=(), usb=()
+
+  Content-Security-Policy: default-src 'self' https:; \
+    script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.youtube.com https://www.youtube-nocookie.com https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.gstatic.com https://googleads.g.doubleclick.net https://stats.g.doubleclick.net https://widget.clutch.co; \
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://widget.clutch.co; \
+    img-src 'self' blob: data: https:; \
+    font-src 'self' data: https://fonts.gstatic.com; \
+    frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://www.googletagmanager.com https://widget.clutch.co https://wa.me https://www.google.com; \
+    connect-src 'self' https://www.google-analytics.com https://www.googletagmanager.com https://www.google.com https://googleads.g.doubleclick.net https://stats.g.doubleclick.net https://wa.me; \
+    form-action 'self' https://wa.me; \
+    media-src 'self' https:; \
+    object-src 'none'; \
+    base-uri 'self'; \
+    upgrade-insecure-requests;
+
+    /*
+
+  
+  Access-Control-Allow-Origin: https://new-prostidios.netlify.app/
+  Access-Control-Allow-Methods: GET, POST, OPTIONS, HEAD
+  Access-Control-Allow-Headers: Origin, Content-Type, Accept, Authorization
+  Access-Control-Allow-Credentials: true

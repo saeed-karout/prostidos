@@ -1,0 +1,95 @@
+import './index.css'
+
+import { createApp } from 'vue'
+// import { createPinia } from 'pinia'
+
+import App from './App.vue'
+import router from './router'
+import { createI18n } from 'vue-i18n';
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { fas } from '@fortawesome/free-solid-svg-icons'
+import { far } from '@fortawesome/free-regular-svg-icons'
+import { fab } from '@fortawesome/free-brands-svg-icons'
+
+import en from './locales/en.json';
+import ar from './locales/ar.json';
+
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+
+gsap.registerPlugin(ScrollTrigger);
+
+
+library.add(fas, far, fab);
+// تحميل اللغة من localStorage أو استخدام اللغة الافتراضية 'en'
+const savedLanguage = localStorage.getItem('language') || 'en';
+if (!['en', 'ar'].includes(savedLanguage)) {
+  localStorage.setItem('language', 'en');
+}
+
+const i18n = createI18n({
+  legacy: false,
+  locale: savedLanguage, // تحميل اللغة المحفوظة
+  fallbackLocale: 'en',
+  messages: { en, ar },
+
+  missingWarn: false,          // جديد
+  fallbackWarn: false,         // جديد
+  warnHtmlMessage: false,
+  // هذا مهم جدًا:
+  globalInjection: true,
+  // وهذا يجبره يرجع القيمة من fallback لو مفقودة
+  fallbackOnMissing: true
+});
+
+const app = createApp(App)
+
+app.use(i18n);
+// app.use(createPinia())
+app.use(router)
+app.component('font-awesome-icon', FontAwesomeIcon)
+
+app.config.globalProperties.$gsap = gsap
+app.config.globalProperties.$ScrollTrigger = ScrollTrigger
+
+
+// WebMCP API for AI agents (optional, if browser supports it)
+if (typeof navigator !== 'undefined' && navigator.modelContext && navigator.modelContext.provideContext) {
+  navigator.modelContext.provideContext({
+    tools: [
+      {
+        name: 'view_portfolio',
+        description: 'View the creative portfolio of Prostdios studio',
+        inputSchema: {
+          type: 'object',
+          properties: {},
+          required: []
+        },
+        execute: () => {
+          return {
+            result: 'Portfolio available at https://prostdios.com/#works',
+            works: ['ESTSS - Company Films', 'Zarabi - Commercial Films', 'Final Edition - Cars Films', 'Beachy Rentals - Real Estate Films']
+          };
+        }
+      },
+      {
+        name: 'contact_studio',
+        description: 'Get contact information for Prostdios creative studio',
+        inputSchema: {
+          type: 'object',
+          properties: {},
+          required: []
+        },
+        execute: () => {
+          return {
+            result: 'Contact Prostdios via WhatsApp or contact form at https://prostdios.com/#contact'
+          };
+        }
+      }
+    ]
+  });
+  console.log('WebMCP tools registered successfully');
+}
+
+app.mount('#app')

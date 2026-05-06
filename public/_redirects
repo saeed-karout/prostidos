@@ -1,0 +1,4 @@
+/*    /index.html   200
+# Serve static files correctly
+/.well-known/* /well-known/:splat 200
+/*.json /:splat 200

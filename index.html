@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="/logos/logo.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Content Security Policy محدث -->
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self' https:; 
+    script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://www.youtube.com https://www.youtube-nocookie.com https://s.ytimg.com https://analytics.tiktok.com https://ads.tiktok.com https://googleads.g.doubleclick.net https://stats.g.doubleclick.net https://widget.clutch.co; 
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; 
+    img-src 'self' data: https: https://analytics.tiktok.com https://ads.tiktok.com; 
+    font-src 'self' https://fonts.gstatic.com; 
+    connect-src 'self' https://formspree.io https://api.web3forms.com https://formsubmit.co https://www.google-analytics.com https://analytics.tiktok.com https://ads.tiktok.com https://business-api.tiktok.com https://www.google.com https://www.google.com/ccm/ https://googleads.g.doubleclick.net https://stats.g.doubleclick.net; 
+    frame-src 'self' https://www.google.com https://www.youtube.com https://www.youtube-nocookie.com https://www.googletagmanager.com;">
+
+
+    <!-- Alternative to HTTP Link Headers for static sites -->
+<link rel="api-catalog" href="/.well-known/api-catalog" />
+<link rel="service-doc" href="/contact" />
+<link rel="help" href="/" />
+
+  <title>Prostdios - The Creative Studio</title>
+  
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17891838543"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'AW-17891838543');
+  </script>
+</head>
+
+<body>
+ 
+  <noscript>
+    <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MQH54RQT" height="0" width="0"
+      style="display:none;visibility:hidden"></iframe>
+  </noscript>
+
+  <div id="app"></div>
+
+  <!-- Google Tag Manager script -->
+  <script>
+    (function (w, d, s, l, i) {
+      w[l] = w[l] || []; w[l].push({
+        'gtm.start':
+          new Date().getTime(), event: 'gtm.js'
+      }); var f = d.getElementsByTagName(s)[0],
+        j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+          'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+    })(window, document, 'script', 'dataLayer', 'GTM-MQH54RQT');
+  </script>
+
+  <script>
+  // Detect AI agents requesting markdown
+  (function() {
+    const acceptHeader = '{{accept}}'; // لن تعمل ثابتة، تحتاج خادم
+    // بدلاً من ذلك، استخدم Client Hints أو تجاهل هذه الميزة
+    console.log('Markdown negotiation requires server-side support');
+  })();
+</script>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+
+</html>

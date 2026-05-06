@@ -1,0 +1,571 @@
+{
+  "nav": {
+    "home": "Home",
+    "services": "Services",
+    "gallery": "Gallery",
+    "blog": "Blog",
+    "aboutUs": "About Us",
+    "ourWork": "Our Work",
+    "contactUs": "Contact Us",
+    "language": "Switch Language",
+    "portfolio":"portfolio",
+    "followUs":"follow Us"
+  },
+  "footer": {
+    "address": {
+      "title": "Address",
+      "text": "Jeddah: Emaar square, King Abdullah Rd, Al Fayha'a, Jeddah 22241, Saudi Arabia."
+    },
+    "get":"get in touch",
+    "part":"Part of",
+    "links": {
+      "services": "Services",
+      "gallery": "Gallery",
+      "blog": "Blog",
+      "contactUs": "Contact Us"
+    },
+    "contacts": {
+      "title": "Contacts",
+      "phone": "009 665 816 703 16",
+      "phone2": "009 222 222 333 22",
+      "email": "Info[at]ProStdios.com"
+    },
+    "copyright": " By",
+    "company": "ProStdios",
+    "privacyPolicy": "Privacy",
+    "terms":"terms",
+    "cookies":"Cookies",
+    "backToTop":"back To Top",
+    "countries":"Emaar square, Jeddah 22241, KSA"
+  },
+  "hero": {
+    "text1": "Creative Agency for Brands That Dare to Stand Out",
+    "text2": "Content people watch. Impact you can measure.",
+    "book": "Book a Shoot",
+    "watch": "Watch the reel",
+    "descriptions": "PROSTDIOS  - Cinematic creativity for ambitious brands.",
+    "sub-description": "German craft. Saudi soul.",
+    "videoUnsupported": "Your browser does not support the video tag.",
+    "contact":"Contact Us",
+     "modalTitle": "Our Production Reel",
+    "modalDescription": "Watch our complete production reel showcasing our work and capabilities."
+  },
+  "visualArchive": {
+    "title": "Visual Archive",
+    "subtitle": "From concept to capture — explore the creative behind every frame",
+    "imageAlt": "Visual archive image",
+    "viewCaseStudy": "View Case Study",
+    "prevImage": "Previous image",
+    "nextImage": "Next image",
+    "contents": [
+      {
+        "country": "Riyadh, Saudi Arabia",
+        "topic": "Safety",
+        "titleWork": "Campaign, editorial, brand film",
+        "descriptionWork": "Lifestyle photoshoot for an eco-friendly brand. Shot on location using natural lighting and simple setup. Designed to reflect freedom, texture, and authenticity."
+      },
+      {
+        "country": "Dammam, Saudi Arabia",
+        "topic": "Escape",
+        "titleWork": "Product launch, commercial",
+        "descriptionWork": "Lifestyle photoshoot for an eco-friendly brand. Shot on location using natural lighting and simple setup. Designed to reflect freedom, texture, and authenticity."
+      },
+      {
+        "country": "Jeddah, Saudi Arabia",
+        "topic": "Creativity",
+        "titleWork": "Advertising campaign, artistic photos",
+        "descriptionWork": "Creative photography expressing the spirit of creativity and innovation in the world of design and visual arts."
+      }
+    ]
+  },
+  
+    "form": {
+      "name": "Name",
+      "namePlaceholder": "Enter your name",
+      "email": "Email",
+      "emailPlaceholder": "Enter your email",
+      "message": "Message",
+      "messagePlaceholder": "Enter your message",
+      "submit": "Submit",
+      "submitting": "Submitting...",
+      "successMessage": "Your message has been sent successfully! 👌",
+      "validation": {
+        "name": "Name is required",
+        "email": "Valid email is required",
+        "message": "Message is required",
+        "general": "Something went wrong. Please try again.",
+        "network": "Network error. Please check your connection.",
+        "emailInvalid": "Please enter a valid email address",
+        "messageShort": "Message should be at least 10 characters"
+      }
+    },
+    "contact": {
+      "small": "Creative Agency for Brands That Dare to Stand Out",
+      "big": "We can't wait to hear from you!",
+      "address": "Jeddah: Emaar square, King Abdullah Rd, Al Fayha'a, Jeddah 22241, Saudi Arabia.",
+      "email": "Info@ProStdios.com",
+      "phone1": "009 222 222 333 22",
+      "phone2": "009 222 222 333 22",
+      "emailIcon": "Email Icon",
+      "phoneIcon": "Phone Icon",
+      "social": {
+        "facebook": "Facebook Icon",
+        "whatsapp": "WhatsApp Icon",
+        "google": "Google Icon",
+        "youtube": "YouTube Icon"
+      }
+    },
+    "homeContact": {
+      "title": "Start Your Project Now",
+      "subtitle": "Ready to start your next project? Leave your details and we'll be happy to help.",
+      "title2": "Get in Touch",
+      "subtitle2": "Have a project in mind? Let's make it a reality. Tell us your idea and we'll get back to you within 24 hours.",
+      "title3": "Contact Us",
+      "subtitle3": "We'd love to hear from you. Send us a message and we'll respond as soon as possible."
+    }
+  ,
+  "logoAlt": "Company Logo",
+  "videoUnsupported": "Your browser does not support the video tag.",
+  "services": {
+    "title": {
+      "main": "Built to Shoot. Made to Shine.",
+      "subtitle": "Lights. Camera. Vision."
+    },
+    "items": [
+      {
+        "name": "Branding",
+        "projects": "Creation"
+      },
+      {
+        "name": "Photography",
+        "projects": "Production"
+      },
+      {
+        "name": "Video",
+        "projects": "Production"
+      },
+      {
+        "name": "Content",
+        "projects": "Design"
+      },
+      {
+        "name": "Marketing",
+        "projects": "Solutions"
+      },
+      {
+        "name": " AI Lead ",
+        "projects": "Targeting"
+      },
+      {
+        "name": "ProStdios",
+        "projects": "More Impact"
+      }
+    ],
+    "description": "Refined visuals. Precise execution. From concept to final cut, we offer end-to-end creative services designed to elevate your brand through photography and film.",
+    "button": "See Our Work"
+  },
+  "contacts": {
+    "title": "Let’s turn your idea into a visual experience.",
+    "subtitle": "We listen, understand your goals, and turn them into content that serves your brand and delivers results — frame by frame.",
+    "button": "Start your project"
+  },
+  "testimonials": {
+    "title": "Testimonials",
+    "prev": "Previous testimonial",
+    "next": "Next testimonial"
+  },
+  "OurServices": {
+    "title": "Our Services",
+    "span_title": "A refined cinematic process — from first idea to final frame.",
+    "service": [
+      {
+        "id": "1",
+        "title": "AI-Driven ",
+        "span": "Marketing Solutions"
+      },
+      {
+        "id": "2",
+        "title": "Product ",
+        "span": "& Market Strategy"
+      },
+      {
+        "id": "3",
+        "title": "Brand ",
+        "span": "Creation"
+      },
+      {
+        "id": "4",
+        "title": "App & Website ",
+        "span": "Development"
+      },
+      {
+        "id": "5",
+        "title": "Advanced ",
+        "span": "Data Analytics"
+      },
+      {
+        "id": "6",
+        "title": "Technical ",
+        "span": "Consulting"
+      },
+      {
+        "id": "7",
+        "title": "User Experience ",
+        "span": "Design"
+      },
+      {
+        "id": "8",
+        "title": "Search Engine ",
+        "span": "Optimization"
+      },
+      {
+        "id": "9",
+        "title": "Social Media ",
+        "span": "Management"
+      },
+      {
+        "id": "10",
+        "title": "Team Training ",
+        "span": "& Development"
+      }
+    ],
+    "new-services": [
+      {
+        "title": "Video Production",
+        "description": "We produce cinematic visuals that communicate brand stories with clarity and impact."
+      },
+      {
+        "title": "Company Films",
+        "description": "Professional corporate films that highlight your organization’s values, culture, and achievements."
+      },
+      {
+        "title": "Promotional & Commercial Films",
+        "description": "Strategic productions designed to enhance brand visibility and drive audience engagement."
+      },
+      {
+        "title": "Podcast Filming & Production",
+        "description": "Comprehensive production for professional podcasts, including setup, recording, and post-production."
+      },
+      {
+        "title": "Branding & Content CreationBranding & Content Creation",
+        "description": "Developing cohesive visual identities and content strategies that strengthen brand presence."
+      },
+      {
+        "title": "Events Filming & Production",
+        "description": "High-quality event coverage capturing key moments with precision and storytelling focus."
+      },
+      {
+        "title": "Ads Management",
+        "description": "Managing performance-driven campaigns across Google, Meta, Snapchat, and TikTok platforms."
+      }
+    ]
+  },
+  "btn-watch": "Watch Full Session",
+  "featuredWorksTitle": "FEATURED WORKS",
+  "gallery": {
+    "clickToWatch": "Click to watch"
+  },
+  "featuredWorks": {
+    "ESTSS": {
+      "title": "ESTSS",
+      "subtitle": "Company Films",
+      "description": "We create cinematic company films that highlight your story, values, and achievements. Using high-end cameras, lenses, and precise lighting, we capture the true identity of your organization with clarity and impact."
+    },
+    "Zarabi": {
+      "title": "Zarabi",
+      "subtitle": "Commercial Films",
+      "description": "Strategic commercial films built to boost visibility and drive engagement. Perfect for brands aiming to convert views into customers through cinematic storytelling and clean visuals."
+    },
+    "FinalEdition": {
+      "title": "Final Edition",
+      "subtitle": "Cars Films",
+      "description": "Premium car and showroom films showcasing vehicles with cinematic movement, drone shots, and detail-focused visuals. Ideal for dealerships, luxury brands, and new model launches."
+    },
+    "BeachyRentals": {
+      "title": "Beachy Rentals",
+      "subtitle": "Real Estate Films",
+      "description": "We produce high-quality real estate films that bring spaces to life. Perfect for agents, developers, and luxury property owners looking for cinematic walkthroughs and stunning detail shots."
+    },
+    "PodcastProduction": {
+      "title": "Florian Homm",
+      "subtitle": "Podcast Films",
+      "description": "Professional podcast filming—especially weekly solo podcast episodes. We come to your location with full gear and handle filming, audio recording, lighting, and editing."
+    },
+    "EventCoverage": {
+      "title": "Art Gallery",
+      "subtitle": "Event Films",
+      "description": "High-quality event film production capturing the moments, energy, and atmosphere of your event. Perfect for conferences, launches, activations, exhibitions, and corporate gatherings."
+    }
+  },
+ "timeLine": {
+  "title": "Prostdios Project Timeline",
+  "subtitle": "A refined cinematic process — from first idea to final frame.",
+  
+  "section1": {
+    "title1": "Discovery & Strategy",
+    "desc1": "We start by understanding your brand story and communication goals. Our team aligns on the creative direction, audience, tone, and key message — ensuring every frame has purpose.",
+    "deliverables1": "Deliverables | Creative brief, concept outline, and moodboard.",
+    
+    "title2": "Concept Development",
+    "desc2": "Storytelling begins here. We craft a visual narrative that connects emotionally with your audience. This includes scriptwriting, storyboarding, and visual style planning.",
+    "deliverables2": "Deliverables | Final concept deck, script, and storyboard."
+  },
+  
+  "section2": {
+    "title": "Pre-Production",
+    "desc": "Precision before production. We handle location scouting, permits, talent casting, equipment setup, and scheduling. Everything is prepared down to the smallest cinematic detail.",
+    "deliverables": "Deliverables | Shooting schedule, cast list, call sheets, and production plan."
+  },
+  
+  "section3": {
+    "title1": "Production",
+    "desc1": "Lights. Camera. Storytelling. Our directors, DOPs, and crew bring the concept to life using industry-leading cameras, lenses, lighting, and drone cinematography.",
+    "deliverables1": "Deliverables | Raw footage and behind-the-scenes material.",
+    
+    "title2": "Post-Production",
+    "desc2": "Where the story takes shape. Our editors, sound designers, and colorists refine every frame — adding music, voice-overs, animations, and VFX when needed.",
+    "deliverables2": "Deliverables | First cut, revised edit, and final master."
+  },
+  
+  "section4": {
+    "title": "Review & Feedback",
+    "desc": "We collaborate with you for review and fine-tuning. Our process includes multiple feedback rounds to ensure your vision is fully realized.",
+    "deliverables": "Deliverables | Approved final edit."
+  },
+  
+  "section5": {
+    "title1": "Final Delivery",
+    "desc1": "Your film is delivered in full resolution, optimized for all platforms — broadcast, cinema, or social media. We also provide optional subtitled and teaser versions.",
+    "deliverables1": "Deliverables | 4K final film, social cuts, and delivery package.",
+    
+    "title2": "Launch Support",
+    "desc2": "We help you plan the launch — from social rollout strategy to cinematic teaser edits that boost engagement.",
+    "deliverables2": "Deliverables | Launch plan, teaser reels, and performance insights."
+  },
+  
+  "footer": {
+    "title": "OUR STANDARD",
+    "description": "Every project follows a clear path. Cinematic creativity, strategic storytelling, and precise execution — because quality is never optional.",
+    "button": "See our work"
+  }
+},
+"pricing": {
+    "badge_text": "Our packages",
+    "title_part1": "Everything your brand needs",
+    "title_part2": ", handled.",
+    "subtitle": "From monthly social media content to one-time productions — choose what fits your goals.",
+    "tabs": {
+      "social": "Social Media",
+      "events": "Events",
+      "podcast": "Podcast",
+      "realestate": "Real Estate",
+      "commercial": "Commercial & Corporate"
+    },
+    "packages": {
+      "social": {
+        "essential": {
+          "name": "Essential",
+          "description": "Essential social media content package for consistent brand presence.",
+          "features": {
+            "reels": "filmed & edited reels/month",
+            "posts": "designed posts",
+            "captions": "Arabic + English captions",
+            "platforms": "Instagram + TikTok",
+            "filming": "filming visit/month",
+            "ads": "Ads management",
+            "report": "Monthly report"
+          }
+        },
+        "growth": {
+          "name": "Growth",
+          "description": "Accelerate your growth with advanced content and ad management.",
+          "features": {
+            "reels": "filmed & edited reels/month",
+            "posts": "designed posts + stories",
+            "captions": "Arabic + English captions",
+            "platforms": "Instagram + TikTok + Snapchat",
+            "filming": "filming visits/month",
+            "ads": "Meta + TikTok ads (up to SAR 2,000 managed)",
+            "report": "Monthly performance report"
+          }
+        },
+        "brand": {
+          "name": "Brand",
+          "description": "Complete brand dominance with premium content across all platforms.",
+          "features": {
+            "reels": "reels + branded video/month",
+            "posts": "designed posts + stories",
+            "captions": "Arabic + English captions",
+            "platforms": "Instagram + TikTok + Snapchat + LinkedIn",
+            "filming": "filming visits/month",
+            "ads": "Meta + TikTok + Google ads (up to SAR 5,000 managed)",
+            "report": "Monthly strategy call + report"
+          }
+        }
+      },
+      "events": {
+        "highlight": {
+          "name": "Event Highlight",
+          "description": "Perfect for small gatherings and intimate events.",
+          "features": {
+            "cameraman": "cameraman on-site",
+            "reel": "min edited highlight reel",
+            "clips": "short clips for stories/reels",
+            "delivery": "Delivery within working days",
+            "drone": "Drone shot",
+            "teaser": "Same-day teaser"
+          }
+        },
+        "full_coverage": {
+          "name": "Full Coverage",
+          "description": "Complete event coverage for conferences, weddings, and corporate events.",
+          "features": {
+            "cameramen": "cameramen on-site",
+            "edit": "min full edit",
+            "clips": "short clips for social media",
+            "drone": "Drone shot included",
+            "delivery": "Delivery within working days",
+            "teaser": "Same-day teaser"
+          }
+        },
+        "premium": {
+          "name": "Premium Production",
+          "description": "High-end commercial production with full crew.",
+          "features": {
+            "crew": "Full professional crew",
+            "cameras": "Multi-camera setup",
+            "drone": "Drone coverage",
+            "teaser": "Same-day teaser delivered",
+            "edit": "Full cinematic edit",
+            "cutdowns": "Social media cut-downs included"
+          }
+        }
+      },
+      "podcast": {
+        "starter": {
+          "name": "Starter",
+          "description": "Perfect for getting started with your podcast.",
+          "features": {
+            "camera": "camera setup",
+            "lighting": "Basic lighting rig",
+            "edit": "Full episode edited",
+            "clips": "short clips for social media",
+            "graphics": "Intro/outro motion graphics",
+            "thumbnail": "Thumbnail design"
+          }
+        },
+        "pro": {
+          "name": "Pro",
+          "description": "Professional podcast production with multi-camera setup.",
+          "features": {
+            "cameras": "Multi-camera setup (2–3 angles)",
+            "lighting": "Professional lighting",
+            "edit": "Full episode edited with graphics",
+            "clips": "short clips for social media",
+            "graphics": "Intro/outro motion graphics",
+            "thumbnail": "Thumbnail design"
+          }
+        },
+        "monthly": {
+          "name": "Monthly Retainer",
+          "description": "Consistent podcast production with dedicated team.",
+          "features": {
+            "episodes": "episodes filmed & edited",
+            "cameras": "Multi-camera setup",
+            "clips": "short clips for social media",
+            "graphics": "Motion graphics & thumbnails",
+            "calendar": "Content calendar management",
+            "publishing": "Publishing & scheduling"
+          }
+        }
+      },
+      "realestate": {
+        "showcase": {
+          "name": "Property Showcase",
+          "description": "Quick and professional property tours.",
+          "features": {
+            "filming": "Interior & exterior filming",
+            "video": "min edited video",
+            "delivery": "Delivery within working days",
+            "reel": "short reel for social media",
+            "drone": "Drone shot",
+            "voiceover": "Voiceover"
+          }
+        },
+        "premium": {
+          "name": "Premium Listing",
+          "description": "Cinematic property tours that sell.",
+          "features": {
+            "filming": "Interior & exterior filming",
+            "drone": "Drone shot included",
+            "edit": "min cinematic edit",
+            "reels": "short reels for social media",
+            "voiceover": "Arabic + English voiceover",
+            "delivery": "Delivery within working days"
+          }
+        },
+        "developer": {
+          "name": "Developer Package",
+          "description": "Volume production for real estate developers.",
+          "features": {
+            "days": "Dedicated filming days/month",
+            "drone": "Drone for all properties",
+            "edits": "Full edits + social reels",
+            "delivery": "Priority delivery",
+            "rate": "Discounted per-unit rate",
+            "manager": "Dedicated account manager"
+          }
+        }
+      },
+      "commercial": {
+        "brand_film": {
+          "name": "Brand Film",
+          "description": "Compelling brand storytelling that connects with your audience.",
+          "features": {
+            "preproduction": "Pre-production & storyboard",
+            "filming": "day filming at your location",
+            "edit": "Professional edit with music",
+            "film": "sec final film",
+            "cutdowns": "social media cut-downs",
+            "drone": "Drone"
+          }
+        },
+        "company_profile": {
+          "name": "Company Profile",
+          "description": "A full documentary-style profile of your company.",
+          "features": {
+            "preproduction": "Pre-production & script",
+            "filming": "Team & office filming",
+            "drone": "Drone shot",
+            "interviews": "Interviews & testimonials",
+            "edit": "min cinematic edit",
+            "versions": "Arabic + English versions"
+          }
+        },
+        "premium": {
+          "name": "Premium Production",
+          "description": "High-end commercial production with full crew.",
+          "features": {
+            "preproduction": "Full pre-production & concept",
+            "crew": "Professional crew & equipment",
+            "filming": "Multi-location filming",
+            "drone": "Drone & gimbal coverage",
+            "grading": "Color grading & sound design",
+            "deliverables": "Full deliverables suite"
+          }
+        }
+      }
+    },
+    "featured_label": "Most Popular",
+    "period_month": "/month",
+    "period_event": "/event",
+    "period_episode": "/episode",
+    "period_property": "/property",
+    "custom_price": "Custom",
+    "currency": "SAR",
+    "cta_button": "Get started",
+    "note": {
+      "text": "All packages include a 3-month minimum for social media retainers. One-time productions have no minimum commitment. Ad spend is always billed separately and paid directly to the platform. Filming is done at your location in Riyadh."
+    }
+  }
+}

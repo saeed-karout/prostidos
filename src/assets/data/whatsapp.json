@@ -1,0 +1,29 @@
+{
+    "whatsapp": {
+    "phoneNumber": "+966581670316",
+    "settings": {
+      "delay": 2000,
+      "showPulse": true,
+      "showTooltip": true,
+      "showNotification": true,
+      "autoHideNotification": true,
+      "notificationDuration": 5000,
+      "position": "bottom-right"
+    },
+    "messages": {
+      "en": "Hello! I would like to get more information.",
+      "ar": "مرحباً! أرغب في الحصول على مزيد من المعلومات."
+    },
+    "tooltips": {
+      "en": {
+        "contact": "Contact us on WhatsApp",
+        "clickToChat": "Click to start chatting"
+      },
+      "ar": {
+        "contact": "تواصل معنا عبر واتساب",
+        "clickToChat": "انقر للبدء بالدردشة"
+      }
+    }
+  }
+
+}
